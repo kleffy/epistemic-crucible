@@ -1,0 +1,11 @@
+[
+  {
+    "model": "claude-sonnet-4-6",
+    "label": "claude-sonnet-4-6",
+    "episodes": 60,
+    "solved": 33,
+    "tsr": 0.55,
+    "elapsed_sec": 933.1,
+    "trace": "results/llm_dose/mechanistic_k10/llm_claude-sonnet-4-6_20260530_223247.jsonl"
+  }
+]

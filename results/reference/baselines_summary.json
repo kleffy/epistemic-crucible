@@ -1,0 +1,219 @@
+{
+  "affordance/random": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "affordance/heuristic": {
+    "episodes": 100,
+    "goal_achieved": 44,
+    "total_steps": 3000,
+    "success_rate": 0.44,
+    "avg_steps": 30.0
+  },
+  "affordance/memorization": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "affordance/tabular_rl": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "affordance/world_model": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "affordance/hybrid_rule_planner": {
+    "episodes": 100,
+    "goal_achieved": 42,
+    "total_steps": 3000,
+    "success_rate": 0.42,
+    "avg_steps": 30.0
+  },
+  "affordance/neural_ppo": {
+    "episodes": 100,
+    "goal_achieved": 17,
+    "total_steps": 3000,
+    "success_rate": 0.17,
+    "avg_steps": 30.0
+  },
+  "causal_gate/random": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "causal_gate/heuristic": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "causal_gate/memorization": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "causal_gate/tabular_rl": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "causal_gate/world_model": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "causal_gate/hybrid_rule_planner": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "counterfactual/random": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "counterfactual/heuristic": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "counterfactual/memorization": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "counterfactual/tabular_rl": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "counterfactual/world_model": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "counterfactual/hybrid_rule_planner": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "tool_substitution/random": {
+    "episodes": 100,
+    "goal_achieved": 2,
+    "total_steps": 3000,
+    "success_rate": 0.02,
+    "avg_steps": 30.0
+  },
+  "tool_substitution/heuristic": {
+    "episodes": 100,
+    "goal_achieved": 58,
+    "total_steps": 3000,
+    "success_rate": 0.58,
+    "avg_steps": 30.0
+  },
+  "tool_substitution/memorization": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "tool_substitution/tabular_rl": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "tool_substitution/world_model": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 3000,
+    "success_rate": 0.0,
+    "avg_steps": 30.0
+  },
+  "tool_substitution/hybrid_rule_planner": {
+    "episodes": 100,
+    "goal_achieved": 56,
+    "total_steps": 3000,
+    "success_rate": 0.56,
+    "avg_steps": 30.0
+  },
+  "contradiction/random": {
+    "episodes": 100,
+    "goal_achieved": 3,
+    "total_steps": 4000,
+    "success_rate": 0.03,
+    "avg_steps": 40.0
+  },
+  "contradiction/heuristic": {
+    "episodes": 100,
+    "goal_achieved": 90,
+    "total_steps": 4000,
+    "success_rate": 0.9,
+    "avg_steps": 40.0
+  },
+  "contradiction/memorization": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "contradiction/tabular_rl": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "contradiction/world_model": {
+    "episodes": 100,
+    "goal_achieved": 0,
+    "total_steps": 4000,
+    "success_rate": 0.0,
+    "avg_steps": 40.0
+  },
+  "contradiction/hybrid_rule_planner": {
+    "episodes": 100,
+    "goal_achieved": 90,
+    "total_steps": 4000,
+    "success_rate": 0.9,
+    "avg_steps": 40.0
+  }
+}

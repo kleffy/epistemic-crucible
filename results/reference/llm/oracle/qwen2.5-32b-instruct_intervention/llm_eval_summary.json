@@ -1,0 +1,11 @@
+[
+  {
+    "model": "Qwen/Qwen2.5-32B-Instruct",
+    "label": "qwen2.5-32b-instruct",
+    "episodes": 40,
+    "solved": 24,
+    "tsr": 0.6,
+    "elapsed_sec": 1383.0,
+    "trace": "results/llm_oracle/qwen2.5-32b-instruct_intervention/llm_qwen2.5-32b-instruct_20260531_143243.jsonl"
+  }
+]

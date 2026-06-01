@@ -1,0 +1,1395 @@
+{
+  "families": [
+    "affordance",
+    "causal_gate",
+    "contradiction",
+    "tool_substitution"
+  ],
+  "agents": {
+    "claude-haiku-4-5-20251001": {
+      "overall": {
+        "mean": 0.3125,
+        "lo": 0.2542,
+        "hi": 0.3708,
+        "n": 240
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 0.1667,
+            "lo": 0.0333,
+            "hi": 0.3,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.1667,
+            "lo": 0.0333,
+            "hi": 0.3,
+            "n": 30
+          },
+          "gap": 0.0
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.1,
+            "lo": 0.0,
+            "hi": 0.2333,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 30
+          },
+          "gap": 0.1
+        },
+        "contradiction": {
+          "train": {
+            "mean": 0.8,
+            "lo": 0.6333,
+            "hi": 0.9333,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.6667,
+            "lo": 0.5,
+            "hi": 0.8333,
+            "n": 30
+          },
+          "gap": 0.1333
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.2333,
+            "lo": 0.0667,
+            "hi": 0.4,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.3667,
+            "lo": 0.2,
+            "hi": 0.5333,
+            "n": 30
+          },
+          "gap": -0.1334
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.0667,
+          "n_apply_to_gate": 15,
+          "n_episodes": 30
+        },
+        "test": {
+          "reliance": 0.25,
+          "n_apply_to_gate": 16,
+          "n_episodes": 30
+        }
+      }
+    },
+    "claude-opus-4-8": {
+      "overall": {
+        "mean": 0.575,
+        "lo": 0.425,
+        "hi": 0.725,
+        "n": 40
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 0.4,
+            "lo": 0.0,
+            "hi": 0.8,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.6,
+            "lo": 0.2,
+            "hi": 1.0,
+            "n": 5
+          },
+          "gap": -0.2
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.6,
+            "lo": 0.2,
+            "hi": 1.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.2,
+            "lo": 0.0,
+            "hi": 0.6,
+            "n": 5
+          },
+          "gap": 0.4
+        },
+        "contradiction": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.8,
+            "lo": 0.4,
+            "hi": 1.0,
+            "n": 5
+          },
+          "gap": 0.2
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.4,
+            "lo": 0.0,
+            "hi": 0.8,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.6,
+            "lo": 0.2,
+            "hi": 1.0,
+            "n": 5
+          },
+          "gap": -0.2
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.2,
+          "n_apply_to_gate": 5,
+          "n_episodes": 5
+        },
+        "test": {
+          "reliance": 0.2,
+          "n_apply_to_gate": 5,
+          "n_episodes": 5
+        }
+      }
+    },
+    "claude-sonnet-4-6": {
+      "overall": {
+        "mean": 0.5125,
+        "lo": 0.45,
+        "hi": 0.575,
+        "n": 240
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 0.3,
+            "lo": 0.1333,
+            "hi": 0.4667,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.4,
+            "lo": 0.2333,
+            "hi": 0.5667,
+            "n": 30
+          },
+          "gap": -0.1
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.2,
+            "lo": 0.0667,
+            "hi": 0.3667,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.1,
+            "lo": 0.0,
+            "hi": 0.2333,
+            "n": 30
+          },
+          "gap": 0.1
+        },
+        "contradiction": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.9667,
+            "lo": 0.9,
+            "hi": 1.0,
+            "n": 30
+          },
+          "gap": 0.0333
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.5667,
+            "lo": 0.4,
+            "hi": 0.7333,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.5667,
+            "lo": 0.4,
+            "hi": 0.7333,
+            "n": 30
+          },
+          "gap": 0.0
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.2759,
+          "n_apply_to_gate": 29,
+          "n_episodes": 30
+        },
+        "test": {
+          "reliance": 0.1667,
+          "n_apply_to_gate": 30,
+          "n_episodes": 30
+        }
+      }
+    },
+    "gpt-5.5": {
+      "overall": {
+        "mean": 0.8,
+        "lo": 0.675,
+        "hi": 0.925,
+        "n": 40
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.8,
+            "lo": 0.4,
+            "hi": 1.0,
+            "n": 5
+          },
+          "gap": 0.2
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.4,
+            "lo": 0.0,
+            "hi": 0.8,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.2,
+            "lo": 0.0,
+            "hi": 0.6,
+            "n": 5
+          },
+          "gap": 0.2
+        },
+        "contradiction": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 5
+          },
+          "gap": 0.0
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 5
+          },
+          "gap": 0.0
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.6,
+          "n_apply_to_gate": 5,
+          "n_episodes": 5
+        },
+        "test": {
+          "reliance": 0.4,
+          "n_apply_to_gate": 5,
+          "n_episodes": 5
+        }
+      }
+    },
+    "llama-3.1-8b-instruct": {
+      "overall": {
+        "mean": 0.1,
+        "lo": 0.0625,
+        "hi": 0.1417,
+        "n": 240
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 0.1,
+            "lo": 0.0,
+            "hi": 0.2008,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.0333,
+            "lo": 0.0,
+            "hi": 0.1,
+            "n": 30
+          },
+          "gap": 0.0667
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 30
+          },
+          "gap": 0.0
+        },
+        "contradiction": {
+          "train": {
+            "mean": 0.1667,
+            "lo": 0.0333,
+            "hi": 0.3,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.0667,
+            "lo": 0.0,
+            "hi": 0.1667,
+            "n": 30
+          },
+          "gap": 0.1
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.3,
+            "lo": 0.1333,
+            "hi": 0.4667,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.1333,
+            "lo": 0.0333,
+            "hi": 0.2667,
+            "n": 30
+          },
+          "gap": 0.1667
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.75,
+          "n_apply_to_gate": 4,
+          "n_episodes": 30
+        },
+        "test": {
+          "reliance": 0.6,
+          "n_apply_to_gate": 5,
+          "n_episodes": 30
+        }
+      }
+    },
+    "o3": {
+      "overall": {
+        "mean": 0.325,
+        "lo": 0.175,
+        "hi": 0.475,
+        "n": 40
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.2,
+            "lo": 0.0,
+            "hi": 0.6,
+            "n": 5
+          },
+          "gap": -0.2
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 5
+          },
+          "gap": 0.0
+        },
+        "contradiction": {
+          "train": {
+            "mean": 0.8,
+            "lo": 0.4,
+            "hi": 1.0,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.8,
+            "lo": 0.4,
+            "hi": 1.0,
+            "n": 5
+          },
+          "gap": 0.0
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.4,
+            "lo": 0.0,
+            "hi": 0.8,
+            "n": 5
+          },
+          "test": {
+            "mean": 0.4,
+            "lo": 0.0,
+            "hi": 0.8,
+            "n": 5
+          },
+          "gap": 0.0
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.0,
+          "n_apply_to_gate": 3,
+          "n_episodes": 5
+        },
+        "test": {
+          "reliance": 0.5,
+          "n_apply_to_gate": 2,
+          "n_episodes": 5
+        }
+      }
+    },
+    "qwen2.5-32b-instruct": {
+      "overall": {
+        "mean": 0.6042,
+        "lo": 0.5417,
+        "hi": 0.6667,
+        "n": 240
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 0.7,
+            "lo": 0.5333,
+            "hi": 0.8667,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.5333,
+            "lo": 0.3333,
+            "hi": 0.7,
+            "n": 30
+          },
+          "gap": 0.1667
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 30
+          },
+          "gap": 0.0
+        },
+        "contradiction": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.9,
+            "lo": 0.8,
+            "hi": 1.0,
+            "n": 30
+          },
+          "gap": 0.1
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.7,
+            "lo": 0.5333,
+            "hi": 0.8667,
+            "n": 30
+          },
+          "gap": 0.3
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.7241,
+          "n_apply_to_gate": 29,
+          "n_episodes": 30
+        },
+        "test": {
+          "reliance": 0.2692,
+          "n_apply_to_gate": 26,
+          "n_episodes": 30
+        }
+      }
+    },
+    "qwen2.5-7b-instruct": {
+      "overall": {
+        "mean": 0.0917,
+        "lo": 0.0583,
+        "hi": 0.1292,
+        "n": 240
+      },
+      "tsr": {
+        "affordance": {
+          "train": {
+            "mean": 0.1333,
+            "lo": 0.0333,
+            "hi": 0.2667,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.0333,
+            "lo": 0.0,
+            "hi": 0.1,
+            "n": 30
+          },
+          "gap": 0.1
+        },
+        "causal_gate": {
+          "train": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 30
+          },
+          "gap": 0.0
+        },
+        "contradiction": {
+          "train": {
+            "mean": 0.2,
+            "lo": 0.0667,
+            "hi": 0.3667,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.1333,
+            "lo": 0.0333,
+            "hi": 0.2667,
+            "n": 30
+          },
+          "gap": 0.0667
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.0667,
+            "lo": 0.0,
+            "hi": 0.1667,
+            "n": 30
+          },
+          "test": {
+            "mean": 0.1667,
+            "lo": 0.0333,
+            "hi": 0.3,
+            "n": 30
+          },
+          "gap": -0.1
+        }
+      },
+      "affordance_colour_reliance": {
+        "train": {
+          "reliance": 0.8,
+          "n_apply_to_gate": 5,
+          "n_episodes": 30
+        },
+        "test": {
+          "reliance": 0.5,
+          "n_apply_to_gate": 2,
+          "n_episodes": 30
+        }
+      }
+    }
+  },
+  "fewshot_reliance": {
+    "claude-opus-4-8": {
+      "zero_shot": 0.2,
+      "few_shot": 0.6,
+      "delta": 0.4,
+      "n_zero": 5,
+      "n_few": 10
+    },
+    "claude-sonnet-4-6": {
+      "zero_shot": 0.1667,
+      "few_shot": 0.6,
+      "delta": 0.4333,
+      "n_zero": 30,
+      "n_few": 10
+    },
+    "gpt-5.5": {
+      "zero_shot": 0.4,
+      "few_shot": 0.6,
+      "delta": 0.2,
+      "n_zero": 5,
+      "n_few": 10
+    }
+  },
+  "dose_response": {
+    "family": "affordance",
+    "baseline_k0": {
+      "reliance_test": {
+        "reliance": 0.2,
+        "n_apply_to_gate": 30,
+        "n_episodes": 30
+      },
+      "reliance_train": {
+        "reliance": 0.3103,
+        "n_apply_to_gate": 29,
+        "n_episodes": 30
+      },
+      "tsr_test": {
+        "mean": 0.4667,
+        "lo": 0.3,
+        "hi": 0.6333,
+        "n": 30
+      },
+      "tsr_train": {
+        "mean": 0.3333,
+        "lo": 0.1667,
+        "hi": 0.5,
+        "n": 30
+      }
+    },
+    "modes": {
+      "anticue": [
+        {
+          "k": 0,
+          "reliance_test": {
+            "reliance": 0.2,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.3103,
+            "n_apply_to_gate": 29,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.4667,
+            "lo": 0.3,
+            "hi": 0.6333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.3333,
+            "lo": 0.1667,
+            "hi": 0.5,
+            "n": 30
+          }
+        },
+        {
+          "k": 1,
+          "reliance_test": {
+            "reliance": 0.0667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.0,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.5333,
+            "lo": 0.3667,
+            "hi": 0.7,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.0333,
+            "lo": 0.0,
+            "hi": 0.1,
+            "n": 30
+          }
+        },
+        {
+          "k": 3,
+          "reliance_test": {
+            "reliance": 0.1304,
+            "n_apply_to_gate": 23,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.1667,
+            "n_apply_to_gate": 18,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.2333,
+            "lo": 0.1,
+            "hi": 0.4,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.1333,
+            "lo": 0.0333,
+            "hi": 0.2667,
+            "n": 30
+          }
+        },
+        {
+          "k": 5,
+          "reliance_test": {
+            "reliance": 0.1,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.1071,
+            "n_apply_to_gate": 28,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.3,
+            "lo": 0.1667,
+            "hi": 0.4667,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.2,
+            "lo": 0.0667,
+            "hi": 0.3667,
+            "n": 30
+          }
+        },
+        {
+          "k": 10,
+          "reliance_test": {
+            "reliance": 0.1724,
+            "n_apply_to_gate": 29,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.2222,
+            "n_apply_to_gate": 27,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.3333,
+            "lo": 0.1667,
+            "hi": 0.5,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.3,
+            "lo": 0.1658,
+            "hi": 0.4667,
+            "n": 30
+          }
+        }
+      ],
+      "cue": [
+        {
+          "k": 0,
+          "reliance_test": {
+            "reliance": 0.2,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.3103,
+            "n_apply_to_gate": 29,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.4667,
+            "lo": 0.3,
+            "hi": 0.6333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.3333,
+            "lo": 0.1667,
+            "hi": 0.5,
+            "n": 30
+          }
+        },
+        {
+          "k": 1,
+          "reliance_test": {
+            "reliance": 0.5667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 1.0,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.3667,
+            "lo": 0.2,
+            "hi": 0.5333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 30
+          }
+        },
+        {
+          "k": 3,
+          "reliance_test": {
+            "reliance": 0.5667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 1.0,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.4,
+            "lo": 0.2333,
+            "hi": 0.5675,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 30
+          }
+        },
+        {
+          "k": 5,
+          "reliance_test": {
+            "reliance": 0.5667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 1.0,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.3667,
+            "lo": 0.2,
+            "hi": 0.5333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 30
+          }
+        },
+        {
+          "k": 10,
+          "reliance_test": {
+            "reliance": 0.5667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 1.0,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.4667,
+            "lo": 0.3,
+            "hi": 0.6333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 30
+          }
+        }
+      ],
+      "mechanistic": [
+        {
+          "k": 0,
+          "reliance_test": {
+            "reliance": 0.2,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.3103,
+            "n_apply_to_gate": 29,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.4667,
+            "lo": 0.3,
+            "hi": 0.6333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.3333,
+            "lo": 0.1667,
+            "hi": 0.5,
+            "n": 30
+          }
+        },
+        {
+          "k": 1,
+          "reliance_test": {
+            "reliance": 0.3,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.1667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.7333,
+            "lo": 0.5667,
+            "hi": 0.9,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.5,
+            "lo": 0.3333,
+            "hi": 0.7,
+            "n": 30
+          }
+        },
+        {
+          "k": 3,
+          "reliance_test": {
+            "reliance": 0.2333,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.1667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.5667,
+            "lo": 0.4,
+            "hi": 0.7333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.6,
+            "lo": 0.4333,
+            "hi": 0.7667,
+            "n": 30
+          }
+        },
+        {
+          "k": 5,
+          "reliance_test": {
+            "reliance": 0.2,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.2667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.6667,
+            "lo": 0.5,
+            "hi": 0.8333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.6333,
+            "lo": 0.4667,
+            "hi": 0.8,
+            "n": 30
+          }
+        },
+        {
+          "k": 10,
+          "reliance_test": {
+            "reliance": 0.0667,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "reliance_train": {
+            "reliance": 0.2,
+            "n_apply_to_gate": 30,
+            "n_episodes": 30
+          },
+          "tsr_test": {
+            "mean": 0.5667,
+            "lo": 0.4,
+            "hi": 0.7333,
+            "n": 30
+          },
+          "tsr_train": {
+            "mean": 0.5333,
+            "lo": 0.3658,
+            "hi": 0.7,
+            "n": 30
+          }
+        }
+      ]
+    }
+  },
+  "oracle_ladder": {
+    "intervention": {
+      "claude-haiku-4-5-20251001": {
+        "affordance": {
+          "train": {
+            "mean": 0.3333,
+            "lo": 0.1333,
+            "hi": 0.6,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.3333,
+            "lo": 0.1333,
+            "hi": 0.5333,
+            "n": 15
+          },
+          "gap": 0.0
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.3333,
+            "lo": 0.0667,
+            "hi": 0.6,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.5333,
+            "lo": 0.2667,
+            "hi": 0.8,
+            "n": 15
+          },
+          "gap": -0.2
+        }
+      },
+      "claude-sonnet-4-6": {
+        "affordance": {
+          "train": {
+            "mean": 0.3333,
+            "lo": 0.1333,
+            "hi": 0.6,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.5333,
+            "lo": 0.2667,
+            "hi": 0.8,
+            "n": 15
+          },
+          "gap": -0.2
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.8667,
+            "lo": 0.6667,
+            "hi": 1.0,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.6667,
+            "lo": 0.4,
+            "hi": 0.8667,
+            "n": 15
+          },
+          "gap": 0.2
+        }
+      },
+      "qwen2.5-32b-instruct": {
+        "affordance": {
+          "train": {
+            "mean": 0.3,
+            "lo": 0.1,
+            "hi": 0.6,
+            "n": 10
+          },
+          "test": {
+            "mean": 0.4,
+            "lo": 0.1,
+            "hi": 0.7,
+            "n": 10
+          },
+          "gap": -0.1
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 10
+          },
+          "test": {
+            "mean": 0.7,
+            "lo": 0.4,
+            "hi": 1.0,
+            "n": 10
+          },
+          "gap": 0.3
+        }
+      }
+    },
+    "property": {
+      "claude-haiku-4-5-20251001": {
+        "affordance": {
+          "train": {
+            "mean": 0.2667,
+            "lo": 0.0667,
+            "hi": 0.5333,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.2,
+            "lo": 0.0,
+            "hi": 0.4,
+            "n": 15
+          },
+          "gap": 0.0667
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.4667,
+            "lo": 0.2,
+            "hi": 0.7333,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.5333,
+            "lo": 0.2667,
+            "hi": 0.8,
+            "n": 15
+          },
+          "gap": -0.0666
+        }
+      },
+      "claude-sonnet-4-6": {
+        "affordance": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "gap": 0.0
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "gap": 0.0
+        }
+      },
+      "qwen2.5-32b-instruct": {
+        "affordance": {
+          "train": {
+            "mean": 0.9,
+            "lo": 0.7,
+            "hi": 1.0,
+            "n": 10
+          },
+          "test": {
+            "mean": 0.9,
+            "lo": 0.7,
+            "hi": 1.0,
+            "n": 10
+          },
+          "gap": 0.0
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 10
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 10
+          },
+          "gap": 0.0
+        }
+      }
+    },
+    "rule": {
+      "claude-haiku-4-5-20251001": {
+        "affordance": {
+          "train": {
+            "mean": 0.3333,
+            "lo": 0.1333,
+            "hi": 0.6,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.4,
+            "lo": 0.2,
+            "hi": 0.6667,
+            "n": 15
+          },
+          "gap": -0.0667
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.3333,
+            "lo": 0.1333,
+            "hi": 0.6,
+            "n": 15
+          },
+          "test": {
+            "mean": 0.4,
+            "lo": 0.1333,
+            "hi": 0.6667,
+            "n": 15
+          },
+          "gap": -0.0667
+        }
+      },
+      "claude-sonnet-4-6": {
+        "affordance": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "gap": 0.0
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 15
+          },
+          "gap": 0.0
+        }
+      },
+      "qwen2.5-32b-instruct": {
+        "affordance": {
+          "train": {
+            "mean": 0.9,
+            "lo": 0.7,
+            "hi": 1.0,
+            "n": 10
+          },
+          "test": {
+            "mean": 0.9,
+            "lo": 0.7,
+            "hi": 1.0,
+            "n": 10
+          },
+          "gap": 0.0
+        },
+        "tool_substitution": {
+          "train": {
+            "mean": 0.8,
+            "lo": 0.5,
+            "hi": 1.0,
+            "n": 10
+          },
+          "test": {
+            "mean": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 10
+          },
+          "gap": -0.2
+        }
+      }
+    }
+  }
+}

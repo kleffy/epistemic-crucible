@@ -1,0 +1,55 @@
+# Neural baseline training configuration.
+#
+# Recipe: behaviour-clone the heuristic solver on the TRAIN split. The heuristic
+# exploits the train-only colour shortcut, so the learned policy inherits it and
+# is then tested on the decorrelated TEST split — the headline diagnostic.
+#
+# Scope: affordance is the family whose public features cleanly determine the
+# expert action, so BC clones it well (per-step acc ~0.80). tool_substitution is
+# solvable by the heuristic (~0.58) but its demonstrations are not cloneable from
+# public features alone (BC acc plateaus ~0.46), and causal_gate/counterfactual
+# have no usable demonstrations — so the neural baseline targets affordance.
+#
+# Device note: the agent is GPU-capable (device: cuda), and the RTX 5090 was used
+# during development. For the committed reference checkpoints we train on CPU: this
+# task is CPU-bound (Python env rollouts) with a tiny policy, so CPU is both faster
+# and bit-reproducible, whereas CUDA has run-to-run variance. PPO fine-tuning
+# (train_mode: bc+ppo) is supported but disabled by default — on this small task it
+# is unstable and can collapse the BC warm-start.
+device: cpu
+grid_size: 6
+seed: 0
+train_mode: bc
+
+families:
+  - affordance
+
+# Behaviour-cloning warm-start.
+bc:
+  demo_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+  epochs: 300
+  batch_size: 64
+  lr: 0.001
+
+reward:
+  goal_reward: 1.0
+  step_penalty: 0.002
+  illegal_penalty: 0.0
+  # Potential-based navigation shaping (public positions only; does not reveal
+  # which tool is causal). Aids exploration so PPO can express a tool-selection
+  # policy within the step budget.
+  navigation_shaping: 0.05
+  shaping_gamma: 0.99
+
+ppo:
+  embed_dim: 32
+  hidden: 64
+  lr: 0.0003
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip: 0.2
+  value_coef: 0.5
+  entropy_coef: 0.01
+  epochs: 4
+  minibatch: 256
+  rollout_steps: 2048

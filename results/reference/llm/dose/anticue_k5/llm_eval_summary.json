@@ -1,0 +1,11 @@
+[
+  {
+    "model": "claude-sonnet-4-6",
+    "label": "claude-sonnet-4-6",
+    "episodes": 60,
+    "solved": 15,
+    "tsr": 0.25,
+    "elapsed_sec": 1412.6,
+    "trace": "results/llm_dose/anticue_k5/llm_claude-sonnet-4-6_20260530_233520.jsonl"
+  }
+]

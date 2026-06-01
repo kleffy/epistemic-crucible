@@ -1,0 +1,39 @@
+families:
+  - affordance
+  - causal_gate
+  - counterfactual
+  - tool_substitution
+  - contradiction
+
+seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+
+agents:
+  - random
+  - heuristic
+  - memorization
+  - tabular_rl
+  - world_model
+  - hybrid_rule_planner
+
+grid_size: 6
+output_dir: results

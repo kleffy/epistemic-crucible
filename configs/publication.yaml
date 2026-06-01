@@ -1,0 +1,131 @@
+# Publication-scale evaluation sweep.
+#
+# All families x all agents (including the learned neural_ppo baseline) over 100
+# seeds. The runner auto-assigns ~80/20 train/test per seed, so transfer_success,
+# shortcut_sensitivity, and concept_reuse_proxy are all computable from one run.
+#
+# neural_ppo is eval-only here: train its checkpoints first with
+#   python experiments/train_neural.py --config configs/neural.yaml
+# then run this sweep. Checkpoints are loaded per family from checkpoint_dir.
+families:
+  - affordance
+  - causal_gate
+  - counterfactual
+  - tool_substitution
+  - contradiction
+
+seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 35
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 49
+  - 50
+  - 51
+  - 52
+  - 53
+  - 54
+  - 55
+  - 56
+  - 57
+  - 58
+  - 59
+  - 60
+  - 61
+  - 62
+  - 63
+  - 64
+  - 65
+  - 66
+  - 67
+  - 68
+  - 69
+  - 70
+  - 71
+  - 72
+  - 73
+  - 74
+  - 75
+  - 76
+  - 77
+  - 78
+  - 79
+  - 80
+  - 81
+  - 82
+  - 83
+  - 84
+  - 85
+  - 86
+  - 87
+  - 88
+  - 89
+  - 90
+  - 91
+  - 92
+  - 93
+  - 94
+  - 95
+  - 96
+  - 97
+  - 98
+  - 99
+
+agents:
+  - random
+  - heuristic
+  - memorization
+  - tabular_rl
+  - world_model
+  - hybrid_rule_planner
+  - neural_ppo
+
+grid_size: 6
+output_dir: results
+checkpoint_dir: results/checkpoints
+neural_device: cpu

@@ -1,0 +1,35 @@
+# LLM evaluation panel.
+#
+# Decision-focused, genuine evaluation: a NEUTRAL prompt (no solution recipe, no
+# anti-shortcut coaching), object IDs anonymized so the split never leaks, and a
+# compact layout that places objects near the agent so the task isolates the
+# causal decision (which object to act on) from long-horizon navigation. Each
+# seed is evaluated under both the train and test variant (paired) for a clean
+# shortcut diagnostic: train has the colour=conductivity correlation; test breaks it.
+#
+# Open-weights models run locally on the GPU (backend: transformers); Claude
+# models use backend: anthropic (ANTHROPIC_API_KEY required).
+backend: anthropic
+device: cuda
+grid_size: 6
+max_new_tokens: 256
+batch_size: 16
+max_history: 9
+compact_layout: true
+eval_splits: [train, test]
+cache_dir: results/llm_cache
+output_dir: results
+
+models:
+  - claude-haiku-4-5-20251001
+  - claude-sonnet-4-6
+  - claude-opus-4-8
+
+# Open-weights panel (run separately with --backend transformers):
+#   Qwen/Qwen2.5-7B-Instruct, meta-llama/Llama-3.1-8B-Instruct,
+#   mistralai/Mistral-7B-Instruct-v0.3
+
+families:
+  - affordance
+
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]

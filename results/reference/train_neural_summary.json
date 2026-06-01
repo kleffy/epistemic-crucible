@@ -1,0 +1,10 @@
+[
+  {
+    "family": "affordance",
+    "mode": "bc",
+    "elapsed_sec": 48.7,
+    "bc_final_acc": 0.8080357193946839,
+    "ppo_final_success_rate": null,
+    "checkpoint": "results/checkpoints/affordance.pt"
+  }
+]

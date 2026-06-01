@@ -1,0 +1,11 @@
+family: counterfactual
+grid_size: 6
+max_steps: 30
+max_interventions: 2
+train_ratio: 0.8
+counterfactual_delta_kind: latent_property
+visible_preserving: true
+prediction_mode: effect
+description: >
+  Counterfactual classification diagnostic. Agent must identify which
+  block has solubility using a limited intervention budget.

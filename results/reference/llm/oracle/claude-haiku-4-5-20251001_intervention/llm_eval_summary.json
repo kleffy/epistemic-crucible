@@ -1,0 +1,11 @@
+[
+  {
+    "model": "claude-haiku-4-5-20251001",
+    "label": "claude-haiku-4-5-20251001",
+    "episodes": 60,
+    "solved": 23,
+    "tsr": 0.3833,
+    "elapsed_sec": 482.3,
+    "trace": "results/llm_oracle/claude-haiku-4-5-20251001_intervention/llm_claude-haiku-4-5-20251001_20260531_005651.jsonl"
+  }
+]

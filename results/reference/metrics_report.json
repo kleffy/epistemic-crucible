@@ -1,0 +1,1044 @@
+{
+  "task_success_rate": {
+    "name": "task_success_rate",
+    "value": 0.1297,
+    "count": 3100,
+    "definition": "Fraction of episodes with goal_achieved=True.",
+    "gaming_risk": "Agents can maximise TSR on OPEN-goal families by memorising seed\u2192action maps without causal understanding.",
+    "metadata": {}
+  },
+  "transfer_success": {
+    "name": "transfer_success",
+    "value": {
+      "affordance/heuristic": {
+        "train_tsr": 0.443,
+        "test_tsr": 0.4286,
+        "delta": -0.0144
+      },
+      "affordance/hybrid_rule_planner": {
+        "train_tsr": 0.4177,
+        "test_tsr": 0.4286,
+        "delta": 0.0109
+      },
+      "affordance/memorization": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "affordance/neural_ppo": {
+        "train_tsr": 0.2025,
+        "test_tsr": 0.0476,
+        "delta": -0.1549
+      },
+      "affordance/random": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "affordance/tabular_rl": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "affordance/world_model": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "causal_gate/heuristic": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "causal_gate/hybrid_rule_planner": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "causal_gate/memorization": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "causal_gate/random": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "causal_gate/tabular_rl": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "causal_gate/world_model": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "contradiction/heuristic": {
+        "train_tsr": 1.0,
+        "test_tsr": 0.5238,
+        "delta": -0.4762
+      },
+      "contradiction/hybrid_rule_planner": {
+        "train_tsr": 1.0,
+        "test_tsr": 0.5238,
+        "delta": -0.4762
+      },
+      "contradiction/memorization": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "contradiction/random": {
+        "train_tsr": 0.038,
+        "test_tsr": 0.0,
+        "delta": -0.038
+      },
+      "contradiction/tabular_rl": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "contradiction/world_model": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "counterfactual/heuristic": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "counterfactual/hybrid_rule_planner": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "counterfactual/memorization": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "counterfactual/random": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "counterfactual/tabular_rl": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "counterfactual/world_model": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "tool_substitution/heuristic": {
+        "train_tsr": 0.6076,
+        "test_tsr": 0.4762,
+        "delta": -0.1314
+      },
+      "tool_substitution/hybrid_rule_planner": {
+        "train_tsr": 0.5823,
+        "test_tsr": 0.4762,
+        "delta": -0.1061
+      },
+      "tool_substitution/memorization": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "tool_substitution/random": {
+        "train_tsr": 0.0253,
+        "test_tsr": 0.0,
+        "delta": -0.0253
+      },
+      "tool_substitution/tabular_rl": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      },
+      "tool_substitution/world_model": {
+        "train_tsr": 0.0,
+        "test_tsr": 0.0,
+        "delta": 0.0
+      }
+    },
+    "count": 3100,
+    "definition": "Per-(family,agent) train TSR vs test TSR; delta=test-train.",
+    "gaming_risk": "Positive delta from lucky seeds is not reliable; report standard deviation across seeds alongside the mean.",
+    "metadata": {}
+  },
+  "shortcut_sensitivity": {
+    "name": "shortcut_sensitivity",
+    "value": {
+      "affordance/heuristic": 0.0145,
+      "affordance/hybrid_rule_planner": -0.0108,
+      "affordance/memorization": 0.0,
+      "affordance/neural_ppo": 0.1549,
+      "affordance/random": 0.0,
+      "affordance/tabular_rl": 0.0,
+      "affordance/world_model": 0.0,
+      "tool_substitution/heuristic": 0.1314,
+      "tool_substitution/hybrid_rule_planner": 0.1061,
+      "tool_substitution/memorization": 0.0,
+      "tool_substitution/random": 0.0253,
+      "tool_substitution/tabular_rl": 0.0,
+      "tool_substitution/world_model": 0.0
+    },
+    "count": 1300,
+    "definition": "train_TSR - test_TSR for affordance and tool_substitution families. High value = surface-feature exploitation.",
+    "gaming_risk": "Memorisation agents show SS\u22480 trivially because they use different lookup keys per split; SS must be read alongside TSR.",
+    "metadata": {}
+  },
+  "intervention_validity": {
+    "name": "intervention_validity",
+    "value": 1.0,
+    "count": 22697,
+    "definition": "Fraction of APPLY/COMBINE/INSPECT steps with non-empty effect strings.",
+    "gaming_risk": "INSPECT on a DETECTOR object always produces a marker effect; excluding INSPECT yields a stricter causal-intervention validity metric.",
+    "metadata": {}
+  },
+  "intervention_efficiency": {
+    "name": "intervention_efficiency",
+    "value": null,
+    "count": 0,
+    "definition": "For successful episodes: oracle_action_count / agent_steps, capped at 1.0. Higher = more efficient relative to the oracle.",
+    "gaming_risk": "Short lucky episodes score higher than systematic solvers; efficiency only applies to successful episodes.",
+    "metadata": {
+      "note": "get_spec not provided; cannot compute oracle lengths."
+    }
+  },
+  "counterfactual_accuracy": {
+    "name": "counterfactual_accuracy",
+    "value": null,
+    "count": 0,
+    "definition": "Counterfactual accuracy: behavioral = correct intervention on classified object; prediction = predicted effect matches actual effect.",
+    "gaming_risk": "Agents can achieve high behavioral CA on COUNTERFACTUAL by always applying to block0 (which is correct on TRAIN); this fails on TEST where the property is swapped.",
+    "metadata": {
+      "mode": "behavioral",
+      "note": "get_spec not provided; cannot determine correct object."
+    }
+  },
+  "concept_reuse_proxy": {
+    "name": "concept_reuse_proxy",
+    "value": {
+      "with_evidence_tsr": 0.2033,
+      "without_evidence_tsr": 0.0,
+      "concept_reuse": 0.2033,
+      "n_with_evidence": 300,
+      "n_without_evidence": 351
+    },
+    "count": 651,
+    "definition": "Test-split TSR with prior evidence minus test-split TSR without prior evidence. Evidence = an informative INSPECT/APPLY intervention in-episode.",
+    "gaming_risk": "Inflated if hidden-rule structure leaks through object types/names, or by an agent that always intervenes trivially; read with intervention_validity.",
+    "metadata": {}
+  },
+  "failure_diversity": {
+    "name": "failure_diversity",
+    "value": {
+      "timeout": 1017,
+      "no_interaction": 780,
+      "high_illegal": 317,
+      "no_effects": 0,
+      "energy_depleted": 0,
+      "distinct_modes": 3
+    },
+    "count": 2698,
+    "definition": "Count of distinct failure modes across all failed episodes.",
+    "gaming_risk": "Failure diversity does not penalise agents that fail identically in predictable ways; high diversity is not inherently desirable.",
+    "metadata": {
+      "active_modes": [
+        "timeout",
+        "no_interaction",
+        "high_illegal"
+      ]
+    }
+  },
+  "curriculum_progression": {
+    "name": "curriculum_progression",
+    "value": {
+      "affordance/heuristic": {
+        "windows": [
+          0.6,
+          0.4,
+          0.4,
+          0.6,
+          0.2,
+          0.0,
+          0.6,
+          0.4,
+          0.2,
+          0.6,
+          0.8,
+          0.2,
+          0.8,
+          0.6,
+          0.4,
+          0.4,
+          0.2,
+          0.4,
+          0.8,
+          0.2
+        ],
+        "slope": 0.001504
+      },
+      "affordance/hybrid_rule_planner": {
+        "windows": [
+          0.6,
+          0.4,
+          0.4,
+          0.6,
+          0.4,
+          0.0,
+          0.4,
+          0.4,
+          0.2,
+          0.6,
+          0.8,
+          0.2,
+          0.8,
+          0.4,
+          0.4,
+          0.4,
+          0.2,
+          0.2,
+          0.8,
+          0.2
+        ],
+        "slope": -0.002406
+      },
+      "affordance/memorization": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "affordance/neural_ppo": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.2,
+          0.2,
+          0.0,
+          0.2,
+          0.0,
+          0.4,
+          0.4,
+          0.0,
+          0.0,
+          0.4,
+          0.4,
+          0.2,
+          0.0,
+          0.4,
+          0.0,
+          0.6,
+          0.0
+        ],
+        "slope": 0.010677
+      },
+      "affordance/random": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "affordance/tabular_rl": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "affordance/world_model": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "causal_gate/heuristic": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "causal_gate/hybrid_rule_planner": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "causal_gate/memorization": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "causal_gate/random": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "causal_gate/tabular_rl": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "causal_gate/world_model": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "contradiction/heuristic": {
+        "windows": [
+          1.0,
+          1.0,
+          0.8,
+          1.0,
+          1.0,
+          1.0,
+          0.6,
+          1.0,
+          0.8,
+          1.0,
+          1.0,
+          1.0,
+          0.8,
+          0.8,
+          1.0,
+          0.6,
+          1.0,
+          0.8,
+          0.8,
+          1.0
+        ],
+        "slope": -0.005113
+      },
+      "contradiction/hybrid_rule_planner": {
+        "windows": [
+          1.0,
+          1.0,
+          0.8,
+          1.0,
+          1.0,
+          1.0,
+          0.6,
+          1.0,
+          0.8,
+          1.0,
+          1.0,
+          1.0,
+          0.8,
+          0.8,
+          1.0,
+          0.6,
+          1.0,
+          0.8,
+          0.8,
+          1.0
+        ],
+        "slope": -0.005113
+      },
+      "contradiction/memorization": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "contradiction/random": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.2,
+          0.0,
+          0.0,
+          0.2,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.2,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": -0.000451
+      },
+      "contradiction/tabular_rl": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "contradiction/world_model": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "counterfactual/heuristic": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "counterfactual/hybrid_rule_planner": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "counterfactual/memorization": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "counterfactual/random": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "counterfactual/tabular_rl": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "counterfactual/world_model": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "tool_substitution/heuristic": {
+        "windows": [
+          0.8,
+          0.4,
+          0.6,
+          0.8,
+          0.4,
+          0.4,
+          0.8,
+          0.6,
+          0.4,
+          0.8,
+          0.6,
+          0.2,
+          0.8,
+          0.6,
+          0.4,
+          0.6,
+          0.4,
+          0.8,
+          1.0,
+          0.2
+        ],
+        "slope": -0.001805
+      },
+      "tool_substitution/hybrid_rule_planner": {
+        "windows": [
+          0.8,
+          0.4,
+          0.6,
+          1.0,
+          0.4,
+          0.0,
+          0.6,
+          0.6,
+          0.4,
+          0.8,
+          0.6,
+          0.4,
+          0.8,
+          0.8,
+          0.4,
+          0.6,
+          0.2,
+          0.8,
+          0.8,
+          0.2
+        ],
+        "slope": -0.003008
+      },
+      "tool_substitution/memorization": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "tool_substitution/random": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.2,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.2,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.000301
+      },
+      "tool_substitution/tabular_rl": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      },
+      "tool_substitution/world_model": {
+        "windows": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "slope": 0.0
+      }
+    },
+    "count": 3100,
+    "definition": "Rolling TSR over seed-ordered windows within each agent+family run. Positive slope indicates improvement; negative indicates forgetting.",
+    "gaming_risk": "Slope is statistically meaningless for random agents or small seed counts; require at least 3 windows before interpreting trend direction.",
+    "metadata": {}
+  }
+}

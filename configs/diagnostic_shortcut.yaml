@@ -1,0 +1,14 @@
+perturbations:
+  color_affordance_decorrelation: true
+  object_id_resampling: true
+  layout_permutation: true
+  distractor_injection: true
+  tool_appearance_swap: true
+  delayed_consequence: true
+  false_hint_text: true
+  resource_scarcity: true
+families: [affordance, tool_substitution]
+description: >
+  Anti-shortcut perturbation battery. Each perturbation attacks a distinct
+  surface shortcut while preserving hidden causal solvability.
+  Use with experiments/run_diagnostic.py --config configs/diagnostic_shortcut.yaml.

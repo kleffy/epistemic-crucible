@@ -1,0 +1,11 @@
+world:
+  grid_size: 6
+  max_steps: 50
+  seed: 42
+
+logging:
+  level: INFO
+
+generator:
+  num_objects: 4
+  num_distractors: 1

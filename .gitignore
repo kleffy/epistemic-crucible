@@ -1,0 +1,40 @@
+# virtual environment
+.venv/
+venv/
+env/
+
+# Python build artefacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# editor and OS
+.idea/
+.vscode/
+.DS_Store
+
+# local-only developer config
+CLAUDE.md
+
+# personal-use docs (not part of the published codebase)
+docs/epistemic_crucible_deep-research-report.md
+docs/epistemic_crucible_implementation_playbook.md
+
+# experiment outputs
+results/*
+!results/.gitkeep
+# committed reference results (reproducible benchmark artifacts)
+!results/reference/
+!results/reference/**
+
+# jupyter
+.ipynb_checkpoints/
+
+# personal paper draft (not part of the published codebase)
+docs/paper_outline.md
+
+# local dev/run scripts (not part of the published codebase)
+scripts/local/
