@@ -1,15 +1,13 @@
-# Disjoint pilot seeds. Do not use these episodes for confirmatory estimates.
+# Results-branch serving smoke test. The full pilot seed list remains aligned
+# with configs/pilot_manifest.json, but seed_count limits execution to one
+# paired base seed (four quartet cells) in the neutral prompt arm.
 base_url: http://127.0.0.1:8000/v1
-concurrency: 8
+concurrency: 1
 seeds: [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007,
         1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015]
 prompt_arms:
-  - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 16}
-  - {name: cue_a, mode: cue, count: 6, base_seed: 9000, seed_count: 16}
-  - {name: cue_b, mode: cue, count: 6, base_seed: 10000, seed_count: 16}
-  - {name: mechanism_a, mode: mechanism, count: 6, base_seed: 11000, seed_count: 16}
-  - {name: mechanism_b, mode: mechanism, count: 6, base_seed: 12000, seed_count: 16}
-# Run with --stage pilot --manifest configs/pilot_manifest.json.
+  - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 1}
+
 models:
   - label: gpt-oss-20b
     id: openai/gpt-oss-20b

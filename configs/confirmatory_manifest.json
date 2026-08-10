@@ -20,8 +20,8 @@
       "revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
       "tokenizer_revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
       "output_ceiling": 1024,
-      "generation": {},
-      "serving": {"quantization": "mxfp4", "response_format": "harmony", "reasoning_parser": "openai_gptoss", "max_model_len": 8192, "vllm_version": "0.26.0"}
+      "generation": {"reasoning_effort": "low", "seed": 0},
+      "serving": {"quantization": "mxfp4", "response_format": "harmony", "reasoning_parser": "openai_gptoss", "chat_template": "model-default@pinned-revision", "load_format": "safetensors", "environment": {"PATH_prepend": ".venv/bin"}, "max_model_len": 8192, "vllm_version": "0.26.0"}
     },
     "qwen3.6-27b": {
       "id": "Qwen/Qwen3.6-27B",

@@ -500,9 +500,10 @@ class OpenAIBackend(LLMBackend):
         if self._base_url:
             client_kwargs["api_key"] = "local-vllm"
         client = openai.OpenAI(**client_kwargs)
-        # Reasoning models reject temperature. Reasoning effort is only sent
-        # when explicitly configured: omitting it preserves the model default,
-        # which is the v0.2 primary condition rather than an implicit low mode.
+        # Hosted reasoning models reject temperature, while local
+        # OpenAI-compatible servers such as vLLM accept it and need the explicit
+        # value for genuinely greedy decoding. Reasoning effort is sent only
+        # when explicitly configured.
         reasoning = bool(
             re.search(r"(^|/)(gpt-5|gpt-oss|o1|o3|o4)", self.model_id)
             or self.gen_params.get("reasoning_effort") is not None
@@ -525,9 +526,10 @@ class OpenAIBackend(LLMBackend):
             configured_effort = self.gen_params.get("reasoning_effort")
             if reasoning and configured_effort not in (None, "default"):
                 kwargs["reasoning_effort"] = configured_effort
-            else:
-                if not reasoning:
-                    kwargs["temperature"] = self.gen_params.get("temperature", 0.0)
+            if not reasoning or self._base_url:
+                kwargs["temperature"] = self.gen_params.get("temperature", 0.0)
+            if self.gen_params.get("seed") is not None:
+                kwargs["seed"] = int(self.gen_params["seed"])
             if self.gen_params.get("extra_body"):
                 kwargs["extra_body"] = self.gen_params["extra_body"]
             resp = _retry(lambda: client.chat.completions.create(**kwargs))
@@ -544,6 +546,7 @@ class OpenAIBackend(LLMBackend):
                 "max_completion_tokens": max_completion_tokens,
                 "reasoning_effort": kwargs.get("reasoning_effort"),
                 "temperature": kwargs.get("temperature"),
+                "seed": kwargs.get("seed"),
                 "extra_body": kwargs.get("extra_body"),
             }
             return GenerationRecord(

@@ -250,6 +250,52 @@ def test_experimental_cache_context_separates_identical_hidden_condition_calls(t
     assert calls["n"] == 2
 
 
+def test_local_reasoning_backend_sends_declared_greedy_settings(monkeypatch):
+    """Local reasoning servers receive the settings needed for reproducibility."""
+    import sys
+    from types import SimpleNamespace
+
+    from crucible.agents.llm_backends import OpenAIBackend
+
+    captured = {}
+
+    def create(**kwargs):
+        captured.update(kwargs)
+        return SimpleNamespace(
+            choices=[
+                SimpleNamespace(
+                    message=SimpleNamespace(content="ACTION: 0"),
+                    finish_reason="stop",
+                )
+            ],
+            usage=SimpleNamespace(model_dump=lambda **_: {"total_tokens": 12}),
+            id="response-1",
+        )
+
+    fake_client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+    fake_openai = SimpleNamespace(OpenAI=lambda **_: fake_client)
+    monkeypatch.setitem(sys.modules, "openai", fake_openai)
+
+    backend = OpenAIBackend(
+        "openai/gpt-oss-20b",
+        base_url="http://127.0.0.1:8000/v1",
+        model_revision="a" * 40,
+        max_completion_tokens=1024,
+        reasoning_effort="low",
+        temperature=0.0,
+        seed=0,
+        concurrency=1,
+    )
+    record = backend.generate_batch_records("system", [[{"role": "user", "content": "state"}]])[0]
+
+    assert captured["reasoning_effort"] == "low"
+    assert captured["temperature"] == 0.0
+    assert captured["seed"] == 0
+    assert record.effective_params["reasoning_effort"] == "low"
+    assert record.effective_params["temperature"] == 0.0
+    assert record.effective_params["seed"] == 0
+
+
 def test_fewshot_modes_differ():
     """Cue names a colour rule, mechanistic teaches testing, anti-cue varies colour."""
     from experiments.run_llm_eval import build_fewshot_prefix

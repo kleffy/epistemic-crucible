@@ -37,9 +37,15 @@ models:
       quantization: mxfp4
       response_format: harmony
       reasoning_parser: openai_gptoss
+      chat_template: model-default@pinned-revision
+      load_format: safetensors
+      environment:
+        PATH_prepend: .venv/bin
       max_model_len: 8192
       vllm_version: 0.26.0
-    generation: {}  # model-default reasoning is primary
+    generation:
+      reasoning_effort: low
+      seed: 0
 
   - label: qwen3.6-27b
     id: Qwen/Qwen3.6-27B
