@@ -175,7 +175,7 @@ def test_gpt_oss_launch_profile_disables_nondeterministic_serving_paths():
         "--enforce-eager",
         "--no-enable-prefix-caching",
         "--no-async-scheduling",
-        "--no-enable-chunked-prefill",
+        "--enable-chunked-prefill",
     ):
         assert flag in script
     assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" in script

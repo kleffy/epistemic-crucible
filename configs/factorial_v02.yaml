@@ -44,7 +44,7 @@ models:
       enforce_eager: true
       prefix_caching: false
       async_scheduling: false
-      chunked_prefill: false
+      chunked_prefill: true
       environment:
         PATH_prepend: .venv/bin
         CUBLAS_WORKSPACE_CONFIG: ":4096:8"

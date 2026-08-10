@@ -19,6 +19,6 @@ exec .venv/bin/vllm serve openai/gpt-oss-20b \
   --enforce-eager \
   --no-enable-prefix-caching \
   --no-async-scheduling \
-  --no-enable-chunked-prefill \
+  --enable-chunked-prefill \
   --host 127.0.0.1 \
   --port 8000
