@@ -261,6 +261,7 @@ def run_local_model(
         "tokenizer_revision": model_cfg.get("tokenizer_revision", revision),
         "backend": "local_vllm",
         "server": cfg.get("base_url", "http://127.0.0.1:8000/v1"),
+        "concurrency": int(cfg.get("concurrency", 8)),
         "seeds": seeds,
         "arms": arms,
         "generation": model_cfg.get("generation", {}),
@@ -324,8 +325,8 @@ def run_local_model(
                 conversations,
                 cache_contexts=cache_contexts,
             )
-            for episode, prompt, candidates, record in zip(
-                active, prompts, candidates_by_episode, records
+            for episode, prompt, candidates, conversation, record in zip(
+                active, prompts, candidates_by_episode, conversations, records
             ):
                 episode.history.append({"role": "assistant", "content": record.response})
                 episode.protocol.ledger.record_message("assistant", record.response)
@@ -369,7 +370,10 @@ def run_local_model(
                     },
                     "prompt_arm": episode.arm,
                     "step": episode.protocol.env.world.step,
-                    "prompt_hash": content_hash(prompt),
+                    "prompt_hash": content_hash(
+                        {"system": FACTORIAL_SYSTEM_PROMPT, "messages": conversation}
+                    ),
+                    "message_hash": content_hash(prompt),
                     "candidate_set_hash": content_hash([asdict(item) for item in candidates]),
                     "label_map_hash": content_hash(episode.label_map),
                     "base_spec_hash": content_hash(to_dict(episode.cell.task_spec)),
@@ -489,6 +493,8 @@ def validate_stage_manifest(
         raise ValueError("confirmatory manifest must set frozen=true")
     if cfg.get("prompt_arms") != manifest.get("prompt_arms"):
         raise ValueError("configured prompt arms do not match the frozen manifest")
+    if int(cfg.get("concurrency", 8)) != int(manifest.get("concurrency", -1)):
+        raise ValueError("configured concurrency does not match the frozen manifest")
     locked_models = manifest.get("models", {})
     label = str(model_cfg["label"])
     if locked_models.get(label) != _model_lock(model_cfg):

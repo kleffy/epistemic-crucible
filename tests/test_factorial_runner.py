@@ -114,7 +114,13 @@ def test_invalid_model_responses_are_abstentions_and_step_records_are_loadable(
     )
     steps, outcomes = load_trace(summary["trace"])
     assert len(steps) == len(outcomes) == 4
+    assert summary["manifest"]["concurrency"] == 8
     assert all(step["kind"] == "step" for step in steps)
+    assert all(len(step["prompt_hash"]) == 64 for step in steps)
+    assert all(len(step["message_hash"]) == 64 for step in steps)
+    prompt_hashes = {step["condition"]["id"]: step["prompt_hash"] for step in steps}
+    assert prompt_hashes["m0_c0"] == prompt_hashes["m1_c0"]
+    assert prompt_hashes["m0_c1"] == prompt_hashes["m1_c1"]
     assert all(step["parse_status"] == "invalid" for step in steps)
     assert all(step["fallback_action"] is None for step in steps)
     assert all(outcome["committed_slot"] is None for outcome in outcomes)
@@ -212,4 +218,14 @@ def test_confirmatory_manifest_fails_closed_until_frozen_and_exact():
             model,
             repository_commit="abc123",
             working_tree_clean=False,
+        )
+    mismatched_concurrency = {**frozen, "concurrency": 8}
+    with pytest.raises(ValueError, match="configured concurrency"):
+        validate_stage_manifest(
+            "confirmatory",
+            mismatched_concurrency,
+            config,
+            model,
+            repository_commit="abc123",
+            working_tree_clean=True,
         )

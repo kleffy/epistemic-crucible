@@ -2,7 +2,7 @@
 # endpoint, then run with --model LABEL --stage confirmatory and the frozen
 # configs/confirmatory_manifest.json. The runner refuses a dirty or mismatched checkout.
 base_url: http://127.0.0.1:8000/v1
-concurrency: 8
+concurrency: 1  # serial requests avoid batch-dependent greedy tie-breaking
 seeds: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
         112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
         124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135,
