@@ -41,6 +41,7 @@ llm = [
 ]
 serve = [
     "vllm==0.26.0",
+    "amd-quark==0.12.post1",
     "openai>=1.50",
 ]
 

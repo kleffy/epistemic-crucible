@@ -5,6 +5,7 @@ repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 export PATH="${repo_dir}/.venv/bin:${PATH}"
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
 export PYTHONHASHSEED=0
+export VLLM_BATCH_INVARIANT=1
 
 cd "${repo_dir}"
 exec .venv/bin/vllm serve openai/gpt-oss-20b \

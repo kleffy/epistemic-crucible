@@ -2,7 +2,7 @@
 # endpoint, then run with --model LABEL --stage confirmatory and the frozen
 # configs/confirmatory_manifest.json. The runner refuses a dirty or mismatched checkout.
 base_url: http://127.0.0.1:8000/v1
-concurrency: 1  # serial requests avoid batch-dependent greedy tie-breaking
+concurrency: 8  # safe only with VLLM_BATCH_INVARIANT=1
 seeds: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
         112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
         124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135,
@@ -41,6 +41,9 @@ models:
       load_format: safetensors
       launch_script: experiments/serve_gpt_oss_v02.sh
       engine_seed: 0
+      batch_invariant: true
+      mxfp4_backend: emulation
+      amd_quark_version: 0.12.post1
       enforce_eager: true
       prefix_caching: false
       async_scheduling: false
@@ -49,6 +52,7 @@ models:
         PATH_prepend: .venv/bin
         CUBLAS_WORKSPACE_CONFIG: ":4096:8"
         PYTHONHASHSEED: "0"
+        VLLM_BATCH_INVARIANT: "1"
       max_model_len: 8192
       vllm_version: 0.26.0
     generation:

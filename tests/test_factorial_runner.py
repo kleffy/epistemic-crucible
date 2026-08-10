@@ -179,6 +179,7 @@ def test_gpt_oss_launch_profile_disables_nondeterministic_serving_paths():
     ):
         assert flag in script
     assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" in script
+    assert "VLLM_BATCH_INVARIANT=1" in script
 
 
 def test_pilot_and_confirmatory_seed_manifests_are_disjoint():
@@ -232,7 +233,7 @@ def test_confirmatory_manifest_fails_closed_until_frozen_and_exact():
             repository_commit="abc123",
             working_tree_clean=False,
         )
-    mismatched_concurrency = {**frozen, "concurrency": 8}
+    mismatched_concurrency = {**frozen, "concurrency": 1}
     with pytest.raises(ValueError, match="configured concurrency"):
         validate_stage_manifest(
             "confirmatory",
