@@ -1,23 +1,22 @@
 cff-version: 1.2.0
 message: "If you use the Epistemic Crucible benchmark, please cite it as below."
-title: "Epistemic Crucible: A Generative Developmental Benchmark for Causal Reasoning Evaluation"
+title: "Success Is Not Identification: Crossed World Interventions for Attributing Agent Policies"
 abstract: >-
-  A generative grid-world benchmark that separates task success from causal
-  understanding by pairing each training world with a counterfactual test world that
-  preserves the hidden causal rule and breaks the surface cue. It hides causal
-  properties behind a strict observation boundary and reports a vector of diagnostic
-  metrics with no single aggregate score.
+  A crossed-intervention behavioral assay that measures whether an interactive
+  policy's terminal choices track operative detector evidence or a correlated visible
+  cue. It makes no claim about internal representations or causal knowledge and
+  reports an unaggregated vector of paired attribution metrics.
 type: software
 authors:
   - family-names: "Ayuba"
     given-names: "Daniel La'ah"
-version: "0.1"
-date-released: "2026-06-01"
+version: "0.2"
+date-released: "2026-08-10"
 license: MIT
 repository-code: "https://github.com/kleffy/epistemic-crucible"
 keywords:
-  - causal reasoning
+  - behavioral policy dependence
   - benchmark
-  - counterfactual
+  - factorial intervention
   - shortcut learning
   - intervention

@@ -1,0 +1,13 @@
+{
+  "manifest_version": "0.2",
+  "stage": "pilot",
+  "frozen": false,
+  "purpose": "Prompt, parser, throughput, macro compiler, and output-ceiling selection only",
+  "base_seeds": [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015],
+  "ceiling_variant_seeds": [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011],
+  "selection_rules": {
+    "output_ceiling": "Smallest per-model ceiling with <1% length-related finishes and plateaued action-parse rate",
+    "ceiling_variant": "Use 3x2 if the 2x2 primary assay is saturated in the pilot"
+  },
+  "prohibited_uses": ["confirmatory effect estimation", "claim selection"]
+}

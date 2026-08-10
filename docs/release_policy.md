@@ -16,6 +16,8 @@ The project follows [Semantic Versioning](https://semver.org/).
 
 - **v0.1.x**, prototype series. Core API (environment, grammar, metrics, agents) is
   functional and tested, but may evolve between minor releases.
+- **v0.2.x**, crossed behavioral-attribution protocol. Condition axes are independent
+  of the frozen legacy train/test split, and trace schema `0.2` is self-describing.
 - **v0.x.y**, MINOR bumps may break existing experiment scripts if the JSONL trace
   schema changes. PATCH bumps are backwards-compatible.
 - **v1.0.0**, signals stable API and frozen trace schema.
@@ -40,11 +42,23 @@ hashes of the reference artifacts.
 Bug-fix PATCH releases on the v0.1 line are allowed, but must not change generated
 worlds, the metric definitions, or the trace schema.
 
+### v0.2 protocol surface
+
+v0.2 is a new minor release and does not rewrite the frozen `v0.1-arxiv` surface.
+Its primary surface consists of the balanced affordance quartet, `QUERY`/`COMMIT`
+macro-actions compiled into legal environment steps, trace schema `0.2`, and the
+unaggregated attribution metric vector. The four other legacy families remain
+available for reproduction but are excluded from primary v0.2 claims.
+
+Pilot and confirmatory manifests are disjoint. After the confirmatory manifest is
+frozen, any integrity defect requires rerunning every affected condition; scientific
+results cannot waive an integrity failure.
+
 ---
 
 ## Reproducibility Guarantees
 
-The following properties hold within a single v0.1.x release:
+The following properties hold within a single release line:
 
 1. **Deterministic world generation**: `generate_task(family, seed, split)` always
    returns the same `TaskSpec`. `build_world_from_spec(spec)` always produces the
@@ -122,15 +136,15 @@ Additional keys may be added in later versions without breaking parsers that use
 
 ## Citation
 
-If you use Epistemic Crucible in your research, please cite:
+For the v0.2 protocol, please cite:
 
 ```bibtex
 @software{epistemic_crucible_2026,
   author = {Ayuba, Daniel La'ah},
-  title  = {Epistemic Crucible: A Generative Developmental Benchmark
-            for Causal Reasoning Evaluation},
+  title  = {Success Is Not Identification: Crossed World Interventions
+            for Attributing Agent Policies},
   year   = {2026},
-  note   = {v0.1},
+  note   = {software protocol v0.2; v0.1-arxiv remains frozen},
 }
 ```
 

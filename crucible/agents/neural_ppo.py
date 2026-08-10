@@ -70,7 +70,7 @@ _CAT_SIZES = [
     len(_SIZE),
     len(_STATE),
 ]
-_N_OBJ_FLOAT = 5  # pos_r, pos_c, held, at_agent, has_marker
+_N_OBJ_FLOAT = 5  # pos_r, pos_c, held, at_agent, signed public marker signal
 _N_GLOBAL = 5  # agent_r, agent_c, energy, step_frac, inv_count
 
 
@@ -92,7 +92,11 @@ class StepFeatures:
     n_cand: int
 
 
-def featurize_step(obs: dict, grid_size: int = 6) -> tuple[StepFeatures, list]:
+def featurize_step(
+    obs: dict,
+    grid_size: int = 6,
+    candidates: list | None = None,
+) -> tuple[StepFeatures, list]:
     """Featurize one observation. Returns (features, candidate Action list)."""
     obj_ids = sorted(obs["objects"].keys())
     idx_of = {oid: i for i, oid in enumerate(obj_ids)}
@@ -121,7 +125,9 @@ def featurize_step(obs: dict, grid_size: int = 6) -> tuple[StepFeatures, list]:
         else:
             pr, pc = pos[0] / grid_size, pos[1] / grid_size
         at_agent = pos is not None and tuple(pos) == agent_pos
-        obj_flt[i] = [pr, pc, float(held), float(at_agent), float(bool(o.get("marker")))]
+        marker = o.get("marker")
+        marker_signal = 1.0 if marker == "signal-positive" else -1.0 if marker else 0.0
+        obj_flt[i] = [pr, pc, float(held), float(at_agent), marker_signal]
 
     glob = np.array(
         [
@@ -134,7 +140,9 @@ def featurize_step(obs: dict, grid_size: int = 6) -> tuple[StepFeatures, list]:
         dtype=np.float32,
     )
 
-    candidates = enumerate_candidate_actions(obs, grid_size)
+    candidates = (
+        candidates if candidates is not None else enumerate_candidate_actions(obs, grid_size)
+    )
     c = len(candidates)
     cand_kind = np.zeros(c, dtype=np.int64)
     cand_dir = np.full(c, _DIR_NONE, dtype=np.int64)
@@ -223,9 +231,7 @@ def collate(batch: list[StepFeatures], device: torch.device) -> dict:
 class PolicyNetwork(nn.Module):
     def __init__(self, embed_dim: int = 32, hidden: int = 64) -> None:
         super().__init__()
-        self.cat_embeds = nn.ModuleList(
-            [nn.Embedding(size, embed_dim) for size in _CAT_SIZES]
-        )
+        self.cat_embeds = nn.ModuleList([nn.Embedding(size, embed_dim) for size in _CAT_SIZES])
         self.obj_proj = nn.Sequential(
             nn.Linear(embed_dim * len(_CAT_SIZES) + _N_OBJ_FLOAT, hidden),
             nn.ReLU(),
@@ -241,12 +247,8 @@ class PolicyNetwork(nn.Module):
             nn.Linear(embed_dim * 2 + hidden * 2, hidden),
             nn.ReLU(),
         )
-        self.scorer = nn.Sequential(
-            nn.Linear(hidden * 2, hidden), nn.ReLU(), nn.Linear(hidden, 1)
-        )
-        self.value_head = nn.Sequential(
-            nn.Linear(hidden, hidden), nn.ReLU(), nn.Linear(hidden, 1)
-        )
+        self.scorer = nn.Sequential(nn.Linear(hidden * 2, hidden), nn.ReLU(), nn.Linear(hidden, 1))
+        self.value_head = nn.Sequential(nn.Linear(hidden, hidden), nn.ReLU(), nn.Linear(hidden, 1))
 
     def _encode_objects(self, b: dict) -> tuple[torch.Tensor, torch.Tensor]:
         obj_cat, obj_flt, obj_mask = b["obj_cat"], b["obj_flt"], b["obj_mask"]
@@ -341,6 +343,14 @@ class NeuralPPOAgent(Agent):
         logits, _ = self.net(batch)
         idx = int(torch.argmax(logits[0]).item())
         return candidates[idx]
+
+    @torch.no_grad()
+    def act_from_candidates(self, obs: dict, candidates: list):
+        """Deterministic action restricted to a protocol-supplied legal set."""
+        feats, candidates = featurize_step(obs, self._grid_size, candidates)
+        batch = collate([feats], self.device)
+        logits, _ = self.net(batch)
+        return candidates[int(torch.argmax(logits[0]).item())]
 
     @torch.no_grad()
     def act_train(self, obs: dict):
@@ -474,7 +484,7 @@ class PPOTrainer:
         for _ in range(self.cfg.epochs):
             order = self.agent._rng.permutation(n)
             for s in range(0, n, self.cfg.minibatch):
-                mb = order[s: s + self.cfg.minibatch]
+                mb = order[s : s + self.cfg.minibatch]
                 batch = collate([buf[j].feats for j in mb], self.agent.device)
                 logits, value = self.agent.net(batch)
                 dist = torch.distributions.Categorical(logits=logits)
@@ -489,9 +499,7 @@ class PPOTrainer:
                 value_loss = F.mse_loss(value, mb_ret)
                 entropy = dist.entropy().mean()
                 loss = (
-                    policy_loss
-                    + self.cfg.value_coef * value_loss
-                    - self.cfg.entropy_coef * entropy
+                    policy_loss + self.cfg.value_coef * value_loss - self.cfg.entropy_coef * entropy
                 )
                 self.opt.zero_grad()
                 loss.backward()
@@ -538,6 +546,11 @@ def _match_action_index(action, candidates: list) -> int | None:
         if cand.kind == action.kind and cand.args == action.args:
             return i
     return None
+
+
+def match_action_index(action, candidates: list) -> int | None:
+    """Public wrapper used by matched v0.2 behavior-cloning datasets."""
+    return _match_action_index(action, candidates)
 
 
 def collect_demonstrations(
@@ -598,7 +611,7 @@ def behavior_clone(
         order = agent._rng.permutation(n)
         total_loss, total_acc, n_batches = 0.0, 0.0, 0
         for s in range(0, n, batch_size):
-            mb = order[s: s + batch_size]
+            mb = order[s : s + batch_size]
             feats = [demos[j][0] for j in mb]
             targets = torch.as_tensor(
                 [demos[j][1] for j in mb], dtype=torch.long, device=agent.device

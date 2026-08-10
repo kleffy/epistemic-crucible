@@ -199,6 +199,57 @@ def test_response_cache_avoids_recompute(tmp_path):
     assert reloaded.get(key) is not None
 
 
+def test_response_cache_persists_complete_generation_provenance(tmp_path):
+    cache = ResponseCache(tmp_path / "records.jsonl")
+    backend = MockBackend(
+        cache=cache,
+        run_manifest={"protocol": "affordance_quartet", "revision": "abc123"},
+        max_new_tokens=1024,
+    )
+    conversation = [{"role": "user", "content": "state"}]
+    first = backend.generate_batch_records("system", [conversation])[0]
+    second = backend.generate_batch_records("system", [conversation])[0]
+    assert first.cache_hit is False
+    assert second.cache_hit is True
+    assert second.requested_params["run_manifest"]["revision"] == "abc123"
+    key = ResponseCache.key("mock", "system", conversation, backend.gen_params)
+    record = ResponseCache(tmp_path / "records.jsonl").get_record(key)
+    assert record is not None
+    for field in (
+        "model_id",
+        "backend",
+        "requested_params",
+        "effective_params",
+        "usage",
+        "finish_reason",
+        "response_id",
+    ):
+        assert field in record
+
+
+def test_experimental_cache_context_separates_identical_hidden_condition_calls(tmp_path):
+    calls = {"n": 0}
+
+    def policy(system, conversation):
+        calls["n"] += 1
+        return 'ACTION: {"kind": "wait", "args": {}}'
+
+    backend = MockBackend(policy=policy, cache=ResponseCache(tmp_path / "cache.jsonl"))
+    conversation = [{"role": "user", "content": "byte-identical public state"}]
+    backend.generate_batch_records(
+        "system",
+        [conversation, conversation],
+        cache_contexts=[{"condition_id": "m0_c0"}, {"condition_id": "m1_c0"}],
+    )
+    assert calls["n"] == 2
+    backend.generate_batch_records(
+        "system",
+        [conversation, conversation],
+        cache_contexts=[{"condition_id": "m0_c0"}, {"condition_id": "m1_c0"}],
+    )
+    assert calls["n"] == 2
+
+
 def test_fewshot_modes_differ():
     """Cue names a colour rule, mechanistic teaches testing, anti-cue varies colour."""
     from experiments.run_llm_eval import build_fewshot_prefix

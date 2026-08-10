@@ -21,6 +21,7 @@ import re
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 from typing import Any
 
 from crucible.utils.logging import get_logger
@@ -28,6 +29,34 @@ from crucible.utils.logging import get_logger
 _log = get_logger(__name__)
 
 Conversation = list[dict]  # list of {"role": "user"|"assistant", "content": str}
+
+
+@dataclass(frozen=True)
+class GenerationRecord:
+    """Visible completion plus the effective settings needed to audit it."""
+
+    response: str
+    model_id: str
+    backend: str
+    requested_params: dict
+    effective_params: dict
+    usage: dict
+    finish_reason: str | None
+    response_id: str | None
+    cache_hit: bool = False
+
+    def to_dict(self) -> dict:
+        return {
+            "response": self.response,
+            "model_id": self.model_id,
+            "backend": self.backend,
+            "requested_params": self.requested_params,
+            "effective_params": self.effective_params,
+            "usage": self.usage,
+            "finish_reason": self.finish_reason,
+            "response_id": self.response_id,
+            "cache_hit": self.cache_hit,
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -41,6 +70,7 @@ class ResponseCache:
     def __init__(self, path: str | pathlib.Path | None) -> None:
         self.path = pathlib.Path(path) if path else None
         self._mem: dict[str, str] = {}
+        self._records: dict[str, dict] = {}
         if self.path and self.path.exists():
             with self.path.open() as fh:
                 for line in fh:
@@ -49,6 +79,7 @@ class ResponseCache:
                         continue
                     rec = json.loads(line)
                     self._mem[rec["key"]] = rec["response"]
+                    self._records[rec["key"]] = rec
             _log.info("loaded %d cached responses from %s", len(self._mem), self.path)
 
     @staticmethod
@@ -63,14 +94,24 @@ class ResponseCache:
     def get(self, key: str) -> str | None:
         return self._mem.get(key)
 
+    def get_record(self, key: str) -> dict | None:
+        record = self._records.get(key)
+        return dict(record) if record is not None else None
+
     def put(self, key: str, response: str) -> None:
+        self.put_record(key, {"response": response})
+
+    def put_record(self, key: str, record: dict) -> None:
         if key in self._mem:
             return
+        response = str(record["response"])
         self._mem[key] = response
+        stored = {"key": key, **record, "response": response}
+        self._records[key] = stored
         if self.path:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             with self.path.open("a") as fh:
-                fh.write(json.dumps({"key": key, "response": response}) + "\n")
+                fh.write(json.dumps(stored, sort_keys=True, default=str) + "\n")
 
 
 # ---------------------------------------------------------------------------
@@ -87,31 +128,113 @@ class LLMBackend(ABC):
         self.cache = cache
         self.gen_params = {"max_new_tokens": 192, "temperature": 0.0, **gen_params}
 
-    def generate_batch(self, system: str, conversations: list[Conversation]) -> list[str]:
-        """Cache-aware batch generation. Subclasses implement ``_generate_batch``."""
-        results: list[str | None] = [None] * len(conversations)
+    def generate_batch(
+        self,
+        system: str,
+        conversations: list[Conversation],
+        *,
+        cache_contexts: list[dict[str, Any] | None] | None = None,
+    ) -> list[str]:
+        return [
+            record.response
+            for record in self.generate_batch_records(
+                system, conversations, cache_contexts=cache_contexts
+            )
+        ]
+
+    def generate_batch_records(
+        self,
+        system: str,
+        conversations: list[Conversation],
+        *,
+        cache_contexts: list[dict[str, Any] | None] | None = None,
+    ) -> list[GenerationRecord]:
+        """Cache-aware generation with per-completion provenance.
+
+        ``cache_contexts`` deliberately separates experimentally distinct calls
+        whose visible prompts are byte-identical. This is required for crossed
+        hidden-mechanism cells: sharing one completion there would silently turn
+        two measurements into one API call.
+        """
+        if cache_contexts is None:
+            cache_contexts = [None] * len(conversations)
+        if len(cache_contexts) != len(conversations):
+            raise ValueError("cache_contexts must align one-to-one with conversations")
+        results: list[GenerationRecord | None] = [None] * len(conversations)
         misses, miss_idx = [], []
-        for i, conv in enumerate(conversations):
+        for i, (conv, context) in enumerate(zip(conversations, cache_contexts, strict=True)):
             key = None
             if self.cache is not None:
-                key = ResponseCache.key(self.model_id, system, conv, self.gen_params)
-                hit = self.cache.get(key)
+                cache_parameters = self.gen_params
+                if context is not None:
+                    cache_parameters = {
+                        "generation": self.gen_params,
+                        "experimental_context": context,
+                    }
+                key = ResponseCache.key(self.model_id, system, conv, cache_parameters)
+                hit = self.cache.get_record(key)
                 if hit is not None:
-                    results[i] = hit
+                    results[i] = GenerationRecord(
+                        response=str(hit["response"]),
+                        model_id=str(hit.get("model_id", self.model_id)),
+                        backend=str(hit.get("backend", self.backend_name)),
+                        requested_params=dict(hit.get("requested_params", self.gen_params)),
+                        effective_params=dict(hit.get("effective_params", self.gen_params)),
+                        usage=dict(hit.get("usage", {})),
+                        finish_reason=hit.get("finish_reason"),
+                        response_id=hit.get("response_id"),
+                        cache_hit=True,
+                    )
                     continue
             misses.append(conv)
             miss_idx.append((i, key))
         if misses:
-            generated = self._generate_batch(system, misses)
-            for (i, key), text in zip(miss_idx, generated):
-                results[i] = text
+            generated = self._generate_batch_records(system, misses)
+            for (i, key), record in zip(miss_idx, generated):
+                results[i] = record
                 if self.cache is not None and key is not None:
-                    self.cache.put(key, text)
-        return [r if r is not None else "" for r in results]
+                    self.cache.put_record(key, record.to_dict())
+        return [
+            record
+            if record is not None
+            else GenerationRecord(
+                response="",
+                model_id=self.model_id,
+                backend=self.backend_name,
+                requested_params=dict(self.gen_params),
+                effective_params=dict(self.gen_params),
+                usage={},
+                finish_reason=None,
+                response_id=None,
+            )
+            for record in results
+        ]
+
+    @property
+    def backend_name(self) -> str:
+        return self.__class__.__name__.removesuffix("Backend").lower()
+
+    def _generate_batch_records(
+        self,
+        system: str,
+        conversations: list[Conversation],
+    ) -> list[GenerationRecord]:
+        return [
+            GenerationRecord(
+                response=response,
+                model_id=self.model_id,
+                backend=self.backend_name,
+                requested_params=dict(self.gen_params),
+                effective_params=dict(self.gen_params),
+                usage={},
+                finish_reason=None,
+                response_id=None,
+            )
+            for response in self._generate_batch(system, conversations)
+        ]
 
     @abstractmethod
-    def _generate_batch(self, system: str, conversations: list[Conversation]) -> list[str]:
-        ...
+    def _generate_batch(self, system: str, conversations: list[Conversation]) -> list[str]: ...
 
 
 # ---------------------------------------------------------------------------
@@ -158,7 +281,15 @@ class TransformersBackend(LLMBackend):
         quantization: str | None = None,
         **gen_params,
     ) -> None:
-        super().__init__(model_id, cache, **gen_params)
+        super().__init__(
+            model_id,
+            cache,
+            device=device,
+            dtype=dtype,
+            batch_size=batch_size,
+            quantization=quantization,
+            **gen_params,
+        )
         self.device = device
         self.batch_size = batch_size
         self._tok, self._model = _load_hf_model(model_id, device, dtype, quantization)
@@ -168,7 +299,7 @@ class TransformersBackend(LLMBackend):
 
         outputs: list[str] = []
         for start in range(0, len(conversations), self.batch_size):
-            chunk = conversations[start: start + self.batch_size]
+            chunk = conversations[start : start + self.batch_size]
             prompts = [
                 self._tok.apply_chat_template(
                     _merge_roles([{"role": "system", "content": system}, *conv]),
@@ -185,7 +316,7 @@ class TransformersBackend(LLMBackend):
                     do_sample=False,
                     pad_token_id=self._tok.pad_token_id,
                 )
-            new_tokens = gen[:, enc["input_ids"].shape[1]:]
+            new_tokens = gen[:, enc["input_ids"].shape[1] :]
             outputs.extend(self._tok.batch_decode(new_tokens, skip_special_tokens=True))
         return outputs
 
@@ -281,7 +412,7 @@ def _retry(fn: Callable[[], Any], *, retries: int = 8, base: float = 2.0, cap: f
             transient = type(exc).__name__ in _TRANSIENT_EXC or status in (429, 500, 502, 503, 529)
             if not transient or attempt == retries:
                 raise
-            delay = min(cap, base * (2 ** attempt)) + random.uniform(0, 1)
+            delay = min(cap, base * (2**attempt)) + random.uniform(0, 1)
             resp = getattr(exc, "response", None)
             if resp is not None:
                 try:
@@ -290,7 +421,10 @@ def _retry(fn: Callable[[], Any], *, retries: int = 8, base: float = 2.0, cap: f
                     pass
             _log.warning(
                 "transient API error %s; retry %d/%d in %.1fs",
-                type(exc).__name__, attempt + 1, retries, delay,
+                type(exc).__name__,
+                attempt + 1,
+                retries,
+                delay,
             )
             time.sleep(delay)
 
@@ -332,33 +466,96 @@ class AnthropicBackend(LLMBackend):
 class OpenAIBackend(LLMBackend):
     """OpenAI or any OpenAI-compatible server (set base_url for a local vLLM)."""
 
-    def __init__(self, model_id: str, cache=None, base_url: str | None = None, **gen_params):
-        super().__init__(model_id, cache, **gen_params)
+    def __init__(
+        self,
+        model_id: str,
+        cache=None,
+        base_url: str | None = None,
+        model_revision: str | None = None,
+        **gen_params,
+    ):
+        super().__init__(
+            model_id,
+            cache,
+            base_url=base_url,
+            model_revision=model_revision,
+            **gen_params,
+        )
         self._base_url = base_url
+        self._model_revision = model_revision
 
     def _generate_batch(self, system: str, conversations: list[Conversation]) -> list[str]:
+        return [record.response for record in self._generate_batch_records(system, conversations)]
+
+    def _generate_batch_records(
+        self,
+        system: str,
+        conversations: list[Conversation],
+    ) -> list[GenerationRecord]:
         import openai
 
-        client = openai.OpenAI(base_url=self._base_url)
-        # Reasoning models (gpt-5*, o1/o3/o4) reject temperature and consume
-        # tokens on hidden reasoning, so give a generous completion budget and
-        # use low reasoning effort to bound cost/latency.
-        reasoning = bool(re.match(r"^(gpt-5|o1|o3|o4)", self.model_id))
+        # A local OpenAI-compatible server does not use a paid OpenAI credential.
+        # Official OpenAI calls remain dormant and use the SDK's normal env lookup.
+        client_kwargs: dict[str, Any] = {"base_url": self._base_url}
+        if self._base_url:
+            client_kwargs["api_key"] = "local-vllm"
+        client = openai.OpenAI(**client_kwargs)
+        # Reasoning models reject temperature. Reasoning effort is only sent
+        # when explicitly configured: omitting it preserves the model default,
+        # which is the v0.2 primary condition rather than an implicit low mode.
+        reasoning = bool(
+            re.search(r"(^|/)(gpt-5|gpt-oss|o1|o3|o4)", self.model_id)
+            or self.gen_params.get("reasoning_effort") is not None
+        )
 
-        def one(conv: Conversation) -> str:
+        def one(conv: Conversation) -> GenerationRecord:
+            explicit_budget = self.gen_params.get("max_completion_tokens")
+            max_completion_tokens = (
+                int(explicit_budget)
+                if explicit_budget is not None
+                else max(self.gen_params["max_new_tokens"], 3000)
+                if reasoning
+                else self.gen_params["max_new_tokens"]
+            )
             kwargs: dict = {
                 "model": self.model_id,
                 "messages": [{"role": "system", "content": system}, *conv],
-                "max_completion_tokens": max(self.gen_params["max_new_tokens"], 3000)
-                if reasoning
-                else self.gen_params["max_new_tokens"],
+                "max_completion_tokens": max_completion_tokens,
             }
-            if reasoning:
-                kwargs["reasoning_effort"] = self.gen_params.get("reasoning_effort", "low")
+            configured_effort = self.gen_params.get("reasoning_effort")
+            if reasoning and configured_effort not in (None, "default"):
+                kwargs["reasoning_effort"] = configured_effort
             else:
-                kwargs["temperature"] = self.gen_params.get("temperature", 0.0)
+                if not reasoning:
+                    kwargs["temperature"] = self.gen_params.get("temperature", 0.0)
+            if self.gen_params.get("extra_body"):
+                kwargs["extra_body"] = self.gen_params["extra_body"]
             resp = _retry(lambda: client.chat.completions.create(**kwargs))
-            return resp.choices[0].message.content or ""
+            choice = resp.choices[0]
+            usage = (
+                resp.usage.model_dump(mode="json")
+                if getattr(resp, "usage", None) is not None
+                else {}
+            )
+            effective = {
+                "model": self.model_id,
+                "model_revision": self._model_revision,
+                "base_url": self._base_url,
+                "max_completion_tokens": max_completion_tokens,
+                "reasoning_effort": kwargs.get("reasoning_effort"),
+                "temperature": kwargs.get("temperature"),
+                "extra_body": kwargs.get("extra_body"),
+            }
+            return GenerationRecord(
+                response=choice.message.content or "",
+                model_id=self.model_id,
+                backend=self.backend_name,
+                requested_params=dict(self.gen_params),
+                effective_params=effective,
+                usage=usage,
+                finish_reason=getattr(choice, "finish_reason", None),
+                response_id=getattr(resp, "id", None),
+            )
 
         workers = int(self.gen_params.get("concurrency", 4))
         with ThreadPoolExecutor(max_workers=workers) as ex:

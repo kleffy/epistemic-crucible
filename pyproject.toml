@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "epistemic-crucible"
-version = "0.1.0"
+version = "0.2.0"
 description = "A generative developmental world for intervention-grounded intelligence evaluation."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -37,6 +37,10 @@ llm = [
     "accelerate>=0.34",
     "huggingface_hub>=0.25",
     "anthropic>=0.40",
+    "openai>=1.50",
+]
+serve = [
+    "vllm==0.26.0",
     "openai>=1.50",
 ]
 

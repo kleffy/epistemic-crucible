@@ -23,6 +23,201 @@ from crucible.utils.logging import get_logger
 _log = get_logger(__name__)
 
 
+@dataclass(frozen=True)
+class AttributionProfile:
+    """Unaggregated v0.2 behavioral-attribution coordinates."""
+
+    mechanism_responsiveness: float | None
+    cue_susceptibility: float | None
+    cue_following: float | None
+    coverage: float
+    quartet_success: float | None
+    mechanism_tracking: float | None
+    cue_susceptibility_all: float | None
+    coverage_by_cell: dict[str, float]
+    n: dict[str, int]
+
+
+@dataclass(frozen=True)
+class ChallengeProfile:
+    """Directional coordinates for the six-cell 3x2 ceiling pilot."""
+
+    mechanism_accuracy: float | None
+    cue_susceptibility: float | None
+    cue_following: float | None
+    coverage: float
+    all_cells_success: float | None
+    n: dict[str, int]
+
+
+def analytic_chance_point(k: int) -> dict[str, float]:
+    """Coordinates of independent uniform commitment over ``k`` slots."""
+    if k < 2:
+        raise ValueError("k must be at least 2")
+    return {
+        "mechanism_responsiveness": 1 / k**2,
+        "cue_susceptibility": 1 - 1 / k,
+        "cue_following": 1 / k,
+        "coverage": 1.0,
+    }
+
+
+def attribution_profile(records: Any) -> AttributionProfile:
+    """Compute exact factorial coordinates from dict-like outcome records.
+
+    The base seed is the unit for the paired mechanism/cue axes. A seed is
+    included on an axis only when both of that axis's pairs contain commitments.
+    Directional cue-following is computed over individual committed cells.
+    """
+    records = list(records)
+    grouped: dict[int, dict[tuple[int, int], dict]] = {}
+    for record in records:
+        seed = int(record["base_seed"])
+        key = (int(record["mechanism_slot"]), int(record["cue_slot"]))
+        if key in grouped.setdefault(seed, {}):
+            raise ValueError(f"duplicate attribution record for seed={seed}, cell={key}")
+        grouped[seed][key] = record
+
+    mechanism_seed_values: list[float] = []
+    cue_seed_values: list[float] = []
+    cue_all_seed_values: list[float] = []
+    quartet_values: list[float] = []
+    mechanism_tracking_values: list[float] = []
+    cue_following_values: list[float] = []
+    committed = 0
+    for cells in grouped.values():
+        if set(cells) != {(0, 0), (0, 1), (1, 0), (1, 1)}:
+            continue
+        choices = {key: value.get("committed_slot") for key, value in cells.items()}
+        for (mechanism, cue), choice in choices.items():
+            if choice is not None:
+                committed += 1
+                cell = cells[(mechanism, cue)]
+                mechanism_carrier = int(cell.get("mechanism_carrier_slot", mechanism))
+                cue_carrier = int(cell.get("cue_carrier_slot", cue))
+                mechanism_tracking_values.append(float(int(choice) == mechanism_carrier))
+                cue_following_values.append(float(int(choice) == cue_carrier))
+        mechanism_pairs = [
+            (
+                choices[(0, cue)],
+                int(cells[(0, cue)].get("mechanism_carrier_slot", 0)),
+                choices[(1, cue)],
+                int(cells[(1, cue)].get("mechanism_carrier_slot", 1)),
+            )
+            for cue in (0, 1)
+        ]
+        if all(left is not None and right is not None for left, _, right, _ in mechanism_pairs):
+            mechanism_seed_values.append(
+                float(
+                    np.mean(
+                        [
+                            left == left_carrier and right == right_carrier
+                            for left, left_carrier, right, right_carrier in mechanism_pairs
+                        ]
+                    )
+                )
+            )
+        cue_pairs = [(choices[(mechanism, 0)], choices[(mechanism, 1)]) for mechanism in (0, 1)]
+        if all(left is not None and right is not None for left, right in cue_pairs):
+            cue_seed_values.append(float(np.mean([left != right for left, right in cue_pairs])))
+        if any(choice is not None for choice in choices.values()):
+            cue_all_seed_values.append(float(np.mean([left != right for left, right in cue_pairs])))
+        quartet_values.append(float(all(bool(value.get("solved")) for value in cells.values())))
+
+    def mean_or_none(values: list[float]) -> float | None:
+        return float(np.mean(values)) if values else None
+
+    total = len(records)
+    coverage_by_cell = {}
+    for mechanism, cue in ((0, 0), (0, 1), (1, 0), (1, 1)):
+        cell_records = [
+            record
+            for record in records
+            if int(record["mechanism_slot"]) == mechanism and int(record["cue_slot"]) == cue
+        ]
+        coverage_by_cell[f"m{mechanism}_c{cue}"] = (
+            sum(record.get("committed_slot") is not None for record in cell_records)
+            / len(cell_records)
+            if cell_records
+            else 0.0
+        )
+    return AttributionProfile(
+        mechanism_responsiveness=mean_or_none(mechanism_seed_values),
+        cue_susceptibility=mean_or_none(cue_seed_values),
+        cue_following=mean_or_none(cue_following_values),
+        coverage=committed / total if total else 0.0,
+        quartet_success=mean_or_none(quartet_values),
+        mechanism_tracking=mean_or_none(mechanism_tracking_values),
+        cue_susceptibility_all=mean_or_none(cue_all_seed_values),
+        coverage_by_cell=coverage_by_cell,
+        n={
+            "mechanism_responsiveness": len(mechanism_seed_values),
+            "cue_susceptibility": len(cue_seed_values),
+            "cue_following": len(cue_following_values),
+            "coverage": total,
+            "quartet_success": len(quartet_values),
+            "mechanism_tracking": len(mechanism_tracking_values),
+            "cue_susceptibility_all": len(cue_all_seed_values),
+        },
+    )
+
+
+def challenge_profile(records: Any) -> ChallengeProfile:
+    """Compute the pre-registered directional 3x2 ceiling-pilot profile."""
+    records = list(records)
+    grouped: dict[int, dict[tuple[int, int], dict]] = {}
+    for record in records:
+        seed = int(record["base_seed"])
+        key = (int(record["mechanism_slot"]), int(record["cue_slot"]))
+        if key in grouped.setdefault(seed, {}):
+            raise ValueError(f"duplicate challenge record for seed={seed}, cell={key}")
+        grouped[seed][key] = record
+
+    expected = {(mechanism, cue) for mechanism in (0, 1, 2) for cue in (0, 1)}
+    mechanism_values: list[float] = []
+    cue_values: list[float] = []
+    cue_following_values: list[float] = []
+    all_success: list[float] = []
+    committed = 0
+    for cells in grouped.values():
+        if set(cells) != expected:
+            continue
+        choices = {key: cell.get("committed_slot") for key, cell in cells.items()}
+        for (mechanism, cue), choice in choices.items():
+            if choice is not None:
+                committed += 1
+                mechanism_carrier = int(
+                    cells[(mechanism, cue)].get("mechanism_carrier_slot", mechanism)
+                )
+                cue_carrier = int(cells[(mechanism, cue)].get("cue_carrier_slot", cue))
+                mechanism_values.append(float(int(choice) == mechanism_carrier))
+                cue_following_values.append(float(int(choice) == cue_carrier))
+        for mechanism in (0, 1, 2):
+            left, right = choices[(mechanism, 0)], choices[(mechanism, 1)]
+            if left is not None and right is not None:
+                cue_values.append(float(left != right))
+        all_success.append(float(all(bool(cell.get("solved")) for cell in cells.values())))
+
+    def mean_or_none(values: list[float]) -> float | None:
+        return float(np.mean(values)) if values else None
+
+    total = len(records)
+    return ChallengeProfile(
+        mechanism_accuracy=mean_or_none(mechanism_values),
+        cue_susceptibility=mean_or_none(cue_values),
+        cue_following=mean_or_none(cue_following_values),
+        coverage=committed / total if total else 0.0,
+        all_cells_success=mean_or_none(all_success),
+        n={
+            "mechanism_accuracy": len(mechanism_values),
+            "cue_susceptibility": len(cue_values),
+            "cue_following": len(cue_following_values),
+            "coverage": total,
+            "all_cells_success": len(all_success),
+        },
+    )
+
+
 def bootstrap_ci(
     values: list[float], *, n_boot: int = 2000, alpha: float = 0.05, seed: int = 0
 ) -> tuple[float, float, float]:
@@ -48,6 +243,7 @@ def tsr_with_ci(
     vals = [1.0 if r.get("goal_achieved") else 0.0 for r in filtered]
     mean, lo, hi = bootstrap_ci(vals)
     return {"mean": round(mean, 4), "lo": round(lo, 4), "hi": round(hi, 4), "n": len(vals)}
+
 
 # Action kinds treated as interventions (must match Phase 5 runner).
 _INTERVENTION_KINDS = {"apply", "combine", "inspect"}
@@ -271,9 +467,7 @@ def shortcut_sensitivity(
             train_tsr = (
                 sum(1 for r in train if r.get("goal_achieved")) / len(train) if train else None
             )
-            test_tsr = (
-                sum(1 for r in test if r.get("goal_achieved")) / len(test) if test else None
-            )
+            test_tsr = sum(1 for r in test if r.get("goal_achieved")) / len(test) if test else None
             if train_tsr is not None and test_tsr is not None:
                 results[key] = round(train_tsr - test_tsr, 4)
             else:
@@ -308,18 +502,14 @@ def intervention_validity(
 ) -> MetricResult:
     """Fraction of APPLY/COMBINE/INSPECT steps that produced non-empty effects."""
     filtered = filter_records(steps, family=family, agent=agent)
-    interventions = [
-        s for s in filtered if s.get("action", {}).get("kind") in _INTERVENTION_KINDS
-    ]
+    interventions = [s for s in filtered if s.get("action", {}).get("kind") in _INTERVENTION_KINDS]
     count = len(interventions)
     if count == 0:
         return MetricResult(
             name="intervention_validity",
             value=0.0,
             count=0,
-            definition=(
-                "Fraction of APPLY/COMBINE/INSPECT steps with non-empty effect strings."
-            ),
+            definition=("Fraction of APPLY/COMBINE/INSPECT steps with non-empty effect strings."),
             gaming_risk=(
                 "INSPECT on a DETECTOR object always produces a marker effect; "
                 "excluding INSPECT yields a stricter causal-intervention validity metric."
@@ -439,9 +629,7 @@ def counterfactual_accuracy(
     )
 
     if mode == "prediction":
-        predict_steps = [
-            s for s in steps if s.get("action", {}).get("kind") == "predict"
-        ]
+        predict_steps = [s for s in steps if s.get("action", {}).get("kind") == "predict"]
         count = len(predict_steps)
         if count == 0:
             return MetricResult(
@@ -661,7 +849,7 @@ def curriculum_progression(
             # Compute windowed TSR.
             windows: list[float] = []
             for start in range(0, len(eps), window):
-                chunk = eps[start: start + window]
+                chunk = eps[start : start + window]
                 if chunk:
                     w_tsr = sum(1 for r in chunk if r.get("goal_achieved")) / len(chunk)
                     windows.append(round(w_tsr, 4))

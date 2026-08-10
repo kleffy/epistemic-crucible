@@ -1,0 +1,67 @@
+# v0.2 preregistered local-only study. Serve one pinned model at a time on this
+# endpoint, then run experiments/run_factorial_eval.py --model LABEL.
+base_url: http://127.0.0.1:8000/v1
+concurrency: 8
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+        32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
+
+controls:
+  - mechanism_oracle
+  - detector_policy
+  - cue_follower
+  - anti_cue
+  - fixed_slot
+  - random_committer
+  - abstain
+
+prompt_arms:
+  - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 64}
+  - {name: cue_a, mode: cue, count: 5, base_seed: 9000, seed_count: 32}
+  - {name: cue_b, mode: cue, count: 5, base_seed: 10000, seed_count: 32}
+  - {name: mechanism_a, mode: mechanism, count: 5, base_seed: 11000, seed_count: 32}
+  - {name: mechanism_b, mode: mechanism, count: 5, base_seed: 12000, seed_count: 32}
+
+models:
+  - label: gpt-oss-20b
+    id: openai/gpt-oss-20b
+    revision: 6cee5e81ee83917806bbde320786a8fb61efebee
+    tokenizer_revision: 6cee5e81ee83917806bbde320786a8fb61efebee
+    output_ceiling: 1024  # provisional; freeze after pilot length/parse preflight
+    serving:
+      quantization: mxfp4
+      response_format: harmony
+      reasoning_parser: openai_gptoss
+      max_model_len: 8192
+      vllm_version: 0.26.0
+    generation: {}  # model-default reasoning is primary
+    reasoning_ablation: {reasoning_effort: low}
+
+  - label: qwen3.6-27b
+    id: Qwen/Qwen3.6-27B
+    revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    tokenizer_revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    output_ceiling: 1024
+    serving:
+      quantization: bitsandbytes-nf4
+      language_model_only: true
+      reasoning_parser: qwen3
+      chat_template: qwen3.6
+      max_model_len: 8192
+      vllm_version: 0.26.0
+    generation:
+      extra_body:
+        chat_template_kwargs: {enable_thinking: false}
+
+  - label: mistral-small-3.2-24b
+    id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    tokenizer_revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    output_ceiling: 1024
+    serving:
+      quantization: bitsandbytes-nf4
+      chat_template: mistral
+      max_model_len: 8192
+      vllm_version: 0.26.0
+    generation: {}
