@@ -1,0 +1,70 @@
+# v0.2 preregistered local-only study. Serve one pinned model at a time on this
+# endpoint, then run with --model LABEL --stage confirmatory and the frozen
+# configs/confirmatory_manifest.json. The runner refuses a dirty or mismatched checkout.
+base_url: http://127.0.0.1:8000/v1
+concurrency: 8
+seeds: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+        112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
+        124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135,
+        136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
+        148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+        160, 161, 162, 163]
+
+controls:
+  - mechanism_oracle
+  - detector_policy
+  - cue_follower
+  - anti_cue
+  - fixed_slot
+  - random_committer
+  - focal_uniform
+  - abstain
+
+prompt_arms:
+  - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 64}
+  - {name: cue_a, mode: cue, count: 6, base_seed: 9000, seed_count: 64}
+  - {name: cue_b, mode: cue, count: 6, base_seed: 10000, seed_count: 64}
+  - {name: mechanism_a, mode: mechanism, count: 6, base_seed: 11000, seed_count: 64}
+  - {name: mechanism_b, mode: mechanism, count: 6, base_seed: 12000, seed_count: 64}
+
+models:
+  - label: gpt-oss-20b
+    id: openai/gpt-oss-20b
+    revision: 6cee5e81ee83917806bbde320786a8fb61efebee
+    tokenizer_revision: 6cee5e81ee83917806bbde320786a8fb61efebee
+    output_ceiling: 1024  # provisional; freeze after pilot length/parse preflight
+    serving:
+      quantization: mxfp4
+      response_format: harmony
+      reasoning_parser: openai_gptoss
+      max_model_len: 8192
+      vllm_version: 0.26.0
+    generation: {}  # model-default reasoning is primary
+
+  - label: qwen3.6-27b
+    id: Qwen/Qwen3.6-27B
+    revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    tokenizer_revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    output_ceiling: 1024
+    serving:
+      quantization: bitsandbytes-nf4
+      language_model_only: true
+      reasoning_parser: qwen3
+      chat_template: qwen3.6
+      max_model_len: 8192
+      vllm_version: 0.26.0
+    generation:
+      extra_body:
+        chat_template_kwargs: {enable_thinking: false}
+
+  - label: mistral-small-3.2-24b
+    id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    tokenizer_revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    output_ceiling: 1024
+    serving:
+      quantization: bitsandbytes-nf4
+      chat_template: mistral
+      max_model_len: 8192
+      vllm_version: 0.26.0
+    generation: {}

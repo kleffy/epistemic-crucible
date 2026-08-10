@@ -54,10 +54,12 @@ def _make_world(agent_pos=(0, 0), obj_pos=(0, 1), obj_in_inventory=False):
 
 # --- MOVE ---
 
+
 def test_legal_move_in_bounds():
     world = _make_world(agent_pos=(3, 3))
     action = Action(ActionKind.MOVE, {"direction": Direction.SOUTH})
     from crucible.actions import is_legal
+
     assert is_legal(action, world) is True
 
 
@@ -65,15 +67,18 @@ def test_illegal_move_out_of_bounds():
     world = _make_world(agent_pos=(0, 0))
     action = Action(ActionKind.MOVE, {"direction": Direction.NORTH})
     from crucible.actions import is_legal
+
     assert is_legal(action, world) is False
 
 
 # --- PICKUP ---
 
+
 def test_pickup_at_position():
     world = _make_world(agent_pos=(0, 1), obj_pos=(0, 1))
     action = Action(ActionKind.PICKUP, {"obj_id": "test_000"})
     from crucible.actions import is_legal
+
     assert is_legal(action, world) is True
 
 
@@ -81,6 +86,7 @@ def test_pickup_wrong_position():
     world = _make_world(agent_pos=(0, 0), obj_pos=(3, 3))
     action = Action(ActionKind.PICKUP, {"obj_id": "test_000"})
     from crucible.actions import is_legal
+
     assert is_legal(action, world) is False
 
 
@@ -88,15 +94,18 @@ def test_pickup_already_held():
     world = _make_world(agent_pos=(0, 0), obj_in_inventory=True)
     action = Action(ActionKind.PICKUP, {"obj_id": "test_000"})
     from crucible.actions import is_legal
+
     assert is_legal(action, world) is False
 
 
 # --- DROP ---
 
+
 def test_drop_from_inventory():
     world = _make_world(agent_pos=(0, 0), obj_in_inventory=True)
     action = Action(ActionKind.DROP, {"obj_id": "test_000"})
     from crucible.actions import is_legal
+
     assert is_legal(action, world) is True
 
 
@@ -104,13 +113,20 @@ def test_drop_not_in_inventory():
     world = _make_world(agent_pos=(0, 0), obj_pos=(0, 1))
     action = Action(ActionKind.DROP, {"obj_id": "test_000"})
     from crucible.actions import is_legal
+
     assert is_legal(action, world) is False
 
 
 # --- OBSERVATION BOUNDARY ---
 
 _HIDDEN_FIELD_NAMES = {
-    "hidden", "conductivity", "solubility", "magnetism", "charge", "fragility", "affinity"
+    "hidden",
+    "conductivity",
+    "solubility",
+    "magnetism",
+    "charge",
+    "fragility",
+    "affinity",
 }
 
 
@@ -123,6 +139,7 @@ def test_observation_excludes_hidden():
 
 
 # --- SERIALISATION ---
+
 
 def test_object_serialization_roundtrip():
     obj = CrucibleObject(

@@ -30,9 +30,7 @@ class Agent(ABC):
     def act(self, obs: dict) -> Action:
         """Select an action given a public observation."""
 
-    def observe_result(
-        self, obs: dict, reward: float, done: bool, info: dict
-    ) -> None:
+    def observe_result(self, obs: dict, reward: float, done: bool, info: dict) -> None:
         """Hook called after env.step() returns. Default is no-op.
 
         Learning agents override this to update their policy or model.
@@ -58,19 +56,24 @@ def enumerate_candidate_actions(obs: dict, grid_size: int = 6) -> list[Action]:
         candidates.append(Action(kind=ActionKind.MOVE, args={"direction": d}))
 
     # Classify objects by accessibility
-    at_pos = [
-        oid
-        for oid, o in objects.items()
-        if o["pos"] is not None and tuple(o["pos"]) == agent_pos and oid not in inventory
-    ]
-    adjacent_pos = [
-        oid
-        for oid, o in objects.items()
-        if o["pos"] is not None
-        and _manhattan(tuple(o["pos"]), agent_pos) == 1  # type: ignore[arg-type]
-        and oid not in inventory
-    ]
-    accessible = set(at_pos + adjacent_pos + inventory)
+    at_pos = sorted(
+        [
+            oid
+            for oid, o in objects.items()
+            if o["pos"] is not None and tuple(o["pos"]) == agent_pos and oid not in inventory
+        ]
+    )
+    adjacent_pos = sorted(
+        [
+            oid
+            for oid, o in objects.items()
+            if o["pos"] is not None
+            and _manhattan(tuple(o["pos"]), agent_pos) == 1  # type: ignore[arg-type]
+            and oid not in inventory
+        ]
+    )
+    inventory = sorted(inventory)
+    accessible = sorted(set(at_pos + adjacent_pos + inventory))
 
     # PICKUP — objects at agent position not already held
     for oid in at_pos:
@@ -81,11 +84,11 @@ def enumerate_candidate_actions(obs: dict, grid_size: int = 6) -> list[Action]:
         candidates.append(Action(kind=ActionKind.DROP, args={"obj_id": oid}))
 
     # INSPECT — any visible object
-    for oid in objects:
+    for oid in sorted(objects):
         candidates.append(Action(kind=ActionKind.INSPECT, args={"obj_id": oid}))
 
     # APPLY — (tool from inventory or at pos) × (accessible target)
-    actor_pool = set(inventory + at_pos)
+    actor_pool = sorted(set(inventory + at_pos))
     for tool_id in actor_pool:
         for target_id in accessible:
             if tool_id != target_id:
@@ -97,12 +100,21 @@ def enumerate_candidate_actions(obs: dict, grid_size: int = 6) -> list[Action]:
                 )
 
     # COMBINE — any 2-combination of accessible objects
-    for a_id, b_id in combinations(sorted(accessible), 2):
+    for a_id, b_id in combinations(accessible, 2):
         candidates.append(
             Action(kind=ActionKind.COMBINE, args={"obj_id_a": a_id, "obj_id_b": b_id})
         )
 
-    return candidates
+    return sorted(candidates, key=action_sort_key)
+
+
+def action_sort_key(action: Action) -> tuple:
+    """Canonical public ordering independent of set/dict iteration order."""
+    args = tuple(
+        (key, value.value if hasattr(value, "value") else str(value))
+        for key, value in sorted(action.args.items())
+    )
+    return (action.kind.value, args)
 
 
 def _manhattan(a: tuple[int, int], b: tuple[int, int]) -> int:

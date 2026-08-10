@@ -94,7 +94,8 @@ class TaskSpec:
     object_specs: list[ObjectSpec]
     goal: GoalSpec
     constraints: ConstraintSpec
-    split: SplitLabel
+    # None is reserved for protocols whose conditions are not train/test splits.
+    split: SplitLabel | None
     pressure_labels: list[str]
     solution_certificate: SolutionCertificate
     metadata: dict = field(default_factory=dict)
@@ -171,9 +172,7 @@ def _generate_affordance(seed: int, split: SplitLabel) -> TaskSpec:
             oracle_rules_required=["conductivity_gate_rule"],
         ),
         metadata={
-            "train_correlation": "red=conductive"
-            if split == SplitLabel.TRAIN
-            else "decorrelated",
+            "train_correlation": "red=conductive" if split == SplitLabel.TRAIN else "decorrelated",
         },
     )
 
@@ -516,14 +515,26 @@ _GENERATORS = {
 }
 
 
-def generate_task(
-    family: TaskFamily | str, seed: int, split: SplitLabel | None = None
-) -> TaskSpec:
+def generate_task(family: TaskFamily | str, seed: int, split: SplitLabel | None = None) -> TaskSpec:
     """Generate a deterministic TaskSpec. Split is auto-assigned from seed if None."""
     family = TaskFamily(family)
     if split is None:
         split = assign_split(seed)
     return _GENERATORS[family](seed, split)
+
+
+def generate_affordance_quartet(seed: int):
+    """Lazy public v0.2 API; imported here for discoverability and compatibility."""
+    from crucible.factorial import generate_affordance_quartet as generate
+
+    return generate(seed)
+
+
+def generate_affordance_challenge(seed: int):
+    """Public lazy proxy for the v0.2 3x2 ceiling-check generator."""
+    from crucible.factorial import generate_affordance_challenge as generate
+
+    return generate(seed)
 
 
 def generate_perturbed_task(
@@ -559,7 +570,9 @@ def validate_task(spec: TaskSpec) -> list[str]:
     if not spec.solution_certificate.action_sequence:
         errors.append("solution_certificate.action_sequence must be non-empty")
     if spec.split not in (SplitLabel.TRAIN, SplitLabel.TEST):
-        errors.append(f"split must be TRAIN or TEST, got {spec.split!r}")
+        is_protocol_condition = bool(spec.split is None and spec.metadata.get("protocol_id"))
+        if not is_protocol_condition:
+            errors.append(f"unknown split label {spec.split!r}")
 
     obj_id_set = {s.obj_id for s in spec.object_specs}
 

@@ -1,0 +1,7 @@
+{
+  "artifact": "factorial_bc_summary_in_sample_overlap.json",
+  "reason": "Evaluation seeds 0..63 overlapped BC demonstration-world seeds 0..99.",
+  "replacement": "factorial_bc_summary.json evaluated on disjoint seeds 100..163",
+  "sha256": "b81b8343a5336cc1341dc8928261e9e5c72a1b553c667177c956287fbc76f5c9",
+  "status": "invalid-do-not-report"
+}

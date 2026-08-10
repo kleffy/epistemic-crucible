@@ -42,6 +42,7 @@ def _run_one_episode(agent, spec):
 
 # --- ALL BASELINES RUN ONE EPISODE WITHOUT ERROR ---
 
+
 @pytest.mark.parametrize(
     "agent",
     [
@@ -62,6 +63,7 @@ def test_every_baseline_runs_one_episode(agent):
 
 # --- RANDOM AGENT LEGAL ACTION RATE ---
 
+
 def test_random_agent_legal_action_rate():
     spec = generate_task(_FAMILY, seed=_SEED, split=SplitLabel.TRAIN)
     agent = RandomAgent(seed=_SEED)
@@ -73,6 +75,7 @@ def test_random_agent_legal_action_rate():
 
 
 # --- MEMORIZATION STORE AND REPLAY ---
+
 
 def test_memorization_store_and_replay():
     spec = generate_task(_FAMILY, seed=_SEED, split=SplitLabel.TRAIN)
@@ -110,6 +113,7 @@ def test_memorization_wait_on_unknown_key():
 
 # --- HEURISTIC AGENT DOES NOT ACCESS HIDDEN STATE ---
 
+
 def test_heuristic_no_hidden_import():
     source = inspect.getsource(HeuristicAgent)
     # Check that the agent does not access .hidden attribute or import rule internals.
@@ -126,6 +130,7 @@ def test_hybrid_no_hidden_import():
 
 # --- LLM AGENT SKIPPED WITHOUT CREDENTIALS ---
 
+
 @pytest.mark.skipif(LLMAgent.is_available(), reason="LLM credentials present; skip no-cred test")
 def test_llm_skipped_without_credentials():
     assert not LLMAgent.is_available()
@@ -140,6 +145,7 @@ def test_llm_runs_with_credentials():
 
 
 # --- RUNNER WRITES VALID JSONL ---
+
 
 def test_runner_writes_valid_jsonl(tmp_path):
     from experiments.run_baselines import run_all
@@ -170,6 +176,7 @@ def test_runner_writes_valid_jsonl(tmp_path):
 
 # --- ENUMERATE CANDIDATE ACTIONS ---
 
+
 def test_enumerate_candidate_actions_non_empty():
     spec = generate_task(_FAMILY, seed=_SEED, split=SplitLabel.TRAIN)
     env = CrucibleEnv(seed=spec.seed, config={"task_spec": spec})
@@ -183,6 +190,7 @@ def test_enumerate_candidate_actions_non_empty():
 
 # --- TABULAR RL PERSISTS Q-TABLE ACROSS EPISODES ---
 
+
 def test_tabular_rl_accumulates_experience():
     agent = TabularRLAgent(seed=0)
     for seed in range(3):
@@ -193,6 +201,7 @@ def test_tabular_rl_accumulates_experience():
 
 
 # --- ALL FAMILIES SMOKE ---
+
 
 @pytest.mark.parametrize("family", list(TaskFamily))
 def test_random_agent_all_families(family):

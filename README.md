@@ -1,21 +1,28 @@
 # Epistemic Crucible
 
-> Build worlds in which high performance is impossible without discovering hidden causes, inventing interventions, revising false beliefs, and compressing those discoveries into abstractions that transfer across mutated descendants.
+> Success is not identification: cross the visible cue and operative mechanism to
+> measure which one controls an agent's behavior.
 
 ## What this is
 
-A lightweight generative environment for evaluating whether agents acquire **reusable causal knowledge**, not task-specific policies.
+A lightweight generative environment for measuring **behavioral policy dependence**
+under controlled world interventions.
 
-**This is not a reward-only benchmark.** Task success is a training signal, not the evaluation target. The platform measures knowledge emergence: whether agents develop internal structures that survive intervention, contradiction, and transfer to held-out world variants.
+**This is not a claim about internal causal representations.** v0.2 crosses the
+carrier of a hidden mechanism with the carrier of a visible cue and records how an
+agent's terminal choice responds. The frozen v0.1 task families remain available for
+reproduction but are not the primary v0.2 measurement surface.
 
-## Core diagnostic loop
+## v0.2 diagnostic loop
 
-1. Agent encounters objects with visible features and hidden causal properties.
-2. It must act, intervene, and observe consequences.
-3. It must infer latent rules instead of memorising task layouts.
-4. It must transfer inferred rules to recombined worlds.
-5. It must survive adversarial perturbations that break superficial shortcuts.
-6. It is evaluated on knowledge emergence, not reward alone.
+1. Agent encounters three tools with visible features and a hidden conductivity bit.
+2. It chooses model-facing `QUERY(tool)` or `COMMIT(tool)` macro-actions; each is
+   compiled into legal movement, pickup, and apply actions through the environment.
+3. A queried tool is removed from later query choices; the first commit is terminal.
+4. Each base world is evaluated in a paired 2x2 quartet crossing mechanism and cue.
+5. Mechanism/cue tracking, paired responsiveness, unconditional and conditional cue
+   susceptibility, evidence acquisition/use, coverage, and task success are reported
+   separately, with no aggregate score.
 
 ## Installation
 
@@ -41,6 +48,22 @@ python experiments/generate_report.py --traces results/baselines_*.jsonl
 
 # Run the full baseline suite (~8 minutes, 20 seeds × 6 agents × 5 families)
 python experiments/run_baselines.py --config configs/baselines.yaml
+
+# Run the fast v0.2 controls, or the full pre-registered integrity audit
+python experiments/run_factorial_eval.py --controls
+python experiments/run_integrity_gate.py
+```
+
+Model runs are stage-gated. A pilot invocation supplies the pilot config and manifest;
+confirmatory runs additionally require a frozen manifest, its exact protocol commit,
+and a clean worktree:
+
+```bash
+python experiments/run_factorial_eval.py \
+  --config configs/factorial_pilot_v02.yaml \
+  --model MODEL_LABEL \
+  --stage pilot \
+  --manifest configs/pilot_manifest.json
 ```
 
 ## CI test commands
@@ -49,9 +72,14 @@ python experiments/run_baselines.py --config configs/baselines.yaml
 pytest tests/ -v -m "not slow"   # fast suite (<5 s, excludes end-to-end runs)
 pytest tests/ -v                  # full suite including end-to-end runs (~60 s)
 ruff check .                      # lint
+ruff format --check .             # formatting
 ```
 
-## Example results
+## Frozen v0.1 results (historical)
+
+The results below accompany the frozen `v0.1-arxiv` tag. They are retained for
+reproduction, not promoted as v0.2 evidence. See
+[`docs/AUDIT-v0.1.md`](docs/AUDIT-v0.1.md) for the construct and reporting audit.
 
 Task Success Rates on the affordance family from the publication sweep
 (`configs/publication.yaml`, 100 seeds, ~79 train / ~21 test). Full artifacts in
@@ -59,20 +87,14 @@ Task Success Rates on the affordance family from the publication sweep
 
 | Agent               | Train TSR | Test TSR | Shortcut sensitivity |
 |---------------------|-----------|----------|----------------------|
-| **neural_ppo** (BC) | 0.203     | 0.048    | **0.155** (highest)  |
+| **neural_ppo** (legacy name; BC) | 0.203 | 0.048 | **0.155** (highest) |
 | heuristic           | 0.443     | 0.429    | 0.014                |
 | hybrid_rule_planner | 0.418     | 0.429    | −0.011               |
 | random / tabular_rl / world_model / memorization | 0.000 | 0.000 | 0.000 |
 
-The headline is the **learned** baseline: the behavior-cloned `neural_ppo` agent
-inherits the train-only RED=conductive correlation and collapses on the
-decorrelated test split (0.203 → 0.048), giving the highest `shortcut_sensitivity`
-of any agent, a learning system that discovers the shortcut instead of the
-hidden causal rule. (On affordance the symbolic heuristic happens to generalize;
-its shortcut gap surfaces on `tool_substitution`, sensitivity 0.131.) The
-`concept_reuse_proxy` metric is positive overall (0.203 vs 0.000): agents that
-gather causal evidence before acting succeed on novel surface forms; those that
-don't, fail.
+These values are descriptive legacy task-success results. They do not identify
+whether a policy follows the hidden mechanism, a visible cue, or an availability
+heuristic, and v0.2 makes no causal-knowledge inference from them.
 
 The neural agent is GPU-capable (`pip install -e ".[gpu]"`); see
 [`docs/benchmark_card.md`](docs/benchmark_card.md) for the training recipe and the
@@ -98,15 +120,14 @@ via API. Overall TSR across the four learnable families (full artifacts in
 | llama-3.1-8b-instruct | 0.10 [0.06, 0.14] |
 | qwen2.5-7b-instruct | 0.09 [0.06, 0.13] |
 
-A capability gradient organized more by model scale or capacity than by weight
-availability: the 7–8B open-weights models barely act on the task (wander and
-inspect instead of discovering the apply-tool-to-gate intervention), a 32B open
-model matches Opus, and the frontier models discover it unprompted. Even strong
-models show surface-shortcut reliance: a dose-response probe shows a single
-colour-correlated demonstration raises reliance on the spurious colour rule on
-held-out worlds (0.20→0.57), and a hint ladder localizes whether a model's failure
-is attribution or execution. Run with `pip install -e ".[llm]"` and
-`python experiments/run_llm_eval.py`.
+The table is preserved only to reproduce v0.1. Its former `0.57` colour-reliance
+headline equals the observed red-tool availability rate (`0.57/0.60`), so it is
+not evidence of saturation or cue-controlled policy. The v0.1 record also omitted
+that the inference path allowed 3,000 completion tokens, used low reasoning effort,
+retained nine messages (not nine turns), and trained the released neural checkpoint
+with behavior cloning rather than PPO. v0.2 corrects those points explicitly and
+does not carry this leaderboard or the four unrepaired families into its primary
+claims.
 
 ## Diagnostic experiment
 
@@ -128,6 +149,8 @@ plots: shortcut exposure, intervention traces, and failure mode breakdown.
 - [docs/metrics.md](docs/metrics.md): metric definitions and gaming risk analysis
 - [docs/task_grammar.md](docs/task_grammar.md): task family grammar
 - [docs/release_policy.md](docs/release_policy.md): versioning, reproducibility guarantees, citation
+- [docs/v0.2-protocol.md](docs/v0.2-protocol.md): crossed protocol, metrics, controls, and staged study
+- [docs/ICLR2027_SUBMISSION_CHECKLIST.md](docs/ICLR2027_SUBMISSION_CHECKLIST.md): verified deadlines and submission operations
 
 ## Project layout
 
@@ -149,9 +172,9 @@ docs/            design and benchmark documentation
 ```bibtex
 @software{epistemic_crucible_2026,
   author = {Ayuba, Daniel La'ah},
-  title  = {Epistemic Crucible: A Generative Developmental Benchmark
-            for Causal Reasoning Evaluation},
+  title  = {Success Is Not Identification: Crossed World Interventions
+            for Attributing Agent Policies},
   year   = {2026},
-  note   = {v0.1},
+  note   = {software protocol v0.2; v0.1-arxiv remains frozen},
 }
 ```

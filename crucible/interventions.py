@@ -256,11 +256,7 @@ def _replace_inventory(world: WorldState, old_obj_id: str, new_obj_id: str) -> N
 
 
 def _isolation_cell(world: WorldState) -> tuple[int, int]:
-    occupied = {
-        obj.visible.pos
-        for obj in world.objects.values()
-        if obj.visible.pos is not None
-    }
+    occupied = {obj.visible.pos for obj in world.objects.values() if obj.visible.pos is not None}
     occupied.add(world.agent.pos)
     preferred = (world.grid_size - 1, world.grid_size - 1)
     if preferred not in occupied:

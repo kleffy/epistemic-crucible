@@ -79,9 +79,7 @@ def test_padding_masks_extra_candidates():
 
 
 def test_ppo_update_runs_and_changes_params():
-    specs = [
-        generate_task(TaskFamily.AFFORDANCE, seed=s, split=SplitLabel.TRAIN) for s in range(3)
-    ]
+    specs = [generate_task(TaskFamily.AFFORDANCE, seed=s, split=SplitLabel.TRAIN) for s in range(3)]
 
     def env_factory(spec):
         return CrucibleEnv(

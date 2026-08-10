@@ -216,11 +216,7 @@ def test_source_and_catalyst_produce_deterministic_token():
         Action(ActionKind.COMBINE, {"obj_id_a": "source", "obj_id_b": "catalyst"}),
     )
 
-    produced = [
-        obj
-        for obj in world.objects.values()
-        if obj.visible.obj_type == ObjectType.TOKEN
-    ]
+    produced = [obj for obj in world.objects.values() if obj.visible.obj_type == ObjectType.TOKEN]
     assert len(produced) == 1
     assert produced[0].obj_id == "123_token_source_catalyst"
     assert result.public_effects == ["produced 123_token_source_catalyst"]

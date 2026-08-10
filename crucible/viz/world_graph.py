@@ -72,15 +72,23 @@ def plot_world(world, *, ax=None, title=None, save_to=None):
         color = _COLOUR_MAP.get(obj.visible.color.value, "white")
         marker = _SHAPE_MARKER.get(obj.visible.shape.value, "o")
         ax.plot(
-            col, y, marker,
-            color=color, markersize=16,
-            markeredgecolor="black", markeredgewidth=0.6,
+            col,
+            y,
+            marker,
+            color=color,
+            markersize=16,
+            markeredgecolor="black",
+            markeredgewidth=0.6,
             zorder=3,
         )
         ax.text(
-            col, y - 0.38,
+            col,
+            y - 0.38,
             obj.visible.obj_type.value[:4],
-            ha="center", va="top", fontsize=6, zorder=4,
+            ha="center",
+            va="top",
+            fontsize=6,
+            zorder=4,
         )
 
     # Agent
@@ -91,8 +99,12 @@ def plot_world(world, *, ax=None, title=None, save_to=None):
     # Inventory sidebar
     inv_text = "Inventory:\n" + ("\n".join(inventory_labels) if inventory_labels else "(empty)")
     fig.text(
-        0.82, 0.5, inv_text,
-        fontsize=8, va="center", family="monospace",
+        0.82,
+        0.5,
+        inv_text,
+        fontsize=8,
+        va="center",
+        family="monospace",
         bbox=dict(boxstyle="round", facecolor="lightyellow", edgecolor="gray", alpha=0.9),
     )
 

@@ -75,7 +75,7 @@ def _print_report(report: dict[str, MetricResult]) -> None:
             f"{name:<{col_w[0]}} "
             f"{_format_value(result.value):<{col_w[1]}} "
             f"{result.count:<{col_w[2]}} "
-            f"{result.gaming_risk[:col_w[3]]:<{col_w[3]}}"
+            f"{result.gaming_risk[: col_w[3]]:<{col_w[3]}}"
         )
         print(row)
     print(sep)

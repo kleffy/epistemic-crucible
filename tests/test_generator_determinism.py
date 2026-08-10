@@ -8,7 +8,7 @@ import yaml
 def test_package_imports():
     import crucible
 
-    assert crucible.__version__ == "0.1.0"
+    assert crucible.__version__ == "0.2.0"
 
 
 def test_pytest_discovers_tests():

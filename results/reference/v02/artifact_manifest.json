@@ -1,0 +1,46 @@
+{
+  "commands": {
+    "acceptance": "pytest -q tests/test_quartet_invariance.py tests/test_attribution_metrics.py  # 1033 tests",
+    "held_out_evaluation": "python experiments/train_factorial_bc.py --config configs/factorial_bc_v02.yaml --output-dir results/factorial_v02/bc --evaluate-existing",
+    "integrity": "python experiments/run_integrity_gate.py",
+    "training": "python experiments/train_factorial_bc.py --config configs/factorial_bc_v02.yaml --output-dir results/factorial_v02/bc"
+  },
+  "dependency_versions": {
+    "numpy": "2.4.5",
+    "pyyaml": "6.0.3",
+    "torch": "2.11.0+cu128"
+  },
+  "files": {
+    "README.md": "52c7b6c9c53b1494d74c4414db63f5a9bef13a6d7adf46b0f367f6a0929e0e27",
+    "checkpoint_hashes.json": "1aa60119948657174ece26c7dc8c12c14da207632b9934efe136895263ef2ca5",
+    "factorial_bc_summary.json": "de8e423e0fd2281b8eda9d0dae7a4ab2181d772a60c1dd776194623a11499012",
+    "integrity_report.json": "d173c563f281ba227a18f47773b4259bc7f43e228c785b8b76dfdfb95ddbfc23",
+    "invalid_evaluations.json": "b3201eec52fc783a1968e7e69f8607cde4f2edc0eb24a95a131c2c4c2802cf8a",
+    "sample_bc_traces.jsonl": "71716e4153d4e9ada43e21049e4d99612ccc1a9a1430144aadd09dbead0dc854",
+    "sample_control_traces.jsonl": "9d4ea3d4d16a18de28117d7a9f224e6c4427269317a0ad07842274c8588fa7a6"
+  },
+  "gpu": [
+    {
+      "driver_version": "580.126.09",
+      "memory_mib": "32607",
+      "name": "NVIDIA GeForce RTX 5090"
+    }
+  ],
+  "platform": "Linux-6.17.0-14-generic-x86_64-with-glibc2.39",
+  "protocol_commit": "dfa7c96e7841c00ed564ef292bd2f6fb0cefa053",
+  "python": "3.12.12",
+  "schema_version": "0.2",
+  "source_files": {
+    "configs/factorial_bc_v02.yaml": "b21bfb4bb31fc4f8450e22171503f53e31b887ad3fce1d6fc088486d8fd099c0",
+    "experiments/run_integrity_gate.py": "7fdcfad17210b072e004dab664ae2eec9bb0d384ffc25d67f461e47132c25923",
+    "experiments/train_factorial_bc.py": "0ae8017334f0aff543074cb73fb674aa5d130c02a13df8eccaef427f71adda2e",
+    "pyproject.toml": "95efed965b77c09dff37feff817a556ec7b128030ca57035c23d5f1ad46ae9b8",
+    "tests/test_attribution_metrics.py": "b018e13fcae92b9c0cf880fd2bddb613df6325ef2c01917f9644e39599aae113",
+    "tests/test_quartet_invariance.py": "bf627bd04dc7460e3d860301a87f7088e4c4a795d73b80a2c59f3a051e0edd34"
+  },
+  "torch": {
+    "compiled_cuda": "12.8",
+    "cuda_available_at_packaging": true,
+    "version": "2.11.0+cu128"
+  }
+}

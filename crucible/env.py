@@ -147,15 +147,20 @@ class CrucibleEnv:
             }
         )
 
-        return obs_after, reward, done, {
-            "legal": legal,
-            "effects": effects,
-            "solved": self._solved,
-            "state_hash_before": state_hash_before,
-            "state_hash_after": state_hash_after,
-            "public_state_hash_before": public_state_hash_before,
-            "public_state_hash_after": public_state_hash_after,
-        }
+        return (
+            obs_after,
+            reward,
+            done,
+            {
+                "legal": legal,
+                "effects": effects,
+                "solved": self._solved,
+                "state_hash_before": state_hash_before,
+                "state_hash_after": state_hash_after,
+                "public_state_hash_before": public_state_hash_before,
+                "public_state_hash_after": public_state_hash_after,
+            },
+        )
 
     def get_trace(self) -> list[dict]:
         return list(self._trace)
@@ -191,8 +196,7 @@ class CrucibleEnv:
             agent.inventory.append(obj_id)
             obj.visible.pos = None
             world.relations = [
-                r for r in world.relations
-                if not (r.subject == obj_id or r.object_ == obj_id)
+                r for r in world.relations if not (r.subject == obj_id or r.object_ == obj_id)
             ]
             world.relations.append(
                 Relation(kind=RelationKind.HELD, subject="agent", object_=obj_id)
@@ -205,7 +209,8 @@ class CrucibleEnv:
             agent.inventory.remove(obj_id)
             obj.visible.pos = agent.pos
             world.relations = [
-                r for r in world.relations
+                r
+                for r in world.relations
                 if not (r.kind == RelationKind.HELD and r.object_ == obj_id)
             ]
             _refresh_object_adjacency(world, obj_id)
@@ -235,9 +240,7 @@ class CrucibleEnv:
 
 
 def _refresh_agent_adjacency(world: WorldState) -> None:
-    world.relations = [
-        r for r in world.relations if r.subject != "agent" and r.object_ != "agent"
-    ]
+    world.relations = [r for r in world.relations if r.subject != "agent" and r.object_ != "agent"]
     agent_pos = world.agent.pos
     for obj_id, obj in world.objects.items():
         if obj.visible.pos is None:
@@ -258,9 +261,8 @@ def _refresh_object_adjacency(world: WorldState, obj_id: str) -> None:
     for other_id, other in world.objects.items():
         if other_id == obj_id or other.visible.pos is None:
             continue
-        dist = (
-            abs(obj.visible.pos[0] - other.visible.pos[0])
-            + abs(obj.visible.pos[1] - other.visible.pos[1])
+        dist = abs(obj.visible.pos[0] - other.visible.pos[0]) + abs(
+            obj.visible.pos[1] - other.visible.pos[1]
         )
         if dist == 1:
             world.relations.append(
@@ -270,11 +272,7 @@ def _refresh_object_adjacency(world: WorldState, obj_id: str) -> None:
                 Relation(kind=RelationKind.ADJACENT, subject=other_id, object_=obj_id)
             )
     agent_pos = world.agent.pos
-    if (
-        abs(obj.visible.pos[0] - agent_pos[0])
-        + abs(obj.visible.pos[1] - agent_pos[1])
-        == 1
-    ):
+    if abs(obj.visible.pos[0] - agent_pos[0]) + abs(obj.visible.pos[1] - agent_pos[1]) == 1:
         world.relations.append(
             Relation(kind=RelationKind.ADJACENT, subject="agent", object_=obj_id)
         )

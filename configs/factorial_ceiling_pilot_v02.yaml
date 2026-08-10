@@ -1,0 +1,10 @@
+# Pre-registered 3x2 ceiling-risk pilot; seeds are disjoint from confirmation.
+variant: challenge_3x2
+base_url: http://127.0.0.1:8000/v1
+concurrency: 8
+seeds: [2000, 2001, 2002, 2003, 2004, 2005,
+        2006, 2007, 2008, 2009, 2010, 2011]
+prompt_arms:
+  - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 12}
+# Copy one pinned model entry from factorial_v02.yaml after local preflight.
+models: []

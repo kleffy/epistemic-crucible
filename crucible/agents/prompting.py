@@ -96,9 +96,7 @@ def oracle_hint(spec, label_map: dict, level: str | None) -> str:
     if level == "property":
         return f"Hint: {label} is the tool that opens the gate.\n\n"
     if level == "rule":
-        return (
-            f"Hint: applying {label} to the gate opens it; the other tools have no effect.\n\n"
-        )
+        return f"Hint: applying {label} to the gate opens it; the other tools have no effect.\n\n"
     return ""
 
 

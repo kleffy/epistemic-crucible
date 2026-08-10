@@ -102,7 +102,7 @@ class LLMAgent(Agent):
             obs, goal_text, self._grid_size, label_map=self._label_map
         )
         self._history.append({"role": "user", "content": user_msg})
-        raw = backend.generate_batch(SYSTEM_PROMPT, [self._history[-self._max_history:]])[0]
+        raw = backend.generate_batch(SYSTEM_PROMPT, [self._history[-self._max_history :]])[0]
         self._history.append({"role": "assistant", "content": raw})
         return parse_action(raw, candidates)
 

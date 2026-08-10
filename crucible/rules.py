@@ -227,9 +227,7 @@ def validate_rule_set(rules: list[LatentRule], world: WorldState | None = None) 
         effect_signature = tuple(repr(effect) for effect in rule.effects)
         previous = effect_by_preconditions.get(key)
         if previous is not None and previous != effect_signature:
-            errors.append(
-                f"contradictory effects for trigger/preconditions on {rule.rule_id!r}"
-            )
+            errors.append(f"contradictory effects for trigger/preconditions on {rule.rule_id!r}")
         effect_by_preconditions[key] = effect_signature
 
     return errors
