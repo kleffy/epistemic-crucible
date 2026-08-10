@@ -168,6 +168,19 @@ def test_model_study_manifest_pins_full_revisions():
         int(model["revision"], 16)
 
 
+def test_gpt_oss_launch_profile_disables_nondeterministic_serving_paths():
+    script = open("experiments/serve_gpt_oss_v02.sh").read()
+    for flag in (
+        "--seed 0",
+        "--enforce-eager",
+        "--no-enable-prefix-caching",
+        "--no-async-scheduling",
+        "--no-enable-chunked-prefill",
+    ):
+        assert flag in script
+    assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" in script
+
+
 def test_pilot_and_confirmatory_seed_manifests_are_disjoint():
     pilot = json.loads(open("configs/pilot_manifest.json").read())
     confirmatory = json.loads(open("configs/confirmatory_manifest.json").read())

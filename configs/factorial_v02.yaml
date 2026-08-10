@@ -39,8 +39,16 @@ models:
       reasoning_parser: openai_gptoss
       chat_template: model-default@pinned-revision
       load_format: safetensors
+      launch_script: experiments/serve_gpt_oss_v02.sh
+      engine_seed: 0
+      enforce_eager: true
+      prefix_caching: false
+      async_scheduling: false
+      chunked_prefill: false
       environment:
         PATH_prepend: .venv/bin
+        CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+        PYTHONHASHSEED: "0"
       max_model_len: 8192
       vllm_version: 0.26.0
     generation:
