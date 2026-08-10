@@ -6,6 +6,7 @@ import pytest
 import yaml
 
 from experiments.run_factorial_eval import (
+    _runtime_hardware,
     build_factorial_demo_examples,
     build_factorial_fewshot_prefix,
     run_controls,
@@ -121,6 +122,26 @@ def test_invalid_model_responses_are_abstentions_and_step_records_are_loadable(
         "value": 1.0,
         "denominator": 4,
     }
+
+
+def test_hardware_provenance_tolerates_cpu_hosts_without_nvidia_smi(monkeypatch):
+    def missing_binary(*args, **kwargs):
+        raise FileNotFoundError("nvidia-smi")
+
+    monkeypatch.setattr("experiments.run_factorial_eval.subprocess.run", missing_binary)
+    hardware = _runtime_hardware()
+    assert hardware["driver"] is None
+
+
+def test_artifact_gpu_probe_tolerates_missing_nvidia_smi(monkeypatch):
+    pytest.importorskip("torch")
+    from experiments.package_factorial_artifacts import _gpu_metadata
+
+    def missing_binary(*args, **kwargs):
+        raise FileNotFoundError("nvidia-smi")
+
+    monkeypatch.setattr("experiments.package_factorial_artifacts.subprocess.run", missing_binary)
+    assert _gpu_metadata() is None
 
 
 def test_small_integrity_gate_passes():

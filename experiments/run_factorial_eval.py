@@ -530,17 +530,21 @@ def _runtime_hardware() -> dict[str, Any]:
         )
     except ImportError:
         runtime.update({"pytorch": None, "cuda_runtime": None, "gpu": None})
-    driver = subprocess.run(
-        [
-            "nvidia-smi",
-            "--query-gpu=driver_version",
-            "--format=csv,noheader",
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    runtime["driver"] = driver.stdout.strip() if driver.returncode == 0 else None
+    try:
+        driver = subprocess.run(
+            [
+                "nvidia-smi",
+                "--query-gpu=driver_version",
+                "--format=csv,noheader",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        runtime["driver"] = None
+    else:
+        runtime["driver"] = driver.stdout.strip() if driver.returncode == 0 else None
     return runtime
 
 

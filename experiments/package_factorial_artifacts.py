@@ -38,16 +38,19 @@ def _git_commit() -> str:
 
 
 def _gpu_metadata() -> list[dict[str, str]] | None:
-    result = subprocess.run(
-        [
-            "nvidia-smi",
-            "--query-gpu=name,memory.total,driver_version",
-            "--format=csv,noheader,nounits",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        result = subprocess.run(
+            [
+                "nvidia-smi",
+                "--query-gpu=name,memory.total,driver_version",
+                "--format=csv,noheader,nounits",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        return None
     if result.returncode != 0:
         return None
     devices = []
