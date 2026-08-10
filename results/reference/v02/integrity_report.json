@@ -1,0 +1,949 @@
+{
+  "analytic_uniform_reference_points": {
+    "all_three_tools": {
+      "coverage": 1.0,
+      "cue_following": 0.3333333333333333,
+      "cue_susceptibility": 0.6666666666666667,
+      "mechanism_responsiveness": 0.1111111111111111
+    },
+    "red_blue_focal_tools": {
+      "coverage": 1.0,
+      "cue_following": 0.5,
+      "cue_susceptibility": 0.5,
+      "mechanism_responsiveness": 0.25
+    }
+  },
+  "controls": {
+    "abstain": {
+      "aligned_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "choice_accuracy": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 0.0,
+        "m0_c1": 0.0,
+        "m1_c0": 0.0,
+        "m1_c1": 0.0
+      },
+      "crossed_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "cue_following": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "cue_susceptibility": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "detector_query_rate": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "first_query_cue_bias": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "identification_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "mechanism_tracking": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "natural_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "quartet_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "unique_queries": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      }
+    },
+    "anti_cue": {
+      "aligned_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 64,
+        "value": 0.5
+      },
+      "choice_accuracy": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 256,
+        "value": 0.5
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 1.0,
+        "m0_c1": 1.0,
+        "m1_c0": 1.0,
+        "m1_c1": 1.0
+      },
+      "crossed_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "cue_following": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "cue_susceptibility": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 128,
+        "value": 1.0
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 128,
+        "value": 1.0
+      },
+      "detector_query_rate": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "first_query_cue_bias": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "identification_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "mechanism_tracking": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 256,
+        "value": 0.5
+      },
+      "natural_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "quartet_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "unique_queries": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      }
+    },
+    "cue_follower": {
+      "aligned_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 64,
+        "value": 0.5
+      },
+      "choice_accuracy": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 256,
+        "value": 0.5
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 1.0,
+        "m0_c1": 1.0,
+        "m1_c0": 1.0,
+        "m1_c1": 1.0
+      },
+      "crossed_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "cue_following": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "cue_susceptibility": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 128,
+        "value": 1.0
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 128,
+        "value": 1.0
+      },
+      "detector_query_rate": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "first_query_cue_bias": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "identification_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "mechanism_tracking": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 256,
+        "value": 0.5
+      },
+      "natural_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "quartet_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "unique_queries": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      }
+    },
+    "detector_policy": {
+      "aligned_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "choice_accuracy": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 1.0,
+        "m0_c1": 1.0,
+        "m1_c0": 1.0,
+        "m1_c1": 1.0
+      },
+      "crossed_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "cue_following": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 256,
+        "value": 0.5
+      },
+      "cue_susceptibility": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "detector_query_rate": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "first_query_cue_bias": {
+        "ci_high": 0.390625,
+        "ci_low": 0.2734375,
+        "denominator": 256,
+        "value": 0.3359375
+      },
+      "identification_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 128,
+        "value": 1.0
+      },
+      "mechanism_tracking": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "natural_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "quartet_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "unique_queries": {
+        "ci_high": 3.0,
+        "ci_low": 3.0,
+        "denominator": 256,
+        "value": 3.0
+      }
+    },
+    "fixed_slot": {
+      "aligned_success": {
+        "ci_high": 0.390625,
+        "ci_low": 0.2734375,
+        "denominator": 64,
+        "value": 0.3359375
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 0.390625,
+        "ci_low": 0.2734375,
+        "denominator": 64,
+        "value": 0.3359375
+      },
+      "choice_accuracy": {
+        "ci_high": 0.390625,
+        "ci_low": 0.2734375,
+        "denominator": 256,
+        "value": 0.3359375
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 1.0,
+        "m0_c1": 1.0,
+        "m1_c0": 1.0,
+        "m1_c1": 1.0
+      },
+      "crossed_success": {
+        "ci_high": 0.390625,
+        "ci_low": 0.28125,
+        "denominator": 64,
+        "value": 0.3359375
+      },
+      "cue_following": {
+        "ci_high": 0.390625,
+        "ci_low": 0.28125,
+        "denominator": 256,
+        "value": 0.3359375
+      },
+      "cue_susceptibility": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "detector_query_rate": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "first_query_cue_bias": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "identification_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "mechanism_tracking": {
+        "ci_high": 0.390625,
+        "ci_low": 0.28125,
+        "denominator": 256,
+        "value": 0.3359375
+      },
+      "natural_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "quartet_success": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.0
+      },
+      "unique_queries": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      }
+    },
+    "focal_uniform": {
+      "aligned_success": {
+        "ci_high": 0.625,
+        "ci_low": 0.453125,
+        "denominator": 64,
+        "value": 0.5390625
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 0.57421875,
+        "ci_low": 0.46875,
+        "denominator": 64,
+        "value": 0.5234375
+      },
+      "choice_accuracy": {
+        "ci_high": 0.578125,
+        "ci_low": 0.46875,
+        "denominator": 256,
+        "value": 0.5234375
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 1.0,
+        "m0_c1": 1.0,
+        "m1_c0": 1.0,
+        "m1_c1": 1.0
+      },
+      "crossed_success": {
+        "ci_high": 0.59375,
+        "ci_low": 0.421875,
+        "denominator": 64,
+        "value": 0.5078125
+      },
+      "cue_following": {
+        "ci_high": 0.58203125,
+        "ci_low": 0.44921875,
+        "denominator": 256,
+        "value": 0.515625
+      },
+      "cue_susceptibility": {
+        "ci_high": 0.6171875,
+        "ci_low": 0.4453125,
+        "denominator": 128,
+        "value": 0.53125
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 0.6171875,
+        "ci_low": 0.4453125,
+        "denominator": 128,
+        "value": 0.53125
+      },
+      "detector_query_rate": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "first_query_cue_bias": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "identification_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": 0.3046875,
+        "ci_low": 0.171875,
+        "denominator": 128,
+        "value": 0.234375
+      },
+      "mechanism_tracking": {
+        "ci_high": 0.578125,
+        "ci_low": 0.46875,
+        "denominator": 256,
+        "value": 0.5234375
+      },
+      "natural_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "quartet_success": {
+        "ci_high": 0.078125,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.03125
+      },
+      "unique_queries": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      }
+    },
+    "mechanism_oracle": {
+      "aligned_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "choice_accuracy": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 1.0,
+        "m0_c1": 1.0,
+        "m1_c0": 1.0,
+        "m1_c1": 1.0
+      },
+      "crossed_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "cue_following": {
+        "ci_high": 0.5,
+        "ci_low": 0.5,
+        "denominator": 256,
+        "value": 0.5
+      },
+      "cue_susceptibility": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 128,
+        "value": 0.0
+      },
+      "detector_query_rate": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "first_query_cue_bias": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "identification_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 128,
+        "value": 1.0
+      },
+      "mechanism_tracking": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 256,
+        "value": 1.0
+      },
+      "natural_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "quartet_success": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "unique_queries": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      }
+    },
+    "random_committer": {
+      "aligned_success": {
+        "ci_high": 0.46875,
+        "ci_low": 0.296875,
+        "denominator": 64,
+        "value": 0.3828125
+      },
+      "base_seeds": 64,
+      "cell_success": {
+        "ci_high": 0.421875,
+        "ci_low": 0.3125,
+        "denominator": 64,
+        "value": 0.3671875
+      },
+      "choice_accuracy": {
+        "ci_high": 0.42578125,
+        "ci_low": 0.3125,
+        "denominator": 256,
+        "value": 0.3671875
+      },
+      "complete_quartets": 64,
+      "coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "coverage_by_cell": {
+        "m0_c0": 1.0,
+        "m0_c1": 1.0,
+        "m1_c0": 1.0,
+        "m1_c1": 1.0
+      },
+      "crossed_success": {
+        "ci_high": 0.42988281249999716,
+        "ci_low": 0.2734375,
+        "denominator": 64,
+        "value": 0.3515625
+      },
+      "cue_following": {
+        "ci_high": 0.3984375,
+        "ci_low": 0.2734375,
+        "denominator": 256,
+        "value": 0.3359375
+      },
+      "cue_susceptibility": {
+        "ci_high": 0.84375,
+        "ci_low": 0.6953125,
+        "denominator": 128,
+        "value": 0.7734375
+      },
+      "cue_susceptibility_all": {
+        "ci_high": 0.84375,
+        "ci_low": 0.6953125,
+        "denominator": 128,
+        "value": 0.7734375
+      },
+      "detector_query_rate": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "evidence_consistent_commitment": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "first_query_cue_bias": {
+        "ci_high": null,
+        "ci_low": null,
+        "denominator": 0,
+        "value": null
+      },
+      "identification_coverage": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      },
+      "mechanism_responsiveness": {
+        "ci_high": 0.1875,
+        "ci_low": 0.0703125,
+        "denominator": 128,
+        "value": 0.125
+      },
+      "mechanism_tracking": {
+        "ci_high": 0.421875,
+        "ci_low": 0.3125,
+        "denominator": 256,
+        "value": 0.3671875
+      },
+      "natural_coverage": {
+        "ci_high": 1.0,
+        "ci_low": 1.0,
+        "denominator": 64,
+        "value": 1.0
+      },
+      "quartet_success": {
+        "ci_high": 0.046875,
+        "ci_low": 0.0,
+        "denominator": 64,
+        "value": 0.015625
+      },
+      "unique_queries": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "denominator": 256,
+        "value": 0.0
+      }
+    }
+  },
+  "counts": {
+    "control_seeds": 64,
+    "invariant_seeds": 10000,
+    "oracle_checks": 8000,
+    "oracle_seeds": 1000
+  },
+  "elapsed_seconds": 72.032,
+  "gate": "factorial_integrity",
+  "leakage": {
+    "candidate_order_match_rate": 1.0,
+    "cue_axis_colour_masked_match_rate": 1.0,
+    "interpretation": "Matched public observations are identical within each cue value, so a public-state classifier has exactly chance information about mechanism.",
+    "label_match_rate": 1.0,
+    "mechanism_public_match_rate": 1.0
+  },
+  "passed": true,
+  "schema_version": "0.2",
+  "slot_balance": {
+    "cue_carrier": [
+      13334,
+      13334,
+      13332
+    ],
+    "mechanism_carrier": [
+      13334,
+      13334,
+      13332
+    ],
+    "neutral": [
+      3333,
+      3333,
+      3334
+    ]
+  },
+  "violations": []
+}
