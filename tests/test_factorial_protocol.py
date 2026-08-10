@@ -20,7 +20,7 @@ from crucible.factorial import (
     shortest_legal_moves,
     validate_affordance_quartet,
 )
-from crucible.factorial_metrics import compute_factorial_metrics
+from crucible.factorial_metrics import compute_factorial_metrics, paired_arm_contrast
 from crucible.grammar import build_world_from_spec, validate_task
 from crucible.ledger import EpisodeLedger, content_hash
 from crucible.observations import observe
@@ -133,6 +133,16 @@ def test_primary_macro_actions_compile_to_legal_environment_steps():
     assert episode.outcome().solved is True
 
 
+def test_invalid_response_termination_is_abstention_not_evaluator_choice():
+    episode = FactorialEpisode(generate_affordance_quartet(8).cell(1, 0))
+    episode.reset()
+    outcome = episode.terminate_without_commit("invalid_response")
+    assert outcome.committed_slot is None
+    assert outcome.commit_mode is None
+    assert outcome.solved is False
+    assert outcome.done_reason == "invalid_response"
+
+
 def test_focal_and_neutral_global_slots_are_balanced_across_seeds():
     neutral_counts = [0, 0, 0]
     mechanism_counts = [0, 0, 0]
@@ -193,6 +203,62 @@ def test_scripted_controls_occupy_expected_metric_regions(
     assert report.cue_susceptibility.denominator == 6
 
 
+def test_focal_uniform_control_matches_two_slot_reference_region():
+    outcomes = [
+        run_scripted_control(cell, "focal_uniform")
+        for seed in range(512)
+        for cell in generate_affordance_quartet(seed).cells.values()
+    ]
+    report = compute_factorial_metrics(outcomes, bootstrap_samples=0)
+    assert report.mechanism_tracking.value == pytest.approx(0.5, abs=0.05)
+    assert report.mechanism_responsiveness.value == pytest.approx(0.25, abs=0.05)
+    assert report.cue_following.value == pytest.approx(0.5, abs=0.05)
+    assert report.cue_susceptibility.value == pytest.approx(0.5, abs=0.05)
+
+
+def test_paired_arm_contrast_preserves_seed_pairing():
+    reference = [
+        run_scripted_control(cell, "cue_follower")
+        for seed in range(8)
+        for cell in generate_affordance_quartet(seed).cells.values()
+    ]
+    treatment = [
+        run_scripted_control(cell, "detector_policy")
+        for seed in range(8)
+        for cell in generate_affordance_quartet(seed).cells.values()
+    ]
+    mechanism_delta = paired_arm_contrast(
+        reference, treatment, "mechanism_tracking", bootstrap_samples=100
+    )
+    cue_delta = paired_arm_contrast(reference, treatment, "cue_following", bootstrap_samples=100)
+    assert mechanism_delta.value == 0.5
+    assert cue_delta.value == -0.5
+    assert mechanism_delta.denominator == cue_delta.denominator == 8
+
+
+def test_aligned_crossed_success_and_query_rate_make_controls_legible():
+    cue = compute_factorial_metrics(
+        (
+            run_scripted_control(cell, "cue_follower")
+            for cell in generate_affordance_quartet(0).cells.values()
+        ),
+        bootstrap_samples=0,
+    )
+    mechanism = compute_factorial_metrics(
+        (
+            run_scripted_control(cell, "detector_policy")
+            for cell in generate_affordance_quartet(0).cells.values()
+        ),
+        bootstrap_samples=0,
+    )
+    assert cue.aligned_success.value == 1.0
+    assert cue.crossed_success.value == 0.0
+    assert cue.detector_query_rate.value == 0.0
+    assert mechanism.aligned_success.value == 1.0
+    assert mechanism.crossed_success.value == 1.0
+    assert mechanism.detector_query_rate.value == 1.0
+
+
 def test_abstention_is_coverage_failure_not_zero_responsiveness():
     outcomes = [
         run_scripted_control(cell, "abstain")
@@ -202,6 +268,10 @@ def test_abstention_is_coverage_failure_not_zero_responsiveness():
     assert report.coverage.value == 0.0
     assert report.mechanism_responsiveness.value is None
     assert report.cue_susceptibility.value is None
+    assert report.cue_susceptibility_all.value == 0.0
+    assert report.cue_susceptibility_all.denominator == 2
+    assert report.choice_accuracy.value == 0.0
+    assert report.choice_accuracy.denominator == 4
 
 
 def test_detector_budget_rejects_a_fourth_query_without_mutation():

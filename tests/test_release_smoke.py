@@ -162,12 +162,8 @@ def test_quickstart_runs_deterministically(tmp_path: Path):
     t2 = sorted(out2.glob("baselines_*.jsonl"), key=lambda p: p.stat().st_mtime)[-1]
 
     key = lambda d: json.dumps(d, sort_keys=True)  # noqa: E731
-    lines1 = sorted(
-        [json.loads(ln) for ln in t1.read_text().splitlines() if ln.strip()], key=key
-    )
-    lines2 = sorted(
-        [json.loads(ln) for ln in t2.read_text().splitlines() if ln.strip()], key=key
-    )
+    lines1 = sorted([json.loads(ln) for ln in t1.read_text().splitlines() if ln.strip()], key=key)
+    lines2 = sorted([json.loads(ln) for ln in t2.read_text().splitlines() if ln.strip()], key=key)
     assert lines1 == lines2, "Benchmark output must be identical across repeated runs"
 
 

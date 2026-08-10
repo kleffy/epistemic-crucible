@@ -34,9 +34,7 @@ def _red_tool_and_gate(seed: int, split: str) -> tuple[set[str], str | None]:
     """Real IDs of red-coloured tools and the gate for an affordance instance."""
     spec = generate_task(TaskFamily.AFFORDANCE, seed=seed, split=SplitLabel(split))
     red = {
-        o.obj_id
-        for o in spec.object_specs
-        if o.obj_type.value == "tool" and o.color.value == "red"
+        o.obj_id for o in spec.object_specs if o.obj_type.value == "tool" and o.color.value == "red"
     }
     gate = next((o.obj_id for o in spec.object_specs if o.obj_type.value == "gate"), None)
     return red, gate
@@ -91,6 +89,7 @@ def dose_response(dose_dir: pathlib.Path, family: str = "affordance") -> dict:
     plus task success. The headline curve is TEST reliance against K per mode:
     cue should rise, mechanistic stay flat, anti-cue fall.
     """
+
     def _one(sub: pathlib.Path) -> dict:
         paths = sorted(str(p) for p in sub.glob("*.jsonl"))
         if not paths:
@@ -148,8 +147,7 @@ def oracle_ladder(oracle_dir: pathlib.Path) -> dict:
                 tr = tsr_with_ci(outcomes, family=fam, agent=ag, split="train")
                 te = tsr_with_ci(outcomes, family=fam, agent=ag, split="test")
                 if tr["n"] or te["n"]:
-                    per[fam] = {"train": tr, "test": te,
-                                "gap": round(tr["mean"] - te["mean"], 4)}
+                    per[fam] = {"train": tr, "test": te, "gap": round(tr["mean"] - te["mean"], 4)}
     return out
 
 
@@ -231,17 +229,19 @@ def _make_figures(table: dict, out_dir: pathlib.Path) -> None:
 
     # Publication-quality defaults: 300 dpi and fonts set large enough to stay
     # legible after the figures are scaled to the column width in the paper.
-    plt.rcParams.update({
-        "savefig.dpi": 300,
-        "figure.dpi": 300,
-        "font.size": 14,
-        "axes.titlesize": 16,
-        "axes.labelsize": 15,
-        "xtick.labelsize": 13,
-        "ytick.labelsize": 13,
-        "legend.fontsize": 13,
-        "savefig.bbox": "tight",
-    })
+    plt.rcParams.update(
+        {
+            "savefig.dpi": 300,
+            "figure.dpi": 300,
+            "font.size": 14,
+            "axes.titlesize": 16,
+            "axes.labelsize": 15,
+            "xtick.labelsize": 13,
+            "ytick.labelsize": 13,
+            "legend.fontsize": 13,
+            "savefig.bbox": "tight",
+        }
+    )
 
     agents = list(table["agents"])
     aff = [table["agents"][a]["tsr"].get("affordance", {}) for a in agents]
@@ -261,8 +261,9 @@ def _make_figures(table: dict, out_dir: pathlib.Path) -> None:
     ax.bar([i - w / 2 for i in x], train, w, yerr=tr_err, capsize=3, label="train", color="#4c72b0")
     ax.bar([i + w / 2 for i in x], test, w, yerr=te_err, capsize=3, label="test", color="#dd8452")
     ax.set_xticks(list(x))
-    ax.set_xticklabels([a.replace("claude-", "").replace("-20251001", "") for a in agents],
-                       rotation=30, ha="right")
+    ax.set_xticklabels(
+        [a.replace("claude-", "").replace("-20251001", "") for a in agents], rotation=30, ha="right"
+    )
     ax.set_ylabel("Task Success Rate")
     ax.set_title("Affordance: train vs test TSR (decision-focused, 95% CI)")
     ax.legend()
@@ -281,10 +282,20 @@ def _make_figures(table: dict, out_dir: pathlib.Path) -> None:
             if not rows:
                 continue
             xs = [r["k"] for r in rows if r["reliance_test"]["reliance"] is not None]
-            ys = [r["reliance_test"]["reliance"] for r in rows
-                  if r["reliance_test"]["reliance"] is not None]
-            ax.plot(xs, ys, marker=markers[mode], color=colours[mode],
-                    label=mode, linewidth=2, markersize=7)
+            ys = [
+                r["reliance_test"]["reliance"]
+                for r in rows
+                if r["reliance_test"]["reliance"] is not None
+            ]
+            ax.plot(
+                xs,
+                ys,
+                marker=markers[mode],
+                color=colours[mode],
+                label=mode,
+                linewidth=2,
+                markersize=7,
+            )
         ax.set_xlabel("Number of in-context demonstrations (K)")
         ax.set_ylabel("Test-split colour reliance")
         ax.set_title("Dose-response: in-context shortcut acquisition")
@@ -307,9 +318,7 @@ def _render_markdown(table: dict) -> str:
     lines.append("## Capability gradient — overall TSR (all families, decision-focused)\n")
     lines.append("| Agent | Overall TSR [95% CI] | n |")
     lines.append("| --- | --- | --- |")
-    ranked = sorted(
-        table["agents"].items(), key=lambda kv: kv[1]["overall"]["mean"], reverse=True
-    )
+    ranked = sorted(table["agents"].items(), key=lambda kv: kv[1]["overall"]["mean"], reverse=True)
     for ag, data in ranked:
         o = data["overall"]
         lines.append(f"| {ag} | {o['mean']:.3f} [{o['lo']:.2f},{o['hi']:.2f}] | {o['n']} |")
@@ -342,8 +351,10 @@ def _render_markdown(table: dict) -> str:
             f"| {tr_rel if tr_rel is not None else '—'} "
             f"| {te_rel if te_rel is not None else '—'} |"
         )
-    lines.append("\n*Red-apply = fraction of episodes whose first apply-to-gate used a red tool. "
-                 "On TRAIN red is conductive (correct); on TEST red is a decoy (shortcut).*\n")
+    lines.append(
+        "\n*Red-apply = fraction of episodes whose first apply-to-gate used a red tool. "
+        "On TRAIN red is conductive (correct); on TEST red is a decoy (shortcut).*\n"
+    )
 
     # Few-shot in-context shortcut probe.
     fewshot = table.get("fewshot_reliance")
@@ -409,9 +420,7 @@ def _render_markdown(table: dict) -> str:
                 cells = []
                 for lv in levels:
                     d = oracle.get(lv, {}).get(ag, {}).get(fam)
-                    cells.append(
-                        f"{d['train']['mean']:.2f}→{d['test']['mean']:.2f}" if d else "—"
-                    )
+                    cells.append(f"{d['train']['mean']:.2f}→{d['test']['mean']:.2f}" if d else "—")
                 lines.append(f"| {ag} | " + " | ".join(cells) + " |")
     return "\n".join(lines)
 
@@ -439,10 +448,14 @@ def main(argv: list[str] | None = None) -> None:
         _log.error("no trace files matched")
         return
     fewshot = _expand(args.fewshot_traces) if args.fewshot_traces else None
-    analyze(paths, pathlib.Path(args.output_dir), fewshot_paths=fewshot,
-            fewshot_split=args.fewshot_split,
-            dose_dir=pathlib.Path(args.dose_dir) if args.dose_dir else None,
-            oracle_dir=pathlib.Path(args.oracle_dir) if args.oracle_dir else None)
+    analyze(
+        paths,
+        pathlib.Path(args.output_dir),
+        fewshot_paths=fewshot,
+        fewshot_split=args.fewshot_split,
+        dose_dir=pathlib.Path(args.dose_dir) if args.dose_dir else None,
+        oracle_dir=pathlib.Path(args.oracle_dir) if args.oracle_dir else None,
+    )
 
 
 if __name__ == "__main__":

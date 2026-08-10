@@ -64,8 +64,7 @@ def plot_shortcut_exposure(outcomes, *, families=None, agents=None, save_to=None
     n_fam = max(len(all_families), 1)
     ncols = min(2, n_fam)
     nrows = math.ceil(n_fam / ncols)
-    fig, axes = plt.subplots(nrows, ncols, figsize=(5.2 * ncols, 3.7 * nrows),
-                             squeeze=False)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(5.2 * ncols, 3.7 * nrows), squeeze=False)
     flat = list(axes.flat)
 
     for fi, fam in enumerate(all_families):
@@ -91,8 +90,9 @@ def plot_shortcut_exposure(outcomes, *, families=None, agents=None, save_to=None
     if all_families:
         flat[0].legend(loc="upper right")
     else:
-        flat[0].text(0.5, 0.5, "No data", ha="center", va="center",
-                     transform=flat[0].transAxes, color="gray")
+        flat[0].text(
+            0.5, 0.5, "No data", ha="center", va="center", transform=flat[0].transAxes, color="gray"
+        )
     for j in range(n_fam, nrows * ncols):  # hide unused grid cells
         flat[j].axis("off")
 
@@ -142,8 +142,9 @@ def plot_recombination_heatmap(outcomes, *, families=None, agents=None, save_to=
 
     for ax, split in [(ax_train, "train"), (ax_test, "test")]:
         if not all_agents or not all_families:
-            ax.text(0.5, 0.5, "No data", ha="center", va="center",
-                    transform=ax.transAxes, color="gray")
+            ax.text(
+                0.5, 0.5, "No data", ha="center", va="center", transform=ax.transAxes, color="gray"
+            )
             ax.set_title(split.capitalize())
             continue
 
@@ -166,8 +167,7 @@ def plot_recombination_heatmap(outcomes, *, families=None, agents=None, save_to=
                 v = matrix[ai, fi]
                 if not np.isnan(v):
                     color = "white" if v < 0.5 else "black"
-                    ax.text(fi, ai, f"{v:.2f}", ha="center", va="center",
-                            fontsize=12, color=color)
+                    ax.text(fi, ai, f"{v:.2f}", ha="center", va="center", fontsize=12, color=color)
 
         plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 
@@ -211,8 +211,7 @@ def plot_failure_map(steps, outcomes, *, agents=None, families=None, save_to=Non
     fig, ax = plt.subplots(figsize=(9, max(4.5, len(all_agents) * 0.7 + 2.0)))
 
     if not all_agents:
-        ax.text(0.5, 0.5, "No data", ha="center", va="center",
-                transform=ax.transAxes, color="gray")
+        ax.text(0.5, 0.5, "No data", ha="center", va="center", transform=ax.transAxes, color="gray")
         ax.set_title("Failure Mode Distribution")
         if save_to is not None:
             fig.savefig(save_to, dpi=300, bbox_inches="tight")
@@ -236,17 +235,25 @@ def plot_failure_map(steps, outcomes, *, agents=None, families=None, save_to=Non
         bars = ax.barh(all_agents, values, left=bottoms, color=color, label=mode)
         for bar, v, b in zip(bars, values, bottoms):
             if v > 0:
-                ax.text(b + v / 2, bar.get_y() + bar.get_height() / 2, str(v),
-                        ha="center", va="center", fontsize=11, color="white",
-                        fontweight="bold")
+                ax.text(
+                    b + v / 2,
+                    bar.get_y() + bar.get_height() / 2,
+                    str(v),
+                    ha="center",
+                    va="center",
+                    fontsize=11,
+                    color="white",
+                    fontweight="bold",
+                )
         bottoms = [b + v for b, v in zip(bottoms, values)]
 
     ax.set_xlabel("Episode count")
     ax.set_title("Failure Mode Distribution per Agent")
     # Legend below the axes so it never overlaps the bars (the longest bar reaches
     # the right edge, where an in-axes legend used to sit).
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12),
-              ncol=len(_FAILURE_MODES), framealpha=0.9)
+    ax.legend(
+        loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=len(_FAILURE_MODES), framealpha=0.9
+    )
     ax.invert_yaxis()
 
     if save_to is not None:

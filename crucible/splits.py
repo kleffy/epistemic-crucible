@@ -43,9 +43,7 @@ def assign_split(seed: int, train_ratio: float = 0.8) -> SplitLabel:
     return SplitLabel.TRAIN if float(rng.random()) < train_ratio else SplitLabel.TEST
 
 
-def split_seeds(
-    seeds: list[int], train_ratio: float = 0.8
-) -> dict[SplitLabel, list[int]]:
+def split_seeds(seeds: list[int], train_ratio: float = 0.8) -> dict[SplitLabel, list[int]]:
     """Partition a list of seeds into TRAIN and TEST groups."""
     result: dict[SplitLabel, list[int]] = {SplitLabel.TRAIN: [], SplitLabel.TEST: []}
     for s in seeds:

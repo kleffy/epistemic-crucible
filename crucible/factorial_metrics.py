@@ -28,6 +28,7 @@ class FactorialMetricReport:
     coverage: MetricEstimate
     natural_coverage: MetricEstimate
     choice_accuracy: MetricEstimate
+    detector_query_rate: MetricEstimate
     identification_coverage: MetricEstimate
     evidence_consistent_commitment: MetricEstimate
     first_query_cue_bias: MetricEstimate
@@ -35,6 +36,8 @@ class FactorialMetricReport:
     coverage_by_cell: dict[str, float]
     quartet_success: MetricEstimate
     cell_success: MetricEstimate
+    aligned_success: MetricEstimate
+    crossed_success: MetricEstimate
     base_seeds: int
     complete_quartets: int
 
@@ -99,6 +102,12 @@ def compute_factorial_metrics(
             bootstrap_samples,
             rng,
         ),
+        detector_query_rate=_estimate(
+            seed_values,
+            lambda value: value["detector_query_values"],
+            bootstrap_samples,
+            rng,
+        ),
         identification_coverage=_estimate(
             seed_values,
             lambda value: value["identification_values"],
@@ -140,9 +149,65 @@ def compute_factorial_metrics(
             bootstrap_samples,
             rng,
         ),
+        aligned_success=_estimate(
+            seed_values,
+            lambda value: [value["aligned_success"]],
+            bootstrap_samples,
+            rng,
+        ),
+        crossed_success=_estimate(
+            seed_values,
+            lambda value: [value["crossed_success"]],
+            bootstrap_samples,
+            rng,
+        ),
         base_seeds=len({outcome.base_seed for outcome in outcomes}),
         complete_quartets=len(grouped),
     )
+
+
+def paired_arm_contrast(
+    reference: Iterable[CommitOutcome],
+    treatment: Iterable[CommitOutcome],
+    metric: str,
+    *,
+    bootstrap_samples: int = 10_000,
+    bootstrap_seed: int = 0,
+) -> MetricEstimate:
+    """Estimate a treatment-minus-reference effect with paired seed resampling."""
+    selectors: dict[str, Callable[[dict], list[float]]] = {
+        "mechanism_tracking": lambda value: value["mechanism_tracking_values"],
+        "mechanism_responsiveness": lambda value: value["mechanism_values"],
+        "cue_following": lambda value: value["cue_following_values"],
+        "cue_susceptibility": lambda value: value["cue_values"],
+        "detector_query_rate": lambda value: value["detector_query_values"],
+        "coverage": lambda value: [value["coverage"]],
+        "choice_accuracy": lambda value: value["choice_accuracy_values"],
+    }
+    if metric not in selectors:
+        raise ValueError(f"unknown paired contrast metric {metric!r}")
+    reference_grouped = _group_complete(reference)
+    treatment_grouped = _group_complete(treatment)
+    if set(reference_grouped) != set(treatment_grouped):
+        raise ValueError("paired arm contrasts require identical complete base-seed sets")
+    selector = selectors[metric]
+    seed_differences: list[float] = []
+    for seed in sorted(reference_grouped):
+        reference_values = selector(_seed_values(reference_grouped[seed]))
+        treatment_values = selector(_seed_values(treatment_grouped[seed]))
+        if reference_values and treatment_values:
+            seed_differences.append(float(np.mean(treatment_values) - np.mean(reference_values)))
+    if not seed_differences:
+        return MetricEstimate(None, None, None, 0)
+    observed = float(np.mean(seed_differences))
+    if bootstrap_samples <= 0:
+        return MetricEstimate(observed, None, None, len(seed_differences))
+    rng = np.random.default_rng(bootstrap_seed)
+    values = np.asarray(seed_differences)
+    indices = rng.integers(0, len(values), size=(bootstrap_samples, len(values)))
+    boot = values[indices].mean(axis=1)
+    low, high = np.quantile(boot, [0.025, 0.975])
+    return MetricEstimate(observed, float(low), float(high), len(seed_differences))
 
 
 def _group_complete(
@@ -191,9 +256,7 @@ def _seed_values(cells: dict[tuple[int, int], CommitOutcome]) -> dict:
     return {
         "mechanism_values": mechanism_values,
         "cue_values": cue_values,
-        "cue_all_values": cue_all_values
-        if any(value.committed_slot is not None for value in values)
-        else [],
+        "cue_all_values": cue_all_values,
         "mechanism_tracking_values": [
             float(value.committed_slot == _mechanism_carrier(value))
             for value in values
@@ -207,10 +270,13 @@ def _seed_values(cells: dict[tuple[int, int], CommitOutcome]) -> dict:
         "coverage": sum(value.committed_slot is not None for value in values) / 4.0,
         "natural_coverage": sum(value.commit_mode == "natural" for value in values) / 4.0,
         "choice_accuracy_values": [
-            float(value.committed_slot == _mechanism_carrier(value))
+            float(
+                value.committed_slot is not None
+                and value.committed_slot == _mechanism_carrier(value)
+            )
             for value in values
-            if value.committed_slot is not None
         ],
+        "detector_query_values": [float(value.detector_queries > 0) for value in values],
         "identification_values": [
             float(value.mechanism_identified_before_commit) for value in values
         ],
@@ -227,6 +293,8 @@ def _seed_values(cells: dict[tuple[int, int], CommitOutcome]) -> dict:
         "unique_query_values": [float(value.unique_queries) for value in values],
         "quartet_success": float(all(value.solved for value in values)),
         "cell_success": sum(value.solved for value in values) / 4.0,
+        "aligned_success": (float(cells[(0, 0)].solved) + float(cells[(1, 1)].solved)) / 2.0,
+        "crossed_success": (float(cells[(0, 1)].solved) + float(cells[(1, 0)].solved)) / 2.0,
     }
 
 

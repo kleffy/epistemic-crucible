@@ -8,9 +8,11 @@ matching model label from ``configs/factorial_v02.yaml``.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import pathlib
 import platform
+import random
 import re
 import subprocess
 import sys
@@ -38,7 +40,10 @@ from crucible.factorial import (  # noqa: E402
     generate_affordance_quartet,
     run_scripted_control,
 )
-from crucible.factorial_metrics import compute_factorial_metrics  # noqa: E402
+from crucible.factorial_metrics import (  # noqa: E402
+    compute_factorial_metrics,
+    paired_arm_contrast,
+)
 from crucible.ledger import content_hash  # noqa: E402
 from crucible.metrics import challenge_profile  # noqa: E402
 from crucible.objects import ObjectType  # noqa: E402
@@ -116,7 +121,7 @@ def parse_macro_action(
 def build_factorial_fewshot_prefix(
     arm: str,
     *,
-    count: int = 5,
+    count: int = 6,
     base_seed: int = 9_000,
 ) -> list[dict[str, str]]:
     """Build cue or detector-evidence demonstrations without raw object IDs."""
@@ -124,29 +129,61 @@ def build_factorial_fewshot_prefix(
         return []
     if arm not in {"cue", "mechanism"}:
         raise ValueError(f"unknown demonstration arm {arm!r}")
-    lines: list[str] = []
-    for index in range(count):
-        quartet = generate_affordance_quartet(base_seed + index)
+    examples = build_factorial_demo_examples(arm, count=count, base_seed=base_seed)
+    return [
+        {
+            "role": "user",
+            "content": "Prior episodes:\n" + "\n".join(example["text"] for example in examples),
+        }
+    ]
+
+
+def build_factorial_demo_examples(
+    arm: str,
+    *,
+    count: int = 6,
+    base_seed: int = 9_000,
+) -> list[dict[str, Any]]:
+    """Return frozen, auditable six-shot demonstration examples."""
+    if arm not in {"cue", "mechanism"}:
+        raise ValueError(f"unknown demonstration arm {arm!r}")
+    if count != 6:
+        raise ValueError("v0.2 cue and mechanism demonstration arms require exactly six shots")
+    order = list(range(6))
+    random.Random(base_seed).shuffle(order)
+    examples: list[dict[str, Any]] = []
+    for display_index, source_index in enumerate(order, start=1):
         if arm == "cue":
-            slot = index % 2
-            cell = quartet.cell(slot, slot)
+            quartet = generate_affordance_quartet(base_seed + source_index)
+            local_slot = source_index % 2
+            cell = quartet.cell(local_slot, local_slot)
         else:
-            cell = quartet.cell(index % 2, (index // 2) % 2)
+            challenge = generate_affordance_challenge(base_seed)
+            conditions = [(mechanism, cue) for mechanism in range(3) for cue in range(2)]
+            cell = challenge.cell(*conditions[source_index])
         tools = [obj for obj in cell.task_spec.object_specs if obj.obj_type == ObjectType.TOOL]
         descriptions = ", ".join(f"{obj.color.value} {obj.shape.value} tool" for obj in tools)
         correct = tools[cell.mechanism_carrier_slot]
         if arm == "cue":
-            lines.append(
-                f"Example {index + 1}: available tools were {descriptions}; "
+            text = (
+                f"Example {display_index}: available tools were {descriptions}; "
                 "the red tool was applied and opened the gate."
             )
         else:
-            lines.append(
-                f"Example {index + 1}: available tools were {descriptions}; a detector "
+            text = (
+                f"Example {display_index}: available tools were {descriptions}; a detector "
                 f"marked the {correct.color.value} {correct.shape.value} tool "
                 "signal-positive, and that tool opened the gate."
             )
-    return [{"role": "user", "content": "Prior episodes:\n" + "\n".join(lines)}]
+        examples.append(
+            {
+                "text": text,
+                "source_index": source_index,
+                "condition_id": cell.condition_id,
+                "positive_color": correct.color.value,
+            }
+        )
+    return examples
 
 
 def run_controls(cfg: dict[str, Any], output_dir: pathlib.Path) -> dict[str, Any]:
@@ -160,6 +197,7 @@ def run_controls(cfg: dict[str, Any], output_dir: pathlib.Path) -> dict[str, Any
             "anti_cue",
             "fixed_slot",
             "random_committer",
+            "focal_uniform",
             "abstain",
         ],
     )
@@ -193,6 +231,10 @@ def run_local_model(
     cfg: dict[str, Any],
     model_cfg: dict[str, Any],
     output_dir: pathlib.Path,
+    *,
+    stage: str,
+    stage_manifest: dict[str, Any],
+    stage_manifest_hash: str,
 ) -> dict[str, Any]:
     """Run one pinned model already served by a local OpenAI-compatible endpoint."""
     model_id = str(model_cfg["id"])
@@ -225,6 +267,8 @@ def run_local_model(
         "serving": model_cfg.get("serving", {}),
         "server_launch_manifest_hash": content_hash(model_cfg.get("serving", {})),
         "runtime_hardware": _runtime_hardware(),
+        "stage": stage,
+        "stage_manifest_hash": stage_manifest_hash,
     }
     manifest_hash = content_hash(run_manifest)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -287,9 +331,9 @@ def run_local_model(
                 episode.protocol.ledger.record_message("assistant", record.response)
                 action, parse_status = parse_macro_action(record.response, candidates)
                 if action is None:
-                    episode.protocol.force_commit(0)
-                    action_record = {"kind": "forced_commit", "slot": 0}
-                    effect_text = "Invalid action parse; terminal fallback COMMIT(tool slot 0)."
+                    episode.protocol.terminate_without_commit("invalid_response")
+                    action_record = {"kind": "invalid_response", "slot": None}
+                    effect_text = "Invalid action parse; episode ended with A=⊥."
                     low_level_actions: list[dict] = []
                 else:
                     macro_result = episode.protocol.macro_step(action)
@@ -309,9 +353,11 @@ def run_local_model(
                     "user", f"Result of last action: {effect_text}"
                 )
                 step_record = {
+                    "kind": "step",
                     "schema_version": TRACE_SCHEMA_VERSION,
                     "protocol": PROTOCOL_NAME,
                     "run_manifest_hash": manifest_hash,
+                    "stage_manifest_hash": stage_manifest_hash,
                     "base_seed": episode.cell.task_spec.seed,
                     "base_world_id": episode.cell.task_spec.metadata["base_world_id"],
                     "condition": {
@@ -330,7 +376,7 @@ def run_local_model(
                     "action": action_record,
                     "low_level_actions": low_level_actions,
                     "parse_status": parse_status,
-                    "fallback_action": action_record if parse_status != "parsed" else None,
+                    "fallback_action": None,
                     "raw_provider_status": record.finish_reason,
                     "generation": record.to_dict(),
                 }
@@ -339,7 +385,12 @@ def run_local_model(
         for episode, outcome in zip(episodes, outcomes):
             handle.write(
                 json.dumps(
-                    _outcome_record(outcome, str(model_cfg["label"]), episode.arm),
+                    _outcome_record(
+                        outcome,
+                        str(model_cfg["label"]),
+                        episode.arm,
+                        stage_manifest_hash=stage_manifest_hash,
+                    ),
                     sort_keys=True,
                 )
                 + "\n"
@@ -357,11 +408,21 @@ def run_local_model(
             )
         else:
             arm_reports[arm["name"]] = asdict(compute_factorial_metrics(selected))
+        parse_failures = sum(outcome.done_reason == "invalid_response" for outcome in selected)
+        arm_reports[arm["name"]]["parse_failure_rate"] = {
+            "value": parse_failures / len(selected) if selected else 0.0,
+            "denominator": len(selected),
+        }
     summary = {
         "manifest": run_manifest,
         "manifest_hash": manifest_hash,
+        "stage_manifest": stage_manifest,
+        "stage_manifest_hash": stage_manifest_hash,
         "trace": str(trace_path),
         "reports": arm_reports,
+        "paired_contrasts": (
+            _paired_prompt_arm_contrasts(episodes, outcomes) if variant == "quartet_2x2" else {}
+        ),
     }
     (output_dir / f"factorial_{model_cfg['label']}_summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n"
@@ -378,6 +439,78 @@ def _repository_commit() -> str:
         text=True,
     )
     return completed.stdout.strip() if completed.returncode == 0 else "unknown"
+
+
+def _working_tree_clean() -> bool:
+    completed = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=_HERE,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return completed.returncode == 0 and not completed.stdout.strip()
+
+
+def _model_lock(model_cfg: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": model_cfg["id"],
+        "revision": model_cfg["revision"],
+        "tokenizer_revision": model_cfg.get("tokenizer_revision", model_cfg["revision"]),
+        "output_ceiling": int(model_cfg.get("output_ceiling", 1024)),
+        "generation": model_cfg.get("generation", {}),
+        "serving": model_cfg.get("serving", {}),
+    }
+
+
+def validate_stage_manifest(
+    stage: str,
+    manifest: dict[str, Any],
+    cfg: dict[str, Any],
+    model_cfg: dict[str, Any],
+    *,
+    repository_commit: str | None = None,
+    working_tree_clean: bool | None = None,
+) -> None:
+    """Fail closed when a staged run diverges from its declared manifest."""
+    if manifest.get("stage") != stage:
+        raise ValueError(f"manifest stage {manifest.get('stage')!r} does not match {stage!r}")
+    variant = str(cfg.get("variant", "quartet_2x2"))
+    expected_seeds = (
+        manifest.get("ceiling_variant_seeds")
+        if stage == "pilot" and variant == "challenge_3x2"
+        else manifest.get("base_seeds")
+    )
+    if [int(seed) for seed in cfg.get("seeds", [])] != [int(seed) for seed in expected_seeds or []]:
+        raise ValueError("configured base seeds do not match the stage manifest")
+    if stage != "confirmatory":
+        return
+    if manifest.get("frozen") is not True:
+        raise ValueError("confirmatory manifest must set frozen=true")
+    if cfg.get("prompt_arms") != manifest.get("prompt_arms"):
+        raise ValueError("configured prompt arms do not match the frozen manifest")
+    locked_models = manifest.get("models", {})
+    label = str(model_cfg["label"])
+    if locked_models.get(label) != _model_lock(model_cfg):
+        raise ValueError(f"model lock for {label!r} does not match the frozen manifest")
+    actual_commit = repository_commit if repository_commit is not None else _repository_commit()
+    if manifest.get("protocol_commit") != actual_commit:
+        raise ValueError("repository commit does not match frozen protocol_commit")
+    clean = working_tree_clean if working_tree_clean is not None else _working_tree_clean()
+    if not clean:
+        raise ValueError("confirmatory runs require a clean working tree")
+
+
+def load_stage_manifest(
+    path: pathlib.Path,
+    stage: str,
+    cfg: dict[str, Any],
+    model_cfg: dict[str, Any],
+) -> tuple[dict[str, Any], str]:
+    raw = path.read_bytes()
+    manifest = json.loads(raw)
+    validate_stage_manifest(stage, manifest, cfg, model_cfg)
+    return manifest, hashlib.sha256(raw).hexdigest()
 
 
 def _runtime_hardware() -> dict[str, Any]:
@@ -436,7 +569,7 @@ def _build_episodes(
                 continue
             prefix = build_factorial_fewshot_prefix(
                 str(arm["mode"]),
-                count=int(arm.get("count", 5)),
+                count=int(arm.get("count", 6)),
                 base_seed=int(arm.get("base_seed", 9_000)),
             )
             for cell in quartet.cells.values():
@@ -458,27 +591,62 @@ def _build_episodes(
 def _default_prompt_arms() -> list[dict[str, Any]]:
     return [
         {"name": "neutral", "mode": "neutral", "count": 0, "base_seed": 9_000},
-        {"name": "cue_a", "mode": "cue", "count": 5, "base_seed": 9_000},
-        {"name": "cue_b", "mode": "cue", "count": 5, "base_seed": 10_000},
+        {"name": "cue_a", "mode": "cue", "count": 6, "base_seed": 9_000},
+        {"name": "cue_b", "mode": "cue", "count": 6, "base_seed": 10_000},
         {
             "name": "mechanism_a",
             "mode": "mechanism",
-            "count": 5,
+            "count": 6,
             "base_seed": 11_000,
         },
         {
             "name": "mechanism_b",
             "mode": "mechanism",
-            "count": 5,
+            "count": 6,
             "base_seed": 12_000,
         },
     ]
+
+
+def _paired_prompt_arm_contrasts(
+    episodes: list[_StudyEpisode],
+    outcomes: list[CommitOutcome],
+) -> dict[str, dict[str, Any]]:
+    by_arm: dict[str, list[CommitOutcome]] = {}
+    for episode, outcome in zip(episodes, outcomes, strict=True):
+        by_arm.setdefault(episode.arm, []).append(outcome)
+    if "neutral" not in by_arm:
+        return {}
+    metrics = (
+        "cue_following",
+        "mechanism_tracking",
+        "detector_query_rate",
+        "coverage",
+        "choice_accuracy",
+    )
+    comparisons: list[tuple[str, str, str]] = []
+    for treatment in sorted(name for name in by_arm if name != "neutral"):
+        comparisons.append((f"{treatment}_minus_neutral", "neutral", treatment))
+    for suffix in ("a", "b"):
+        cue = f"cue_{suffix}"
+        mechanism = f"mechanism_{suffix}"
+        if cue in by_arm and mechanism in by_arm:
+            comparisons.append((f"{cue}_minus_{mechanism}", mechanism, cue))
+    return {
+        label: {
+            metric: asdict(paired_arm_contrast(by_arm[reference], by_arm[treatment], metric))
+            for metric in metrics
+        }
+        for label, reference, treatment in comparisons
+    }
 
 
 def _outcome_record(
     outcome: CommitOutcome,
     agent: str,
     arm: str | None = None,
+    *,
+    stage_manifest_hash: str | None = None,
 ) -> dict[str, Any]:
     ledger = list(outcome.trace)
     return {
@@ -487,6 +655,7 @@ def _outcome_record(
         "protocol": PROTOCOL_NAME,
         "agent": agent,
         "prompt_arm": arm,
+        "stage_manifest_hash": stage_manifest_hash,
         **{key: value for key, value in asdict(outcome).items() if key != "trace"},
         "episode_ledger": ledger,
         "episode_ledger_hash": content_hash(ledger),
@@ -498,6 +667,8 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--config", default="configs/factorial_v02.yaml")
     parser.add_argument("--controls", action="store_true")
     parser.add_argument("--model", help="Model label from the config; local server must match")
+    parser.add_argument("--stage", choices=("pilot", "confirmatory"))
+    parser.add_argument("--manifest", type=pathlib.Path)
     parser.add_argument("--output-dir", default="results/factorial_v02")
     args = parser.parse_args(argv)
     with pathlib.Path(args.config).open() as handle:
@@ -508,10 +679,22 @@ def main(argv: list[str] | None = None) -> None:
         return
     if not args.model:
         parser.error("choose --controls or provide --model LABEL")
+    if not args.stage or args.manifest is None:
+        parser.error("model runs require --stage and --manifest")
     models = {str(model["label"]): model for model in cfg.get("models", [])}
     if args.model not in models:
         parser.error(f"unknown model label {args.model!r}; choose from {sorted(models)}")
-    run_local_model(cfg, models[args.model], output_dir)
+    stage_manifest, stage_manifest_hash = load_stage_manifest(
+        args.manifest, args.stage, cfg, models[args.model]
+    )
+    run_local_model(
+        cfg,
+        models[args.model],
+        output_dir,
+        stage=args.stage,
+        stage_manifest=stage_manifest,
+        stage_manifest_hash=stage_manifest_hash,
+    )
 
 
 if __name__ == "__main__":

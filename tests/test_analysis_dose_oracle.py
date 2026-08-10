@@ -22,8 +22,11 @@ def _affordance_ids(seed: int, split: str) -> tuple[str | None, str]:
     """Return (a red tool id or None, the gate id) for one affordance instance."""
     spec = generate_task(TaskFamily.AFFORDANCE, seed=seed, split=SplitLabel(split))
     red = next(
-        (o.obj_id for o in spec.object_specs
-         if o.obj_type.value == "tool" and o.color.value == "red"),
+        (
+            o.obj_id
+            for o in spec.object_specs
+            if o.obj_type.value == "tool" and o.color.value == "red"
+        ),
         None,
     )
     gate = next(o.obj_id for o in spec.object_specs if o.obj_type.value == "gate")
@@ -49,15 +52,33 @@ def _write_condition(sub: pathlib.Path, *, n: int, use_red: bool, success: bool)
     for seed in seeds:
         red, gate = _affordance_ids(seed, "test")
         tool = red if use_red else f"{gate}__decoy"  # decoy id is never red
-        lines.append(json.dumps({
-            "kind": "step", "agent": AGENT, "family": "affordance", "split": "test",
-            "seed": seed, "episode": seed, "step": 0,
-            "action": {"kind": "apply", "args": {"tool_id": tool, "target_id": gate}},
-        }))
-        lines.append(json.dumps({
-            "kind": "outcome", "agent": AGENT, "family": "affordance", "split": "test",
-            "seed": seed, "episode": seed, "goal_achieved": success,
-        }))
+        lines.append(
+            json.dumps(
+                {
+                    "kind": "step",
+                    "agent": AGENT,
+                    "family": "affordance",
+                    "split": "test",
+                    "seed": seed,
+                    "episode": seed,
+                    "step": 0,
+                    "action": {"kind": "apply", "args": {"tool_id": tool, "target_id": gate}},
+                }
+            )
+        )
+        lines.append(
+            json.dumps(
+                {
+                    "kind": "outcome",
+                    "agent": AGENT,
+                    "family": "affordance",
+                    "split": "test",
+                    "seed": seed,
+                    "episode": seed,
+                    "goal_achieved": success,
+                }
+            )
+        )
     (sub / "trace.jsonl").write_text("\n".join(lines) + "\n")
 
 
@@ -93,11 +114,19 @@ def test_oracle_ladder_levels_and_gap(tmp_path):
         lines = []
         for seed in range(5):
             for split in ("train", "test"):
-                lines.append(json.dumps({
-                    "kind": "outcome", "agent": "sonnet", "family": "affordance",
-                    "split": split, "seed": seed, "episode": seed,
-                    "goal_achieved": success,
-                }))
+                lines.append(
+                    json.dumps(
+                        {
+                            "kind": "outcome",
+                            "agent": "sonnet",
+                            "family": "affordance",
+                            "split": split,
+                            "seed": seed,
+                            "episode": seed,
+                            "goal_achieved": success,
+                        }
+                    )
+                )
         (sub / "t.jsonl").write_text("\n".join(lines) + "\n")
 
     out = oracle_ladder(tmp_path)

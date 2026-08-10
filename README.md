@@ -54,12 +54,25 @@ python experiments/run_factorial_eval.py --controls
 python experiments/run_integrity_gate.py
 ```
 
+Model runs are stage-gated. A pilot invocation supplies the pilot config and manifest;
+confirmatory runs additionally require a frozen manifest, its exact protocol commit,
+and a clean worktree:
+
+```bash
+python experiments/run_factorial_eval.py \
+  --config configs/factorial_pilot_v02.yaml \
+  --model MODEL_LABEL \
+  --stage pilot \
+  --manifest configs/pilot_manifest.json
+```
+
 ## CI test commands
 
 ```bash
 pytest tests/ -v -m "not slow"   # fast suite (<5 s, excludes end-to-end runs)
 pytest tests/ -v                  # full suite including end-to-end runs (~60 s)
 ruff check .                      # lint
+ruff format --check .             # formatting
 ```
 
 ## Frozen v0.1 results (historical)

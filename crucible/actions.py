@@ -142,11 +142,7 @@ def _accessible(obj_id: str, world: WorldState) -> bool:
 
 
 def _has_free_cell(world: WorldState) -> bool:
-    occupied = {
-        obj.visible.pos
-        for obj in world.objects.values()
-        if obj.visible.pos is not None
-    }
+    occupied = {obj.visible.pos for obj in world.objects.values() if obj.visible.pos is not None}
     occupied.add(world.agent.pos)
     return any(
         (row, col) not in occupied

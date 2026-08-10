@@ -54,10 +54,16 @@ def plot_intervention_trace(
 
     from crucible.metrics import filter_records
 
-    plt.rcParams.update({
-        "font.size": 13, "axes.titlesize": 15, "axes.labelsize": 14,
-        "xtick.labelsize": 12, "ytick.labelsize": 12, "savefig.bbox": "tight",
-    })
+    plt.rcParams.update(
+        {
+            "font.size": 13,
+            "axes.titlesize": 15,
+            "axes.labelsize": 14,
+            "xtick.labelsize": 12,
+            "ytick.labelsize": 12,
+            "savefig.bbox": "tight",
+        }
+    )
     own_ax = ax is None
     if own_ax:
         fig, ax = plt.subplots(figsize=(8, 3.8))
@@ -67,8 +73,16 @@ def plot_intervention_trace(
     filtered = filter_records(steps, agent=agent, family=family)
 
     if not filtered:
-        ax.text(0.5, 0.5, "No data available", ha="center", va="center",
-                transform=ax.transAxes, fontsize=12, color="gray")
+        ax.text(
+            0.5,
+            0.5,
+            "No data available",
+            ha="center",
+            va="center",
+            transform=ax.transAxes,
+            fontsize=12,
+            color="gray",
+        )
         ax.set_title("Intervention Trace (no data)")
         if save_to is not None:
             fig.savefig(save_to, dpi=300, bbox_inches="tight")
@@ -98,8 +112,15 @@ def plot_intervention_trace(
         if action_kind in _INTERVENTION_KINDS:
             matrix[ep_i, step_i] = 2.0 if r.get("effects") else 1.0
 
-    im = ax.imshow(matrix, cmap="RdYlGn", vmin=0, vmax=2, aspect="auto", origin="upper",
-                   interpolation="nearest")
+    im = ax.imshow(
+        matrix,
+        cmap="RdYlGn",
+        vmin=0,
+        vmax=2,
+        aspect="auto",
+        origin="upper",
+        interpolation="nearest",
+    )
 
     cbar = fig.colorbar(im, ax=ax, ticks=[0, 1, 2], fraction=0.046, pad=0.04)
     cbar.ax.set_yticklabels(["none", "no effect", "effect"], fontsize=12)

@@ -51,7 +51,7 @@ class ChallengeProfile:
 
 
 def analytic_chance_point(k: int) -> dict[str, float]:
-    """Coordinates of independent uniform commitment over ``k`` slots."""
+    """Reference coordinates for independent uniform commitment over ``k`` slots."""
     if k < 2:
         raise ValueError("k must be at least 2")
     return {
@@ -120,8 +120,7 @@ def attribution_profile(records: Any) -> AttributionProfile:
         cue_pairs = [(choices[(mechanism, 0)], choices[(mechanism, 1)]) for mechanism in (0, 1)]
         if all(left is not None and right is not None for left, right in cue_pairs):
             cue_seed_values.append(float(np.mean([left != right for left, right in cue_pairs])))
-        if any(choice is not None for choice in choices.values()):
-            cue_all_seed_values.append(float(np.mean([left != right for left, right in cue_pairs])))
+        cue_all_seed_values.append(float(np.mean([left != right for left, right in cue_pairs])))
         quartet_values.append(float(all(bool(value.get("solved")) for value in cells.values())))
 
     def mean_or_none(values: list[float]) -> float | None:

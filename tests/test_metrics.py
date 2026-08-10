@@ -144,8 +144,11 @@ def test_filter_records_by_family():
 
 def test_task_success_rate_basic():
     outcomes = [
-        _outcome(True), _outcome(True), _outcome(True),
-        _outcome(False), _outcome(False),
+        _outcome(True),
+        _outcome(True),
+        _outcome(True),
+        _outcome(False),
+        _outcome(False),
     ]
     result = task_success_rate(outcomes)
     assert isinstance(result, MetricResult)
@@ -329,9 +332,9 @@ def test_intervention_efficiency_with_spec():
 def test_intervention_efficiency_oracle_longer_than_agent():
     # Oracle 10 steps, agent 2 → ratio capped at 1.0
     outcomes = [_outcome(True, steps=2)]
-    spec_mock = type("S", (), {
-        "solution_certificate": type("C", (), {"action_sequence": list(range(10))})()
-    })()
+    spec_mock = type(
+        "S", (), {"solution_certificate": type("C", (), {"action_sequence": list(range(10))})()}
+    )()
 
     def get_spec(family, seed, split):
         return spec_mock
@@ -389,7 +392,7 @@ def test_counterfactual_accuracy_behavioral_with_spec():
 
 def test_failure_diversity_distinct():
     outcomes = [
-        _outcome(False, steps=40, interventions=0, episode=0),   # timeout + no_interaction
+        _outcome(False, steps=40, interventions=0, episode=0),  # timeout + no_interaction
         _outcome(False, steps=5, interventions=1, illegal_rate=0.8, episode=1),  # high_illegal
     ]
     result = failure_diversity([], outcomes)
@@ -436,10 +439,9 @@ def test_curriculum_progression_flat():
 
 def test_curriculum_progression_improving():
     # First 5 seeds fail, next 5 succeed → positive slope
-    outcomes = (
-        [_outcome(False, seed=i, episode=i) for i in range(5)]
-        + [_outcome(True, seed=i + 5, episode=i + 5) for i in range(5)]
-    )
+    outcomes = [_outcome(False, seed=i, episode=i) for i in range(5)] + [
+        _outcome(True, seed=i + 5, episode=i + 5) for i in range(5)
+    ]
     result = curriculum_progression(outcomes, window=5)
     key = "affordance/random"
     slope = result.value[key]["slope"]

@@ -1,4 +1,4 @@
-"""Plot v0.2 attribution coordinates with the mandatory analytic chance point."""
+"""Plot v0.2 attribution coordinates with both analytic uniform references."""
 
 from __future__ import annotations
 
@@ -30,15 +30,19 @@ def plot_summary(summary_path: pathlib.Path, output: pathlib.Path) -> None:
             continue
         axis.scatter(mechanism, cue, s=48)
         axis.annotate(label, (mechanism, cue), xytext=(4, 4), textcoords="offset points")
-    chance = analytic_chance_point(3)
-    axis.scatter(
-        chance["mechanism_responsiveness"],
-        chance["cue_susceptibility"],
-        marker="x",
-        s=90,
-        color="black",
-        label="uniform 3-slot chance",
+    references = (
+        ("uniform over all 3 tools", analytic_chance_point(3), "x"),
+        ("uniform over red/blue focal tools", analytic_chance_point(2), "+"),
     )
+    for label, reference, marker in references:
+        axis.scatter(
+            reference["mechanism_responsiveness"],
+            reference["cue_susceptibility"],
+            marker=marker,
+            s=90,
+            color="black",
+            label=label,
+        )
     axis.set(xlim=(-0.03, 1.03), ylim=(-0.03, 1.03))
     axis.set_xlabel("Strict mechanism responsiveness")
     axis.set_ylabel("Cue susceptibility (committed pairs)")

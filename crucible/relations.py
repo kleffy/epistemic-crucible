@@ -18,6 +18,6 @@ class RelationKind(str, Enum):
 @dataclass
 class Relation:
     kind: RelationKind
-    subject: str   # obj_id or "agent"
-    object_: str   # obj_id, "agent", or "path"
+    subject: str  # obj_id or "agent"
+    object_: str  # obj_id, "agent", or "path"
     metadata: dict = field(default_factory=dict)

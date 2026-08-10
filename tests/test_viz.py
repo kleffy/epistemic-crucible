@@ -79,16 +79,32 @@ def _make_steps(
 def _minimal_trace(tmp_path: Path) -> Path:
     """Write a minimal valid JSONL trace to tmp_path and return its path."""
     step = {
-        "kind": "step", "episode": 0, "seed": 0, "family": "affordance",
-        "split": "train", "agent": "random", "step": 0,
-        "action": {"kind": "move", "args": {}}, "effects": [],
-        "legal": True, "energy": 100, "done": False,
+        "kind": "step",
+        "episode": 0,
+        "seed": 0,
+        "family": "affordance",
+        "split": "train",
+        "agent": "random",
+        "step": 0,
+        "action": {"kind": "move", "args": {}},
+        "effects": [],
+        "legal": True,
+        "energy": 100,
+        "done": False,
     }
     outcome = {
-        "kind": "outcome", "episode": 0, "seed": 0, "family": "affordance",
-        "split": "train", "agent": "random", "goal_achieved": False,
-        "steps": 1, "interventions": 0, "energy_remaining": 100,
-        "illegal_rate": 0.0, "unique_effects": [],
+        "kind": "outcome",
+        "episode": 0,
+        "seed": 0,
+        "family": "affordance",
+        "split": "train",
+        "agent": "random",
+        "goal_achieved": False,
+        "steps": 1,
+        "interventions": 0,
+        "energy_remaining": 100,
+        "illegal_rate": 0.0,
+        "unique_effects": [],
     }
     p = tmp_path / "trace.jsonl"
     p.write_text(json.dumps(step) + "\n" + json.dumps(outcome) + "\n")
@@ -230,9 +246,7 @@ def test_generate_report_has_seed_metadata(tmp_path: Path):
     from crucible.viz.reports import generate_report
 
     trace = _minimal_trace(tmp_path)
-    report_path = generate_report(
-        trace, output_dir=tmp_path, config={"families": ["affordance"]}
-    )
+    report_path = generate_report(trace, output_dir=tmp_path, config={"families": ["affordance"]})
     content = report_path.read_text()
     assert "affordance" in content
 
@@ -254,3 +268,12 @@ def test_generate_report_handles_empty_trace(tmp_path: Path):
     empty.write_text("")
     report_path = generate_report(empty, output_dir=tmp_path)
     assert report_path.exists()
+
+
+def test_task_tree_handles_splitless_factorial_spec():
+    from crucible.factorial import generate_affordance_quartet
+
+    spec = generate_affordance_quartet(0).cell(0, 1).task_spec
+    figure = plot_task_tree(spec)
+    assert "m0_c1" in figure.axes[0].texts[0].get_text()
+    plt.close(figure)

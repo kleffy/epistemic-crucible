@@ -52,8 +52,7 @@ def navigation_potential(world: WorldState, goal: GoalSpec, grid_size: int) -> f
     agent_pos = world.agent.pos
     inv = world.agent.inventory
     holds_tool = any(
-        i in world.objects and world.objects[i].visible.obj_type == ObjectType.TOOL
-        for i in inv
+        i in world.objects and world.objects[i].visible.obj_type == ObjectType.TOOL for i in inv
     )
     if not holds_tool:
         tool_positions = [

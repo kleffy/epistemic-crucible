@@ -543,6 +543,17 @@ class FactorialEpisode:
         )
         return self.outcome()
 
+    def terminate_without_commit(self, reason: str) -> CommitOutcome:
+        """End measurement with ``A=⊥`` without fabricating an environment action."""
+        if self.done or self.committed_slot is not None:
+            raise RuntimeError("episode already terminated")
+        if not reason:
+            raise ValueError("a non-empty termination reason is required")
+        self.done = True
+        self.done_reason = reason
+        self.ledger.append("termination", reason=reason, committed_slot=None)
+        return self.outcome()
+
     def outcome(self) -> CommitOutcome:
         solved = check_goal(self.cell.task_spec.goal, self.env.world)
         return CommitOutcome(
@@ -761,6 +772,12 @@ def run_scripted_control(
             cell.task_spec.seed * 10_007 + cell.mechanism_slot * 101 + cell.cue_slot * 17 + 31
         )
         slot = random.Random(control_seed).randrange(3)
+        return _run_direct_commit(cell, slot, compact_layout)
+    if control == "focal_uniform":
+        control_seed = (
+            cell.task_spec.seed * 10_009 + cell.mechanism_slot * 103 + cell.cue_slot * 19 + 37
+        )
+        slot = random.Random(control_seed).choice(cell.focal_slots)
         return _run_direct_commit(cell, slot, compact_layout)
     if control == "detector_policy":
         actions = compile_factorial_certificate(

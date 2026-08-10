@@ -26,14 +26,30 @@ _METRIC_ORDER = [
 _PLOTS = [
     # (plot_name, module, function, args_builder)
     # args_builder receives (steps, outcomes) and returns positional args tuple
-    ("intervention_trace", "crucible.viz.traces", "plot_intervention_trace",
-     lambda steps, outcomes: (steps,)),
-    ("shortcut_exposure", "crucible.viz.heatmaps", "plot_shortcut_exposure",
-     lambda steps, outcomes: (outcomes,)),
-    ("recombination_heatmap", "crucible.viz.heatmaps", "plot_recombination_heatmap",
-     lambda steps, outcomes: (outcomes,)),
-    ("failure_map", "crucible.viz.heatmaps", "plot_failure_map",
-     lambda steps, outcomes: (steps, outcomes)),
+    (
+        "intervention_trace",
+        "crucible.viz.traces",
+        "plot_intervention_trace",
+        lambda steps, outcomes: (steps,),
+    ),
+    (
+        "shortcut_exposure",
+        "crucible.viz.heatmaps",
+        "plot_shortcut_exposure",
+        lambda steps, outcomes: (outcomes,),
+    ),
+    (
+        "recombination_heatmap",
+        "crucible.viz.heatmaps",
+        "plot_recombination_heatmap",
+        lambda steps, outcomes: (outcomes,),
+    ),
+    (
+        "failure_map",
+        "crucible.viz.heatmaps",
+        "plot_failure_map",
+        lambda steps, outcomes: (steps, outcomes),
+    ),
 ]
 
 
@@ -117,6 +133,7 @@ def generate_report(trace_path, *, output_dir=None, config=None) -> Path:
     plot_paths: dict[str, Path] = {}
     try:
         import matplotlib.pyplot as plt
+
         _has_mpl = True
     except ImportError:
         _has_mpl = False
@@ -138,8 +155,9 @@ def generate_report(trace_path, *, output_dir=None, config=None) -> Path:
     # Build markdown
     lines: list[str] = []
     lines.append("# Epistemic Crucible Evaluation Report\n")
-    lines.append("**No aggregate score is reported.** "
-                 "The metric vector below must be read as a whole.\n")
+    lines.append(
+        "**No aggregate score is reported.** The metric vector below must be read as a whole.\n"
+    )
 
     lines.append(f"- **Trace**: `{trace_path.name}`")
     lines.append(f"- **Generated**: {datetime.now().isoformat(timespec='seconds')}\n")

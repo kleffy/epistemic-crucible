@@ -71,11 +71,7 @@ def _print_report(report: dict) -> None:
     print(header)
     print(sep)
     for name, result in report.items():
-        row = (
-            f"{name:<{col[0]}} "
-            f"{_format_value(result.value):<{col[1]}} "
-            f"{result.count:<{col[2]}}"
-        )
+        row = f"{name:<{col[0]}} {_format_value(result.value):<{col[1]}} {result.count:<{col[2]}}"
         print(row)
     print(sep)
 
@@ -129,9 +125,7 @@ def main(argv: list[str] | None = None) -> dict[str, pathlib.Path]:
 
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     report_path = out_dir / f"diagnostic_{timestamp}_report.json"
-    report_path.write_text(
-        json.dumps({name: r.to_dict() for name, r in report.items()}, indent=2)
-    )
+    report_path.write_text(json.dumps({name: r.to_dict() for name, r in report.items()}, indent=2))
     print(f"\nReport → {report_path}")
 
     return {"trace": trace_path, "report": report_path}

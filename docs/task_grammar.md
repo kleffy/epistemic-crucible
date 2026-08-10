@@ -75,6 +75,6 @@ Splits are assigned deterministically per seed using a separate RNG stream (`see
 ```python
 from crucible.splits import assign_split, split_seeds, SplitLabel
 
-label = assign_split(seed=42)        # TRAIN or TEST
+label = assign_split(seed=42)  # TRAIN or TEST
 groups = split_seeds(list(range(100)), train_ratio=0.8)
 ```

@@ -2,10 +2,44 @@
   "manifest_version": "0.2",
   "stage": "confirmatory",
   "frozen": false,
+  "protocol_commit": null,
   "freeze_deadline": "2026-08-23",
-  "base_seeds": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63],
+  "base_seeds": [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163],
   "zero_shot_seed_count": 64,
-  "demonstration_seed_count": 32,
+  "demonstration_seed_count": 64,
+  "prompt_arms": [
+    {"name": "neutral", "mode": "neutral", "count": 0, "base_seed": 9000, "seed_count": 64},
+    {"name": "cue_a", "mode": "cue", "count": 6, "base_seed": 9000, "seed_count": 64},
+    {"name": "cue_b", "mode": "cue", "count": 6, "base_seed": 10000, "seed_count": 64},
+    {"name": "mechanism_a", "mode": "mechanism", "count": 6, "base_seed": 11000, "seed_count": 64},
+    {"name": "mechanism_b", "mode": "mechanism", "count": 6, "base_seed": 12000, "seed_count": 64}
+  ],
+  "models": {
+    "gpt-oss-20b": {
+      "id": "openai/gpt-oss-20b",
+      "revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
+      "tokenizer_revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
+      "output_ceiling": 1024,
+      "generation": {},
+      "serving": {"quantization": "mxfp4", "response_format": "harmony", "reasoning_parser": "openai_gptoss", "max_model_len": 8192, "vllm_version": "0.26.0"}
+    },
+    "qwen3.6-27b": {
+      "id": "Qwen/Qwen3.6-27B",
+      "revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+      "tokenizer_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+      "output_ceiling": 1024,
+      "generation": {"extra_body": {"chat_template_kwargs": {"enable_thinking": false}}},
+      "serving": {"quantization": "bitsandbytes-nf4", "language_model_only": true, "reasoning_parser": "qwen3", "chat_template": "qwen3.6", "max_model_len": 8192, "vllm_version": "0.26.0"}
+    },
+    "mistral-small-3.2-24b": {
+      "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+      "revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+      "tokenizer_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+      "output_ceiling": 1024,
+      "generation": {},
+      "serving": {"quantization": "bitsandbytes-nf4", "chat_template": "mistral", "max_model_len": 8192, "vllm_version": "0.26.0"}
+    }
+  },
   "demonstration_pools": {
     "cue": [9000, 10000],
     "mechanism": [11000, 12000],
@@ -22,5 +56,7 @@
     "unit": "base seed",
     "demonstration_analysis": "resample base seed and treat each fixed demonstration pool as a replication"
   },
+  "primary_preflight_outcomes": ["detector_query_rate", "parse_failure_rate", "mechanism_tracking", "cue_following", "coverage"],
+  "ceiling_variant_promotion_rule": "Promote the 3x2 challenge to the primary confirmatory study if any pilot model has neutral-arm mechanism tracking >=0.90 with detector query rate >=0.80 on the 2x2 assay, indicating attribution ceiling after investigation.",
   "integrity_repair_rule": "Any post-freeze defect requires a complete rerun of every affected confirmatory condition"
 }

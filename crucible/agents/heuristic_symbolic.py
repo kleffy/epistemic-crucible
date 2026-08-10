@@ -51,9 +51,7 @@ class HeuristicAgent(Agent):
         self._visited.add(agent_pos)
 
         # 1. If holding an actor (tool/key) and a closed gate is accessible → APPLY.
-        held_actors = [
-            oid for oid in inventory if objects.get(oid, {}).get("type") in _ACTOR_TYPES
-        ]
+        held_actors = [oid for oid in inventory if objects.get(oid, {}).get("type") in _ACTOR_TYPES]
         closed_gates = [
             oid
             for oid, o in objects.items()
@@ -90,9 +88,7 @@ class HeuristicAgent(Agent):
             return Action(kind=ActionKind.PICKUP, args={"obj_id": at_pos[0]})
 
         # 3. SOURCE held + key/block adjacent → APPLY source to it.
-        held_sources = [
-            oid for oid in inventory if objects.get(oid, {}).get("type") == "source"
-        ]
+        held_sources = [oid for oid in inventory if objects.get(oid, {}).get("type") == "source"]
         if held_sources:
             source_id = held_sources[0]
             for oid, o in objects.items():
@@ -123,9 +119,7 @@ class HeuristicAgent(Agent):
 
         return Action(kind=ActionKind.WAIT, args={})
 
-    def _move_toward(
-        self, agent_pos: tuple[int, int], target: tuple[int, int]
-    ) -> Action | None:
+    def _move_toward(self, agent_pos: tuple[int, int], target: tuple[int, int]) -> Action | None:
         dr = target[0] - agent_pos[0]
         dc = target[1] - agent_pos[1]
         if dr < 0:

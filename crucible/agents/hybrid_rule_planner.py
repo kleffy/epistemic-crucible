@@ -99,9 +99,7 @@ class HybridRulePlannerAgent(Agent):
 
         # 1. If holding a high-belief actor and a closed gate is accessible → APPLY.
         held_actors = [
-            oid
-            for oid in inventory
-            if objects.get(oid, {}).get("type") in {"tool", "key"}
+            oid for oid in inventory if objects.get(oid, {}).get("type") in {"tool", "key"}
         ]
         held_actors.sort(key=lambda oid: self._belief(oid, "conductivity"), reverse=True)
         closed_gates = [
@@ -170,9 +168,7 @@ class HybridRulePlannerAgent(Agent):
         self._last_action = action
         return action
 
-    def _move_toward(
-        self, agent_pos: tuple[int, int], target: tuple[int, int]
-    ) -> Action | None:
+    def _move_toward(self, agent_pos: tuple[int, int], target: tuple[int, int]) -> Action | None:
         dr = target[0] - agent_pos[0]
         dc = target[1] - agent_pos[1]
         if dr < 0:

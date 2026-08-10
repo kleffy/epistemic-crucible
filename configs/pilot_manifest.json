@@ -7,7 +7,8 @@
   "ceiling_variant_seeds": [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011],
   "selection_rules": {
     "output_ceiling": "Smallest per-model ceiling with <1% length-related finishes and plateaued action-parse rate",
-    "ceiling_variant": "Use 3x2 if the 2x2 primary assay is saturated in the pilot"
+    "query_mediator": "Detector query rate is a primary preflight outcome; stop before confirmation if cue/mechanism prefixes do not move investigation or attribution coordinates",
+    "ceiling_variant": "Promote 3x2 to primary if any pilot model has neutral-arm mechanism tracking >=0.90 with detector query rate >=0.80 on 2x2"
   },
   "prohibited_uses": ["confirmatory effect estimation", "claim selection"]
 }

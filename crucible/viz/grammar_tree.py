@@ -45,12 +45,23 @@ def plot_task_tree(spec, *, ax=None, title=None, save_to=None):
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    _node_kw = dict(ha="center", va="center", fontsize=8, wrap=True,
-                    bbox=dict(boxstyle="round,pad=0.4", facecolor="lightyellow", edgecolor="gray"))
+    _node_kw = dict(
+        ha="center",
+        va="center",
+        fontsize=8,
+        wrap=True,
+        bbox=dict(boxstyle="round,pad=0.4", facecolor="lightyellow", edgecolor="gray"),
+    )
 
     # Root node
     root_x, root_y = 0.5, 0.88
-    root_label = f"{spec.family.value}\nseed={spec.seed}  ({spec.split.value})"
+    if spec.split is not None:
+        partition = spec.split.value
+    else:
+        partition = spec.metadata.get(
+            "condition_id", spec.metadata.get("protocol_id", "unpartitioned")
+        )
+    root_label = f"{spec.family.value}\nseed={spec.seed}  ({partition})"
     ax.text(root_x, root_y, root_label, **_node_kw)
 
     # Goal node
@@ -63,8 +74,7 @@ def plot_task_tree(spec, *, ax=None, title=None, save_to=None):
     # Constraints node
     con_x, con_y = 0.82, 0.62
     con_label = (
-        f"Constraints\nsteps≤{spec.constraints.max_steps}"
-        f"\nenergy={spec.constraints.energy_budget}"
+        f"Constraints\nsteps≤{spec.constraints.max_steps}\nenergy={spec.constraints.energy_budget}"
     )
     ax.text(con_x, con_y, con_label, **_node_kw)
     _edge(ax, root_x, root_y, con_x, con_y)
@@ -90,7 +100,9 @@ def plot_task_tree(spec, *, ax=None, title=None, save_to=None):
 
 def _edge(ax, x1, y1, x2, y2):
     ax.annotate(
-        "", xy=(x2, y2), xytext=(x1, y1),
+        "",
+        xy=(x2, y2),
+        xytext=(x1, y1),
         arrowprops=dict(arrowstyle="-", color="gray", lw=1.0),
         annotation_clip=False,
     )

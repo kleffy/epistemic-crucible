@@ -25,9 +25,7 @@ def test_counterfactual_pair_differs_by_exactly_declared_delta():
     spec = generate_task(TaskFamily.AFFORDANCE, seed=24, split=SplitLabel.TRAIN)
     pair = generate_counterfactual_pair(spec)
 
-    assert changed_state_paths(pair.factual, pair.counterfactual) == [
-        pair.delta.field_path
-    ]
+    assert changed_state_paths(pair.factual, pair.counterfactual) == [pair.delta.field_path]
 
 
 def test_visible_preserving_latent_delta_has_identical_public_state():

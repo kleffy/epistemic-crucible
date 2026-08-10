@@ -264,9 +264,7 @@ def run_model(model_id: str, backend_name: str, cfg: dict, out_dir: pathlib.Path
                 effects = info.get("effects", [])
                 if effects:
                     anon = anonymize_text(str(effects), e.label_map)
-                    e.history.append(
-                        {"role": "user", "content": f"Result of last action: {anon}"}
-                    )
+                    e.history.append({"role": "user", "content": f"Result of last action: {anon}"})
                 e.obs = obs_after
                 e.step_i += 1
                 if check_goal(e.spec.goal, e.env.world) or done:
@@ -285,8 +283,14 @@ def run_model(model_id: str, backend_name: str, cfg: dict, out_dir: pathlib.Path
         "elapsed_sec": round(time.time() - t0, 1),
         "trace": str(jsonl_path),
     }
-    _log.info("model=%s tsr=%.3f (%d/%d) in %.0fs", label, summary["tsr"], solved, len(episodes),
-              summary["elapsed_sec"])
+    _log.info(
+        "model=%s tsr=%.3f (%d/%d) in %.0fs",
+        label,
+        summary["tsr"],
+        solved,
+        len(episodes),
+        summary["elapsed_sec"],
+    )
     return summary
 
 
@@ -308,13 +312,16 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--fewshot-k", type=int, help="Few-shot probe: K solved TRAIN demos")
     p.add_argument("--fewshot-split", default="test", help="Few-shot probe eval split")
     p.add_argument(
-        "--fewshot-mode", default="cue", choices=["cue", "mechanistic", "anticue"],
+        "--fewshot-mode",
+        default="cue",
+        choices=["cue", "mechanistic", "anticue"],
         help="Demonstration style for the few-shot/dose-response probe",
     )
     p.add_argument("--quantization", choices=["4bit"], help="Local model quantization")
     p.add_argument("--batch-size", type=int, help="Local generation batch size")
     p.add_argument(
-        "--oracle", choices=["intervention", "property", "rule"],
+        "--oracle",
+        choices=["intervention", "property", "rule"],
         help="Oracle-ladder ablation: inject a labelled ground-truth hint",
     )
     p.add_argument("--output-dir", default="results")
@@ -336,7 +343,9 @@ def main(argv: list[str] | None = None) -> None:
         cfg["eval_splits"] = ["train", "test"]
     if args.fewshot_k is not None:
         cfg["fewshot"] = {
-            "k": args.fewshot_k, "split": args.fewshot_split, "mode": args.fewshot_mode,
+            "k": args.fewshot_k,
+            "split": args.fewshot_split,
+            "mode": args.fewshot_mode,
         }
     if args.quantization:
         cfg["quantization"] = args.quantization

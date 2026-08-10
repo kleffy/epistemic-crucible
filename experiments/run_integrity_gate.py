@@ -165,6 +165,12 @@ def run_integrity_gate(
         for cell in generate_affordance_quartet(seed).cells.values()
     ]
     control_reports["random_committer"] = asdict(compute_factorial_metrics(random_outcomes))
+    focal_outcomes = [
+        run_scripted_control(cell, "focal_uniform")
+        for seed in range(control_seeds)
+        for cell in generate_affordance_quartet(seed).cells.values()
+    ]
+    control_reports["focal_uniform"] = asdict(compute_factorial_metrics(focal_outcomes))
 
     report = {
         "schema_version": "0.2",
@@ -193,7 +199,10 @@ def run_integrity_gate(
             "cue_carrier": cue_carrier_counts,
         },
         "controls": control_reports,
-        "analytic_chance_point_uniform_three_slots": analytic_chance_point(3),
+        "analytic_uniform_reference_points": {
+            "all_three_tools": analytic_chance_point(3),
+            "red_blue_focal_tools": analytic_chance_point(2),
+        },
         "violations": violations,
         "elapsed_seconds": round(time.time() - started, 3),
     }

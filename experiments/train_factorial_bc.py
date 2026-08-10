@@ -84,7 +84,7 @@ def collect_matched_demonstrations(
     return demos
 
 
-def evaluate_agent(agent: NeuralPPOAgent, seeds: list[int]) -> dict:
+def evaluate_agent_outcomes(agent: NeuralPPOAgent, seeds: list[int]):
     outcomes = []
     for seed in seeds:
         for cell in generate_affordance_quartet(seed).cells.values():
@@ -97,6 +97,11 @@ def evaluate_agent(agent: NeuralPPOAgent, seeds: list[int]) -> dict:
                 assert index is not None
                 episode.macro_step(macro_actions[index])
             outcomes.append(episode.outcome())
+    return outcomes
+
+
+def evaluate_agent(agent: NeuralPPOAgent, seeds: list[int]) -> dict:
+    outcomes = evaluate_agent_outcomes(agent, seeds)
     return asdict(compute_factorial_metrics(outcomes))
 
 
