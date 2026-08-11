@@ -36,7 +36,7 @@
     }
   ],
   "platform": "Linux-6.17.0-14-generic-x86_64-with-glibc2.39",
-  "protocol_commit": "dfa7c96e7841c00ed564ef292bd2f6fb0cefa053",
+  "protocol_commit": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
   "python": "3.12.12",
   "schema_version": "0.2",
   "source_files": {

@@ -1,8 +1,11 @@
 {
   "manifest_version": "0.2",
   "stage": "confirmatory",
-  "frozen": false,
-  "protocol_commit": null,
+  "frozen": true,
+  "protocol_commit": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
+  "protocol_tag": "v0.2-protocol-rc2",
+  "freeze_tag": "v0.2-confirmatory-freeze-20260811",
+  "freeze_date": "2026-08-11",
   "freeze_deadline": "2026-08-23",
   "execution_mode": "live_acquisition",
   "variant": "challenge_3x2",

@@ -508,10 +508,11 @@ def test_confirmatory_manifest_fails_closed_until_frozen_and_exact():
         config = yaml.safe_load(handle)
     manifest = json.loads(open("configs/confirmatory_manifest.json").read())
     model = config["models"][0]
+    unfrozen = {**manifest, "frozen": False, "protocol_commit": None}
     with pytest.raises(ValueError, match="frozen=true"):
         validate_stage_manifest(
             "confirmatory",
-            manifest,
+            unfrozen,
             config,
             model,
             repository_commit="abc123",
