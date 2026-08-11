@@ -1,8 +1,8 @@
-# Pre-registered 3x2 ceiling-risk pilot; seeds are disjoint from confirmation.
+# Planned 3x2 ceiling-risk pilot; seeds are disjoint from confirmation.
 variant: challenge_3x2
 base_url: http://127.0.0.1:8000/v1
 execution_mode: live_acquisition
-concurrency: 8
+concurrency: 1
 serving_validation:
   minimum_replicated_prompt_groups: 1
   minimum_initial_mechanism_axis_groups: 24
@@ -15,5 +15,69 @@ seeds: [2000, 2001, 2002, 2003, 2004, 2005,
         2006, 2007, 2008, 2009, 2010, 2011]
 prompt_arms:
   - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 12}
-# Copy one pinned model entry from factorial_v02.yaml after local preflight.
-models: []
+# Qwen met the 2x2 promotion rule in the valid serial pilot. Its final
+# 2048-token serial ceiling was selected solely from matched length/parse
+# diagnostics after batch-size-4 exposed hard tails at 1536.
+models:
+  - label: qwen3.6-27b
+    id: Qwen/Qwen3.6-27B
+    revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    tokenizer_revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    output_ceiling: 2048
+    serving:
+      backend: transformers
+      quantization: bitsandbytes-nf4
+      bitsandbytes_version: 0.50.0
+      dtype: bfloat16
+      device: cuda
+      batch_size: 1
+      language_model_only: true
+      chat_template: model-default@pinned-revision
+      engine_seed: 0
+      do_sample: false
+      transformers_version: 5.15.0
+      torch_version: 2.11.0+cu130
+      failed_backend_record: results/reference/v02/qwen_vllm_serving_preflight.json
+      environment:
+        CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+        PYTHONHASHSEED: "0"
+    generation:
+      seed: 0
+      extra_body:
+        chat_template_kwargs: {enable_thinking: false}
+
+  # Mistral independently met the same promotion rule. Its 1024-token ceiling
+  # had zero length finishes and zero parse failures in the five-arm pilot.
+  - label: mistral-small-3.2-24b
+    id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    tokenizer_revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    output_ceiling: 1024
+    serving:
+      backend: openai
+      quantization: bitsandbytes-nf4
+      bitsandbytes_version: 0.50.0
+      dtype: bfloat16
+      language_model_only: true
+      tokenizer_mode: mistral
+      chat_template: model-default@pinned-revision
+      load_format: bitsandbytes
+      ignore_patterns: [consolidated.safetensors]
+      generation_config: vllm
+      launch_script: experiments/serve_mistral_v02.sh
+      engine_seed: 0
+      batch_invariant_requested: true
+      enforce_eager: true
+      prefix_caching: false
+      async_scheduling: false
+      chunked_prefill: true
+      environment:
+        CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+        PYTHONHASHSEED: "0"
+        VLLM_BATCH_INVARIANT: "1"
+      max_model_len: 8192
+      max_num_seqs: 8
+      vllm_version: 0.26.0
+      ninja_version: 1.13.0
+    generation:
+      seed: 0

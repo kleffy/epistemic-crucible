@@ -5,7 +5,8 @@
   "protocol_commit": null,
   "freeze_deadline": "2026-08-23",
   "execution_mode": "live_acquisition",
-  "concurrency": 8,
+  "variant": "challenge_3x2",
+  "concurrency": 1,
   "serving_validation": {
     "minimum_replicated_prompt_groups": 1,
     "minimum_initial_mechanism_axis_groups": 640,
@@ -25,30 +26,30 @@
     {"name": "mechanism_a", "mode": "mechanism", "count": 6, "base_seed": 11000, "seed_count": 64},
     {"name": "mechanism_b", "mode": "mechanism", "count": 6, "base_seed": 12000, "seed_count": 64}
   ],
-  "models": {
+  "selected_models": ["qwen3.6-27b", "mistral-small-3.2-24b"],
+  "excluded_models": {
     "gpt-oss-20b": {
-      "id": "openai/gpt-oss-20b",
-      "revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
-      "tokenizer_revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
-      "output_ceiling": 1024,
-      "generation": {"reasoning_effort": "low", "seed": 0},
-      "serving": {"quantization": "mxfp4", "response_format": "harmony", "reasoning_parser": "openai_gptoss", "chat_template": "model-default@pinned-revision", "load_format": "safetensors", "launch_script": "experiments/serve_gpt_oss_v02.sh", "engine_seed": 0, "batch_invariant_requested": true, "batch_invariant_validated": false, "preflight_status": "blocked-on-pinned-stack", "preflight_record": "results/reference/v02/gpt_oss_serving_preflight.json", "mxfp4_backend": "emulation", "amd_quark_version": "0.12.post1", "enforce_eager": true, "prefix_caching": false, "async_scheduling": false, "chunked_prefill": true, "environment": {"PATH_prepend": ".venv/bin", "CUBLAS_WORKSPACE_CONFIG": ":4096:8", "PYTHONHASHSEED": "0", "VLLM_BATCH_INVARIANT": "1"}, "max_model_len": 8192, "vllm_version": "0.26.0"}
-    },
+      "reason": "Pinned serving configurations violated the deterministic-policy gate before inferential analysis.",
+      "preflight_record": "results/reference/v02/gpt_oss_serving_preflight.json",
+      "scientific_metrics_reported": false
+    }
+  },
+  "models": {
     "qwen3.6-27b": {
       "id": "Qwen/Qwen3.6-27B",
       "revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
       "tokenizer_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
-      "output_ceiling": 1024,
-      "generation": {"extra_body": {"chat_template_kwargs": {"enable_thinking": false}}},
-      "serving": {"quantization": "bitsandbytes-nf4", "language_model_only": true, "reasoning_parser": "qwen3", "chat_template": "qwen3.6", "max_model_len": 8192, "vllm_version": "0.26.0"}
+      "output_ceiling": 2048,
+      "generation": {"seed": 0, "extra_body": {"chat_template_kwargs": {"enable_thinking": false}}},
+      "serving": {"backend": "transformers", "quantization": "bitsandbytes-nf4", "bitsandbytes_version": "0.50.0", "dtype": "bfloat16", "device": "cuda", "batch_size": 1, "language_model_only": true, "chat_template": "model-default@pinned-revision", "engine_seed": 0, "do_sample": false, "transformers_version": "5.15.0", "torch_version": "2.11.0+cu130", "failed_backend_record": "results/reference/v02/qwen_vllm_serving_preflight.json", "environment": {"CUBLAS_WORKSPACE_CONFIG": ":4096:8", "PYTHONHASHSEED": "0"}}
     },
     "mistral-small-3.2-24b": {
       "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
       "revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
       "tokenizer_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
       "output_ceiling": 1024,
-      "generation": {},
-      "serving": {"quantization": "bitsandbytes-nf4", "chat_template": "mistral", "max_model_len": 8192, "vllm_version": "0.26.0"}
+      "generation": {"seed": 0},
+      "serving": {"backend": "openai", "quantization": "bitsandbytes-nf4", "bitsandbytes_version": "0.50.0", "dtype": "bfloat16", "language_model_only": true, "tokenizer_mode": "mistral", "chat_template": "model-default@pinned-revision", "load_format": "bitsandbytes", "ignore_patterns": ["consolidated.safetensors"], "generation_config": "vllm", "launch_script": "experiments/serve_mistral_v02.sh", "engine_seed": 0, "batch_invariant_requested": true, "enforce_eager": true, "prefix_caching": false, "async_scheduling": false, "chunked_prefill": true, "environment": {"CUBLAS_WORKSPACE_CONFIG": ":4096:8", "PYTHONHASHSEED": "0", "VLLM_BATCH_INVARIANT": "1"}, "max_model_len": 8192, "max_num_seqs": 8, "vllm_version": "0.26.0", "ninja_version": "1.13.0"}
     }
   },
   "demonstration_pools": {
@@ -57,17 +58,19 @@
     "interpretation": "Two fixed replications; no population-level claim over arbitrary demonstration pools"
   },
   "smallest_effect_of_interest": {
-    "mechanism_tracking": 0.15,
-    "cue_tracking": 0.15
+    "mechanism_accuracy": 0.15,
+    "cue_following": 0.15
   },
   "informative_null_rule": "A null is informative only when its interval excludes an absolute effect of 0.15",
-  "estimability_rule": "At least two model policies yield at least 30 complete paired quartets",
+  "estimability_rule": "At least two model policies yield at least 30 complete paired six-cell blocks",
   "bootstrap": {
     "resamples": 10000,
     "unit": "base seed",
     "demonstration_analysis": "resample base seed and treat each fixed demonstration pool as a replication"
   },
-  "primary_preflight_outcomes": ["detector_query_rate", "parse_failure_rate", "mechanism_tracking", "cue_following", "coverage"],
+  "primary_metrics": ["mechanism_accuracy", "cue_susceptibility", "cue_following", "detector_query_rate", "coverage", "all_cells_success", "cell_success"],
+  "primary_preflight_outcomes": ["detector_query_rate", "parse_failure_rate", "mechanism_accuracy", "cue_following", "coverage"],
   "ceiling_variant_promotion_rule": "Promote the 3x2 challenge to the primary confirmatory study if any pilot model has neutral-arm mechanism tracking >=0.90 with detector query rate >=0.80 on the 2x2 assay, indicating attribution ceiling after investigation.",
+  "ceiling_variant_decision": "Promoted: Qwen and Mistral both triggered the predeclared rule on the valid 2x2 pilot; the disjoint 3x2 pilots then passed their serving gates.",
   "integrity_repair_rule": "Any post-freeze defect requires a complete rerun of every affected confirmatory condition"
 }

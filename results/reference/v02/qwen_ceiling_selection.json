@@ -1,0 +1,20 @@
+{
+  "artifact_type": "pilot-output-ceiling-selection",
+  "date": "2026-08-11",
+  "selection_inputs": ["length finish rate", "action parse rate"],
+  "prohibited_inputs": ["attribution direction", "task success", "policy contrasts"],
+  "initial_observation": {"ceiling": 1024, "steps": 624, "length_finishes": 12, "parse_failures": 12},
+  "disjoint_seed_grid": {
+    "1536": {"steps": 192, "length_finishes": 0, "parsed": 192, "max_completion_tokens": 1002, "summary_sha256": "a1fcbb082011af22ec5cfb10b6643e92764592f305e6a49b515043eddaaa04bf"},
+    "2048": {"steps": 192, "length_finishes": 0, "parsed": 192, "max_completion_tokens": 1002, "summary_sha256": "9a87749cd18b7b43acbbe021293d11db691b03e1e35670dee30bb5f64d6d0681"},
+    "comparison": {"response_mismatches": 0, "parse_mismatches": 0, "action_mismatches": 0}
+  },
+  "reopen_trigger": "The independently invalid batch-size-4 run exposed 12 length finishes at 1536 on the original pilot seeds.",
+  "hard_seed_serial_grid": {
+    "2048": {"steps": 169, "length_finishes": 0, "parsed": 169, "max_completion_tokens": 1591, "summary_sha256": "84ed1bb6e026c7ea7f371a731a9f61c0c7ba73be51ce92e48c3599c140e28b2f"},
+    "3072": {"steps": 169, "length_finishes": 0, "parsed": 169, "max_completion_tokens": 1591, "summary_sha256": "7ceaccb849ef08d39b8432ea58b97179ebf6e8ad1af0f2949ec35431ffa25567"},
+    "comparison": {"response_mismatches": 0, "parse_mismatches": 0, "action_mismatches": 0}
+  },
+  "selected_ceiling": 2048,
+  "selection_rule_result": "2048 is the smallest tested hard-seed serial ceiling with under 1% length finishes and a parse-rate plateau at the next tested ceiling."
+}

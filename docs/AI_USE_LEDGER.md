@@ -7,6 +7,8 @@ manuscript text. Human verification is mandatory before submission.
 | Date | Tool/model | Material affected | Use | Human verification | Included in final statement |
 |---|---|---|---|---|---|
 | 2026-08-10 | OpenAI Codex | v0.2 protocol code, tests, documentation, manuscript scaffold | Implementation and drafting from an author-supplied plan and reviews | Pending full author audit | Yes |
+| 2026-08-11 | OpenAI Codex | ICLR template migration, Qwen direct-backend fallback, pilot execution and audit | Incorporated external review feedback; implemented and tested a deterministic local fallback; ran uncached GPU preflights; amended the unfrozen ceiling-selection procedure from length/parse diagnostics before higher-ceiling acquisition | Pending full author audit | Yes |
+| 2026-08-11 | OpenAI Codex | Mistral serving profile, pilot artifacts, promoted 3x2 analysis path, and confirmatory freeze preparation | Declared the missing serving dependency and greedy server defaults; ran uncached serial GPU smoke, five-arm, and challenge pilots; added seed-clustered 3x2 intervals and paired contrasts after the predeclared promotion rule fired | Pending full author audit | Yes |
 
 Do not enter secrets, private prompts, privileged information, or exposed reasoning
 content. Record externally sourced factual claims with their primary source.

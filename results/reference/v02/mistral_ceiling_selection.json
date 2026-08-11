@@ -1,0 +1,17 @@
+{
+  "artifact_type": "pilot-output-ceiling-selection",
+  "date": "2026-08-11",
+  "model": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+  "selection_inputs": ["length finish rate", "action parse rate"],
+  "prohibited_inputs": ["attribution direction", "task success", "policy contrasts"],
+  "pilot_observation": {
+    "ceiling": 1024,
+    "steps": 685,
+    "length_finishes": 0,
+    "parsed": 685,
+    "parse_failures": 0,
+    "max_completion_tokens": 113
+  },
+  "selected_ceiling": 1024,
+  "selection_rule_result": "1024 is the smallest tested ceiling, has under 1% length finishes, and already attains the maximum possible parse rate of 100%; a higher ceiling cannot improve that rate."
+}

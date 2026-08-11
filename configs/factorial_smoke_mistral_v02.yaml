@@ -1,0 +1,51 @@
+# One-seed Mistral vLLM smoke. Must pass as a fresh live acquisition before the
+# 16-seed five-arm pilot; no smoke metrics may enter paper claims.
+base_url: http://127.0.0.1:8000/v1
+execution_mode: live_acquisition
+concurrency: 1
+serving_validation:
+  minimum_replicated_prompt_groups: 1
+  minimum_initial_mechanism_axis_groups: 2
+  maximum_response_conflict_groups: 0
+  maximum_action_conflict_groups: 0
+  maximum_candidate_set_conflict_groups: 0
+  require_all_uncached: true
+  fail_closed: true
+seeds: [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007,
+        1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015]
+prompt_arms:
+  - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 1}
+models:
+  - label: mistral-small-3.2-24b
+    id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    tokenizer_revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43
+    output_ceiling: 1024
+    serving:
+      backend: openai
+      quantization: bitsandbytes-nf4
+      bitsandbytes_version: 0.50.0
+      dtype: bfloat16
+      language_model_only: true
+      tokenizer_mode: mistral
+      chat_template: model-default@pinned-revision
+      load_format: bitsandbytes
+      ignore_patterns: [consolidated.safetensors]
+      generation_config: vllm
+      launch_script: experiments/serve_mistral_v02.sh
+      engine_seed: 0
+      batch_invariant_requested: true
+      enforce_eager: true
+      prefix_caching: false
+      async_scheduling: false
+      chunked_prefill: true
+      environment:
+        CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+        PYTHONHASHSEED: "0"
+        VLLM_BATCH_INVARIANT: "1"
+      max_model_len: 8192
+      max_num_seqs: 8
+      vllm_version: 0.26.0
+      ninja_version: 1.13.0
+    generation:
+      seed: 0

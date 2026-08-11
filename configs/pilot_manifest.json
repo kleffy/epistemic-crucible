@@ -5,8 +5,21 @@
   "purpose": "Prompt, parser, throughput, macro compiler, and output-ceiling selection only",
   "base_seeds": [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015],
   "ceiling_variant_seeds": [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011],
+  "output_ceiling_grid": [1024, 1536, 2048, 3072],
+  "output_ceiling_amendment": {
+    "trigger": "The 1024-token Qwen pilot produced 12/624 length finishes and 12/624 parse failures, all in mechanism_a.",
+    "comparison": "Run matched 1536- and 2048-token live acquisitions on ceiling_variant_seeds with mechanism_a only.",
+    "decision": "Select 1536 only if both acquisitions have <1% length finishes and identical action-parse rates; otherwise leave the ceiling unresolved.",
+    "prohibited_inputs": ["attribution direction", "task success", "policy contrasts"]
+  },
+  "output_ceiling_reopen": {
+    "trigger": "The fresh batch-size-4 acquisition produced 12/616 length finishes at 1536 tokens on the original pilot seeds; the same run was independently invalidated by nine raw-response conflict groups.",
+    "comparison": "Run matched serial 2048- and 3072-token live acquisitions on base_seeds with mechanism_a only.",
+    "decision": "Select 2048 only if both serial acquisitions have <1% length finishes and identical action-parse rates; otherwise leave the ceiling unresolved.",
+    "prohibited_inputs": ["attribution direction", "task success", "policy contrasts", "invalid batched policy metrics"]
+  },
   "selection_rules": {
-    "output_ceiling": "Smallest per-model ceiling with <1% length-related finishes and plateaued action-parse rate",
+    "output_ceiling": "Smallest tested per-model ceiling with <1% length-related finishes and plateaued action-parse rate; use only length and parse diagnostics",
     "query_mediator": "Detector query rate is a primary preflight outcome; stop before confirmation if cue/mechanism prefixes do not move investigation or attribution coordinates",
     "ceiling_variant": "Promote 3x2 to primary if any pilot model has neutral-arm mechanism tracking >=0.90 with detector query rate >=0.80 on 2x2"
   },

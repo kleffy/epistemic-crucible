@@ -15,12 +15,18 @@ from crucible.factorial import (
     MacroActionKind,
     compile_factorial_certificate,
     execute_compiled_actions,
+    generate_affordance_challenge,
     generate_affordance_quartet,
     run_scripted_control,
     shortest_legal_moves,
     validate_affordance_quartet,
 )
-from crucible.factorial_metrics import compute_factorial_metrics, paired_arm_contrast
+from crucible.factorial_metrics import (
+    compute_challenge_metrics,
+    compute_factorial_metrics,
+    paired_arm_contrast,
+    paired_challenge_arm_contrast,
+)
 from crucible.grammar import build_world_from_spec, validate_task
 from crucible.ledger import EpisodeLedger, content_hash
 from crucible.observations import observe
@@ -234,6 +240,65 @@ def test_paired_arm_contrast_preserves_seed_pairing():
     assert mechanism_delta.value == 0.5
     assert cue_delta.value == -0.5
     assert mechanism_delta.denominator == cue_delta.denominator == 8
+
+
+def test_challenge_metrics_use_seed_clustered_intervals_and_denominators():
+    outcomes = [
+        run_scripted_control(cell, "detector_policy")
+        for seed in range(3)
+        for cell in generate_affordance_challenge(seed).cells.values()
+    ]
+    report = compute_challenge_metrics(outcomes, bootstrap_samples=100)
+    assert report.mechanism_accuracy.value == 1.0
+    assert report.cue_susceptibility.value == 0.0
+    assert report.cue_following.value == pytest.approx(1 / 3)
+    assert report.coverage.value == 1.0
+    assert report.detector_query_rate.value == 1.0
+    assert report.all_cells_success.value == 1.0
+    assert report.mechanism_accuracy.denominator == 18
+    assert report.cue_susceptibility.denominator == 9
+    assert report.coverage.denominator == 3
+    assert report.complete_challenges == 3
+
+
+def test_challenge_abstention_is_undefined_not_zero():
+    outcomes = [
+        run_scripted_control(cell, "abstain")
+        for cell in generate_affordance_challenge(0).cells.values()
+    ]
+    report = compute_challenge_metrics(outcomes, bootstrap_samples=0)
+    assert report.coverage.value == 0.0
+    assert report.mechanism_accuracy.value is None
+    assert report.cue_susceptibility.value is None
+    assert report.cue_following.value is None
+
+
+def test_paired_challenge_contrast_preserves_seed_pairing():
+    reference = [
+        run_scripted_control(cell, "cue_follower")
+        for seed in range(8)
+        for cell in generate_affordance_challenge(seed).cells.values()
+    ]
+    treatment = [
+        run_scripted_control(cell, "detector_policy")
+        for seed in range(8)
+        for cell in generate_affordance_challenge(seed).cells.values()
+    ]
+    mechanism = paired_challenge_arm_contrast(
+        reference,
+        treatment,
+        "mechanism_accuracy",
+        bootstrap_samples=100,
+    )
+    cue = paired_challenge_arm_contrast(
+        reference,
+        treatment,
+        "cue_following",
+        bootstrap_samples=100,
+    )
+    assert mechanism.value == pytest.approx(2 / 3)
+    assert cue.value == pytest.approx(-2 / 3)
+    assert mechanism.denominator == cue.denominator == 8
 
 
 def test_aligned_crossed_success_and_query_rate_make_controls_legible():

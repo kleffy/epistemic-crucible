@@ -1,0 +1,55 @@
+# Matched Qwen output-ceiling diagnostics on disjoint pilot seeds. This file was
+# declared after the 1024-token base pilot exceeded the manifest's 1% length
+# threshold and before either higher-ceiling acquisition was run. Attribution
+# direction, task success, and policy contrasts are prohibited selection inputs.
+variant: challenge_3x2
+base_url: http://127.0.0.1:8000/v1
+execution_mode: live_acquisition
+concurrency: 1
+serving_validation:
+  minimum_replicated_prompt_groups: 1
+  minimum_initial_mechanism_axis_groups: 24
+  maximum_response_conflict_groups: 0
+  maximum_action_conflict_groups: 0
+  maximum_candidate_set_conflict_groups: 0
+  require_all_uncached: true
+  fail_closed: true
+seeds: [2000, 2001, 2002, 2003, 2004, 2005,
+        2006, 2007, 2008, 2009, 2010, 2011]
+prompt_arms:
+  - {name: mechanism_a, mode: mechanism, count: 6, base_seed: 11000, seed_count: 12}
+models:
+  - label: qwen3.6-27b-c1536
+    id: Qwen/Qwen3.6-27B
+    revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    tokenizer_revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    output_ceiling: 1536
+    serving: &qwen_serving
+      backend: transformers
+      quantization: bitsandbytes-nf4
+      bitsandbytes_version: 0.50.0
+      dtype: bfloat16
+      device: cuda
+      batch_size: 1
+      language_model_only: true
+      chat_template: model-default@pinned-revision
+      engine_seed: 0
+      do_sample: false
+      transformers_version: 5.15.0
+      torch_version: 2.11.0+cu130
+      failed_backend_record: results/reference/v02/qwen_vllm_serving_preflight.json
+      environment:
+        CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+        PYTHONHASHSEED: "0"
+    generation: &qwen_generation
+      seed: 0
+      extra_body:
+        chat_template_kwargs: {enable_thinking: false}
+
+  - label: qwen3.6-27b-c2048
+    id: Qwen/Qwen3.6-27B
+    revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    tokenizer_revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    output_ceiling: 2048
+    serving: *qwen_serving
+    generation: *qwen_generation

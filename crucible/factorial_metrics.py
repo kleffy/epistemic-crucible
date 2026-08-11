@@ -42,6 +42,22 @@ class FactorialMetricReport:
     complete_quartets: int
 
 
+@dataclass(frozen=True)
+class ChallengeMetricReport:
+    """Seed-clustered report for the promoted six-cell 3x2 assay."""
+
+    mechanism_accuracy: MetricEstimate
+    cue_susceptibility: MetricEstimate
+    cue_following: MetricEstimate
+    coverage: MetricEstimate
+    detector_query_rate: MetricEstimate
+    all_cells_success: MetricEstimate
+    cell_success: MetricEstimate
+    coverage_by_cell: dict[str, float]
+    base_seeds: int
+    complete_challenges: int
+
+
 def compute_factorial_metrics(
     outcomes: Iterable[CommitOutcome],
     *,
@@ -210,6 +226,114 @@ def paired_arm_contrast(
     return MetricEstimate(observed, float(low), float(high), len(seed_differences))
 
 
+def compute_challenge_metrics(
+    outcomes: Iterable[CommitOutcome],
+    *,
+    bootstrap_samples: int = 10_000,
+    bootstrap_seed: int = 0,
+) -> ChallengeMetricReport:
+    """Compute 3x2 metrics with base seed as the bootstrap unit."""
+    outcomes = list(outcomes)
+    grouped = _group_complete_challenge(outcomes)
+    seed_values = [_challenge_seed_values(cells) for _, cells in sorted(grouped.items())]
+    rng = np.random.default_rng(bootstrap_seed)
+    return ChallengeMetricReport(
+        mechanism_accuracy=_estimate(
+            seed_values,
+            lambda value: value["mechanism_accuracy_values"],
+            bootstrap_samples,
+            rng,
+        ),
+        cue_susceptibility=_estimate(
+            seed_values,
+            lambda value: value["cue_susceptibility_values"],
+            bootstrap_samples,
+            rng,
+        ),
+        cue_following=_estimate(
+            seed_values,
+            lambda value: value["cue_following_values"],
+            bootstrap_samples,
+            rng,
+        ),
+        coverage=_estimate(
+            seed_values,
+            lambda value: [value["coverage"]],
+            bootstrap_samples,
+            rng,
+        ),
+        detector_query_rate=_estimate(
+            seed_values,
+            lambda value: value["detector_query_values"],
+            bootstrap_samples,
+            rng,
+        ),
+        all_cells_success=_estimate(
+            seed_values,
+            lambda value: [value["all_cells_success"]],
+            bootstrap_samples,
+            rng,
+        ),
+        cell_success=_estimate(
+            seed_values,
+            lambda value: [value["cell_success"]],
+            bootstrap_samples,
+            rng,
+        ),
+        coverage_by_cell={
+            f"m{mechanism}_c{cue}": _cell_coverage(grouped, mechanism, cue)
+            for mechanism in (0, 1, 2)
+            for cue in (0, 1)
+        },
+        base_seeds=len({outcome.base_seed for outcome in outcomes}),
+        complete_challenges=len(grouped),
+    )
+
+
+def paired_challenge_arm_contrast(
+    reference: Iterable[CommitOutcome],
+    treatment: Iterable[CommitOutcome],
+    metric: str,
+    *,
+    bootstrap_samples: int = 10_000,
+    bootstrap_seed: int = 0,
+) -> MetricEstimate:
+    """Estimate a treatment-minus-reference 3x2 effect by paired seed resampling."""
+    selectors: dict[str, Callable[[dict], list[float]]] = {
+        "mechanism_accuracy": lambda value: value["mechanism_accuracy_values"],
+        "cue_susceptibility": lambda value: value["cue_susceptibility_values"],
+        "cue_following": lambda value: value["cue_following_values"],
+        "detector_query_rate": lambda value: value["detector_query_values"],
+        "coverage": lambda value: [value["coverage"]],
+        "all_cells_success": lambda value: [value["all_cells_success"]],
+        "cell_success": lambda value: [value["cell_success"]],
+    }
+    if metric not in selectors:
+        raise ValueError(f"unknown paired challenge metric {metric!r}")
+    reference_grouped = _group_complete_challenge(reference)
+    treatment_grouped = _group_complete_challenge(treatment)
+    if set(reference_grouped) != set(treatment_grouped):
+        raise ValueError("paired challenge contrasts require identical complete base-seed sets")
+    selector = selectors[metric]
+    seed_differences: list[float] = []
+    for seed in sorted(reference_grouped):
+        reference_values = selector(_challenge_seed_values(reference_grouped[seed]))
+        treatment_values = selector(_challenge_seed_values(treatment_grouped[seed]))
+        if reference_values and treatment_values:
+            seed_differences.append(float(np.mean(treatment_values) - np.mean(reference_values)))
+    if not seed_differences:
+        return MetricEstimate(None, None, None, 0)
+    observed = float(np.mean(seed_differences))
+    if bootstrap_samples <= 0:
+        return MetricEstimate(observed, None, None, len(seed_differences))
+    rng = np.random.default_rng(bootstrap_seed)
+    values = np.asarray(seed_differences)
+    indices = rng.integers(0, len(values), size=(bootstrap_samples, len(values)))
+    boot = values[indices].mean(axis=1)
+    low, high = np.quantile(boot, [0.025, 0.975])
+    return MetricEstimate(observed, float(low), float(high), len(seed_differences))
+
+
 def _group_complete(
     outcomes: Iterable[CommitOutcome],
 ) -> dict[int, dict[tuple[int, int], CommitOutcome]]:
@@ -226,6 +350,20 @@ def _group_complete(
         if set(cells) == expected:
             complete[seed] = cells
     return complete
+
+
+def _group_complete_challenge(
+    outcomes: Iterable[CommitOutcome],
+) -> dict[int, dict[tuple[int, int], CommitOutcome]]:
+    grouped: dict[int, dict[tuple[int, int], CommitOutcome]] = {}
+    for outcome in outcomes:
+        key = (outcome.mechanism_slot, outcome.cue_slot)
+        cells = grouped.setdefault(outcome.base_seed, {})
+        if key in cells:
+            raise ValueError(f"duplicate outcome for seed={outcome.base_seed}, cell={key}")
+        cells[key] = outcome
+    expected = {(mechanism, cue) for mechanism in (0, 1, 2) for cue in (0, 1)}
+    return {seed: cells for seed, cells in grouped.items() if set(cells) == expected}
 
 
 def _seed_values(cells: dict[tuple[int, int], CommitOutcome]) -> dict:
@@ -295,6 +433,33 @@ def _seed_values(cells: dict[tuple[int, int], CommitOutcome]) -> dict:
         "cell_success": sum(value.solved for value in values) / 4.0,
         "aligned_success": (float(cells[(0, 0)].solved) + float(cells[(1, 1)].solved)) / 2.0,
         "crossed_success": (float(cells[(0, 1)].solved) + float(cells[(1, 0)].solved)) / 2.0,
+    }
+
+
+def _challenge_seed_values(cells: dict[tuple[int, int], CommitOutcome]) -> dict:
+    values = list(cells.values())
+    cue_susceptibility_values: list[float] = []
+    for mechanism in (0, 1, 2):
+        left = cells[(mechanism, 0)].committed_slot
+        right = cells[(mechanism, 1)].committed_slot
+        if left is not None and right is not None:
+            cue_susceptibility_values.append(float(left != right))
+    return {
+        "mechanism_accuracy_values": [
+            float(value.committed_slot == _mechanism_carrier(value))
+            for value in values
+            if value.committed_slot is not None
+        ],
+        "cue_susceptibility_values": cue_susceptibility_values,
+        "cue_following_values": [
+            float(value.committed_slot == _cue_carrier(value))
+            for value in values
+            if value.committed_slot is not None
+        ],
+        "coverage": sum(value.committed_slot is not None for value in values) / 6.0,
+        "detector_query_values": [float(value.detector_queries > 0) for value in values],
+        "all_cells_success": float(all(value.solved for value in values)),
+        "cell_success": sum(value.solved for value in values) / 6.0,
     }
 
 

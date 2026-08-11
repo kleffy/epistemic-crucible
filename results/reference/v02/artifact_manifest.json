@@ -11,12 +11,20 @@
     "torch": "2.11.0+cu128"
   },
   "files": {
-    "README.md": "8e97fe0f74846a693392006f3c3a028da9ecd28612dcc63cb84136580c4a9c37",
+    "README.md": "f1d1f1db291746c97b3bfef3a91e24fd9b68b7488b224af8c11b452d6213bad1",
     "checkpoint_hashes.json": "1aa60119948657174ece26c7dc8c12c14da207632b9934efe136895263ef2ca5",
     "factorial_bc_summary.json": "de8e423e0fd2281b8eda9d0dae7a4ab2181d772a60c1dd776194623a11499012",
     "gpt_oss_serving_preflight.json": "795c14973970bc207423989aeea5fc03c92c2594f52d0cafd36e9d1f4c2eeb52",
     "integrity_report.json": "d173c563f281ba227a18f47773b4259bc7f43e228c785b8b76dfdfb95ddbfc23",
     "invalid_evaluations.json": "b3201eec52fc783a1968e7e69f8607cde4f2edc0eb24a95a131c2c4c2802cf8a",
+    "mistral_ceiling_selection.json": "89185e71aabd30bdcf06371751646c084f41ae5d5ebb4ae430a79e2ea6a1784a",
+    "mistral_challenge_3x2_pilot.json": "c8f55b4cefdfb63e5150dc55f4ee6710e1d7698083c49f67fd2ac6c41ba8f40c",
+    "mistral_serial_pilot.json": "fc5dc510dc693b804cc4479b2957c0159cbe012fc85879c1afd17f380603dd64",
+    "qwen_batched_serving_preflight.json": "69fc2d036d1f0303f5a9929e6820fa1d17dad05aab39e86c1528190d18617519",
+    "qwen_ceiling_selection.json": "e2a93227aa9f409de3887a9338f0459d358e1ab003de35779dc4ad27377692af",
+    "qwen_challenge_3x2_pilot.json": "43f35e1bfe1c62a40963cd80121acfb40da2cfd318af961948f609340af90215",
+    "qwen_serial_pilot.json": "f9495d882949c66d4541764288edcd72e10eced61a16a418bda99e0cbb1973fc",
+    "qwen_vllm_serving_preflight.json": "c62daa18a4bcdaba6de77037929ae791c3a57f8c5a087abe8d99c33a88dd4305",
     "sample_bc_traces.jsonl": "71716e4153d4e9ada43e21049e4d99612ccc1a9a1430144aadd09dbead0dc854",
     "sample_control_traces.jsonl": "9d4ea3d4d16a18de28117d7a9f224e6c4427269317a0ad07842274c8588fa7a6"
   },
@@ -35,7 +43,7 @@
     "configs/factorial_bc_v02.yaml": "b21bfb4bb31fc4f8450e22171503f53e31b887ad3fce1d6fc088486d8fd099c0",
     "experiments/run_integrity_gate.py": "7fdcfad17210b072e004dab664ae2eec9bb0d384ffc25d67f461e47132c25923",
     "experiments/train_factorial_bc.py": "0ae8017334f0aff543074cb73fb674aa5d130c02a13df8eccaef427f71adda2e",
-    "pyproject.toml": "95efed965b77c09dff37feff817a556ec7b128030ca57035c23d5f1ad46ae9b8",
+    "pyproject.toml": "5fe931734fd224a12f4dd8748fa142dfc61df0ef1be77caa267c71bdaeea14b8",
     "tests/test_attribution_metrics.py": "b018e13fcae92b9c0cf880fd2bddb613df6325ef2c01917f9644e39599aae113",
     "tests/test_quartet_invariance.py": "bf627bd04dc7460e3d860301a87f7088e4c4a795d73b80a2c59f3a051e0edd34"
   },
