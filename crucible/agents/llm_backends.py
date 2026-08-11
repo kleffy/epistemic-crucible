@@ -293,6 +293,15 @@ class MockBackend(LLMBackend):
         return [self._policy(system, conv) for conv in conversations]
 
 
+class CacheOnlyBackend(LLMBackend):
+    """Replay cached generations without constructing or contacting a live model."""
+
+    def _generate_batch(self, system: str, conversations: list[Conversation]) -> list[str]:
+        raise RuntimeError(
+            "cache-only backend cannot generate; artifact replay requires complete cache hits"
+        )
+
+
 # ---------------------------------------------------------------------------
 # Local transformers backend (GPU)
 # ---------------------------------------------------------------------------

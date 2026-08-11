@@ -366,13 +366,11 @@ def test_live_validation_ignores_clean_stale_cache_and_contacts_current_backend(
 def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monkeypatch):
     from crucible.agents.llm_backends import MockBackend
 
-    calls = {"count": 0, "explode": False}
+    calls = {"count": 0}
 
     def backend_factory(_backend, model_id, **kwargs):
         def policy(_system, _conversation):
             calls["count"] += 1
-            if calls["explode"]:
-                raise AssertionError("artifact replay contacted the backend")
             return "stable\nACTION: 0"
 
         return MockBackend(model_id=model_id, policy=policy, **kwargs)
@@ -399,8 +397,12 @@ def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monk
         "tokenizer_revision": "0" * 40,
         "output_ceiling": 16,
         "generation": {},
-        "serving": {},
+        "serving": {
+            "backend": "transformers",
+            "environment": {"REPLAY_TEST_ENV": "required-live"},
+        },
     }
+    monkeypatch.setenv("REPLAY_TEST_ENV", "required-live")
     run_local_model(
         config,
         model,
@@ -411,7 +413,19 @@ def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monk
     )
     assert calls["count"] == 4
 
-    calls.update(count=0, explode=True)
+    def live_backend_must_not_be_constructed(*args, **kwargs):
+        raise AssertionError("artifact replay constructed a live backend")
+
+    def model_must_not_be_loaded(*args, **kwargs):
+        raise AssertionError("artifact replay loaded model weights")
+
+    monkeypatch.setattr(
+        "experiments.run_factorial_eval.make_backend", live_backend_must_not_be_constructed
+    )
+    monkeypatch.setattr("crucible.agents.llm_backends._load_hf_model", model_must_not_be_loaded)
+    monkeypatch.setattr("experiments.run_factorial_eval._runtime_hardware", lambda: {"gpu": None})
+    monkeypatch.delenv("REPLAY_TEST_ENV")
+    calls["count"] = 0
     replay = run_local_model(
         {**config, "execution_mode": "artifact_replay"},
         model,
@@ -428,6 +442,19 @@ def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monk
     assert replay["serving_validation"]["counts"]["cache_hit_records"] == 4
     assert replay["serving_validation"]["counts"]["server_contacted"] is False
     assert replay["reports"] == {}
+
+    cache_path = next((tmp_path / "cache").glob("*.jsonl"))
+    cached_lines = cache_path.read_text().splitlines(keepends=True)
+    cache_path.write_text("".join(cached_lines[1:]))
+    with pytest.raises(RuntimeError, match="artifact replay cache miss"):
+        run_local_model(
+            {**config, "execution_mode": "artifact_replay"},
+            model,
+            tmp_path,
+            stage="pilot",
+            stage_manifest={"stage": "pilot", "base_seeds": [1000]},
+            stage_manifest_hash="a" * 64,
+        )
 
 
 def test_hardware_provenance_tolerates_cpu_hosts_without_nvidia_smi(monkeypatch):

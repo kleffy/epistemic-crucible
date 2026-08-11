@@ -29,7 +29,11 @@ _HERE = pathlib.Path(__file__).parent.parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
-from crucible.agents.llm_backends import ResponseCache, make_backend  # noqa: E402
+from crucible.agents.llm_backends import (  # noqa: E402
+    CacheOnlyBackend,
+    ResponseCache,
+    make_backend,
+)
 from crucible.agents.prompting import build_label_map  # noqa: E402
 from crucible.factorial import (  # noqa: E402
     PROTOCOL_NAME,
@@ -269,7 +273,7 @@ def run_local_model(
     effective_environment = {
         key: os.environ.get(key) for key in declared_environment if key in os.environ
     }
-    if backend_kind == "transformers":
+    if backend_kind == "transformers" and execution_mode == LIVE_ACQUISITION:
         mismatched_environment = {
             key: {"expected": str(value), "effective": os.environ.get(key)}
             for key, value in declared_environment.items()
@@ -309,19 +313,49 @@ def run_local_model(
         "stage": stage,
         "stage_manifest_hash": stage_manifest_hash,
     }
-    cache_identity_manifest = {
-        **run_manifest,
-        "execution_mode": LIVE_ACQUISITION,
-        "cache_policy": {
-            "read_enabled": False,
-            "write_enabled": True,
-            "require_hits": False,
-        },
-    }
+    output_dir.mkdir(parents=True, exist_ok=True)
+    acquisition_summary_path = output_dir / f"factorial_{model_cfg['label']}_summary.json"
+    if execution_mode == ARTIFACT_REPLAY:
+        if not acquisition_summary_path.exists():
+            raise RuntimeError(
+                "artifact replay requires the original live-acquisition summary "
+                f"at {acquisition_summary_path}"
+            )
+        acquisition_summary = json.loads(acquisition_summary_path.read_text())
+        acquisition_manifest = dict(acquisition_summary.get("manifest", {}))
+        recorded_namespace = acquisition_manifest.pop("cache_namespace_hash", None)
+        current_stable = dict(run_manifest)
+        acquisition_stable = dict(acquisition_manifest)
+        runtime_keys = {
+            "execution_mode",
+            "cache_policy",
+            "effective_environment",
+            "runtime_hardware",
+        }
+        for key in runtime_keys:
+            current_stable.pop(key, None)
+            acquisition_stable.pop(key, None)
+        if current_stable != acquisition_stable:
+            raise RuntimeError(
+                "artifact replay manifest does not match the original live acquisition"
+            )
+        cache_identity_manifest = acquisition_manifest
+    else:
+        recorded_namespace = None
+        cache_identity_manifest = {
+            **run_manifest,
+            "execution_mode": LIVE_ACQUISITION,
+            "cache_policy": {
+                "read_enabled": False,
+                "write_enabled": True,
+                "require_hits": False,
+            },
+        }
     cache_namespace_hash = content_hash(cache_identity_manifest)
+    if recorded_namespace is not None and recorded_namespace != cache_namespace_hash:
+        raise RuntimeError("live-acquisition cache namespace hash does not verify")
     run_manifest["cache_namespace_hash"] = cache_namespace_hash
     manifest_hash = content_hash(run_manifest)
-    output_dir.mkdir(parents=True, exist_ok=True)
     cache = ResponseCache(
         output_dir / "cache" / f"{model_cfg['label']}-{cache_namespace_hash[:12]}.jsonl",
         **cache_policy,
@@ -345,19 +379,22 @@ def run_local_model(
         "cache_key_params": cache_key_generation,
         **generation,
     }
-    if backend_kind == "openai":
-        backend_kwargs["base_url"] = cfg.get("base_url", "http://127.0.0.1:8000/v1")
+    if execution_mode == ARTIFACT_REPLAY:
+        backend = CacheOnlyBackend(model_id, **backend_kwargs)
     else:
-        backend_kwargs.update(
-            {
-                "tokenizer_revision": model_cfg.get("tokenizer_revision", revision),
-                "device": serving_cfg.get("device", "cuda"),
-                "dtype": serving_cfg.get("dtype", "bfloat16"),
-                "batch_size": int(serving_cfg.get("batch_size", 1)),
-                "quantization": serving_cfg.get("quantization"),
-            }
-        )
-    backend = make_backend(backend_kind, model_id, **backend_kwargs)
+        if backend_kind == "openai":
+            backend_kwargs["base_url"] = cfg.get("base_url", "http://127.0.0.1:8000/v1")
+        else:
+            backend_kwargs.update(
+                {
+                    "tokenizer_revision": model_cfg.get("tokenizer_revision", revision),
+                    "device": serving_cfg.get("device", "cuda"),
+                    "dtype": serving_cfg.get("dtype", "bfloat16"),
+                    "batch_size": int(serving_cfg.get("batch_size", 1)),
+                    "quantization": serving_cfg.get("quantization"),
+                }
+            )
+        backend = make_backend(backend_kind, model_id, **backend_kwargs)
     episodes = _build_episodes(seeds, arms, variant=variant)
     trace_path = output_dir / f"factorial_{model_cfg['label']}_{int(time.time())}.jsonl"
     step_records: list[dict[str, Any]] = []
@@ -516,7 +553,11 @@ def run_local_model(
         "reports": arm_reports,
         "paired_contrasts": paired_contrasts,
     }
-    summary_path = output_dir / f"factorial_{model_cfg['label']}_summary.json"
+    summary_path = (
+        output_dir / f"factorial_{model_cfg['label']}_replay_summary.json"
+        if execution_mode == ARTIFACT_REPLAY
+        else acquisition_summary_path
+    )
     summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
     if (
         execution_mode == LIVE_ACQUISITION
