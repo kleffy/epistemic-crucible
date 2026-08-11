@@ -11,9 +11,10 @@
     "torch": "2.11.0+cu128"
   },
   "files": {
-    "README.md": "52c7b6c9c53b1494d74c4414db63f5a9bef13a6d7adf46b0f367f6a0929e0e27",
+    "README.md": "8e97fe0f74846a693392006f3c3a028da9ecd28612dcc63cb84136580c4a9c37",
     "checkpoint_hashes.json": "1aa60119948657174ece26c7dc8c12c14da207632b9934efe136895263ef2ca5",
     "factorial_bc_summary.json": "de8e423e0fd2281b8eda9d0dae7a4ab2181d772a60c1dd776194623a11499012",
+    "gpt_oss_serving_preflight.json": "795c14973970bc207423989aeea5fc03c92c2594f52d0cafd36e9d1f4c2eeb52",
     "integrity_report.json": "d173c563f281ba227a18f47773b4259bc7f43e228c785b8b76dfdfb95ddbfc23",
     "invalid_evaluations.json": "b3201eec52fc783a1968e7e69f8607cde4f2edc0eb24a95a131c2c4c2802cf8a",
     "sample_bc_traces.jsonl": "71716e4153d4e9ada43e21049e4d99612ccc1a9a1430144aadd09dbead0dc854",

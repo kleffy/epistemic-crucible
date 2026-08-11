@@ -1,0 +1,97 @@
+{
+  "date": "2026-08-11",
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "memory_mib": 32607,
+    "driver_version": "580.126.09"
+  },
+  "model": {
+    "id": "openai/gpt-oss-20b",
+    "revision": "6cee5e81ee83917806bbde320786a8fb61efebee"
+  },
+  "runtime": {
+    "vllm": "0.26.0",
+    "torch": "2.11.0+cu130"
+  },
+  "criterion": {
+    "response_conflict_groups_maximum": 0,
+    "action_conflict_groups_maximum": 0,
+    "group_definition": "independent calls sharing the full system-and-conversation SHA-256, plus explicit initial mechanism-axis pairs keyed by base seed, prompt arm, and cue slot"
+  },
+  "profiles": [
+    {
+      "name": "native-mxfp4-batch-8",
+      "protocol_commit": "61fc45b",
+      "concurrency": 8,
+      "batch_invariant_requested": false,
+      "step_records": 569,
+      "full_prompt_hash_available": false,
+      "initial_mechanism_axis_groups": 160,
+      "initial_response_conflict_groups": 35,
+      "initial_action_conflict_groups": 33,
+      "empty_visible_responses": 1,
+      "trace_sha256": "7e93aa3a5aac85dad236f5a83d4fec91fed4df8df1c67d1f5a3d1e37c341ab08",
+      "status": "invalid-do-not-report"
+    },
+    {
+      "name": "native-mxfp4-serial",
+      "protocol_commit": "a83c294",
+      "concurrency": 1,
+      "batch_invariant_requested": false,
+      "step_records": 570,
+      "replicated_prompt_groups": 196,
+      "response_conflict_groups": 1,
+      "action_conflict_groups": 1,
+      "initial_mechanism_axis_groups": 160,
+      "initial_response_conflict_groups": 0,
+      "initial_action_conflict_groups": 0,
+      "empty_visible_responses": 0,
+      "trace_sha256": "a7efee0a0bf62f5f5c0953020f20e8a9248662d957558c88b55cfadff8a8a3f5",
+      "status": "invalid-do-not-report"
+    },
+    {
+      "name": "native-mxfp4-hardened-serial",
+      "protocol_commit": "967945f",
+      "concurrency": 1,
+      "batch_invariant_requested": false,
+      "step_records": 544,
+      "replicated_prompt_groups": 176,
+      "response_conflict_groups": 38,
+      "action_conflict_groups": 37,
+      "initial_mechanism_axis_groups": 160,
+      "initial_response_conflict_groups": 40,
+      "initial_action_conflict_groups": 39,
+      "empty_visible_responses": 0,
+      "trace_sha256": "1c0a8be236262f141edd1c6b6beaa2934edea08d0f8ee964ec3d3d98168c9eed",
+      "status": "invalid-do-not-report"
+    },
+    {
+      "name": "emulated-mxfp4-batch-invariant-batch-8",
+      "protocol_commit": "c12639c",
+      "concurrency": 8,
+      "batch_invariant_requested": true,
+      "step_records": 571,
+      "replicated_prompt_groups": 180,
+      "response_conflict_groups": 41,
+      "action_conflict_groups": 37,
+      "initial_mechanism_axis_groups": 160,
+      "initial_response_conflict_groups": 40,
+      "initial_action_conflict_groups": 36,
+      "empty_visible_responses": 6,
+      "trace_sha256": "5a7e9b81413476d8d62c08794e4ff1f62515aa4a4b2791d470860cad7bad0740",
+      "status": "invalid-do-not-report"
+    },
+    {
+      "name": "humming-mxfp4-batch-invariant",
+      "protocol_commit": "c12639c",
+      "concurrency": null,
+      "batch_invariant_requested": true,
+      "engine_started": false,
+      "error": "Mxfp4 MoE backend 'HUMMING' does not support the deployment configuration since kernel does not support batch invariance.",
+      "status": "unsupported"
+    }
+  ],
+  "scientific_metrics_reported": false,
+  "status": "blocked-serving-reproducibility",
+  "resolution": "Replace or upgrade the serving stack, then require an in-run zero-conflict audit before any attribution summary is emitted."
+}

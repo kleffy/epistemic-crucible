@@ -66,6 +66,13 @@ python experiments/run_factorial_eval.py \
   --manifest configs/pilot_manifest.json
 ```
 
+Factorial model configs default to `execution_mode: live_acquisition`. In that
+mode cache reads are disabled, every generation must contact the current server,
+and only uncached records can satisfy the serving-validation gate. Responses are
+appended to the cache for audit replay. `artifact_replay` is cache-only: a miss is
+an error, the server is never contacted, scientific reports are suppressed, and
+no passing serving-validation status can be emitted.
+
 ## CI test commands
 
 ```bash
