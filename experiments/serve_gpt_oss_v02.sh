@@ -7,6 +7,9 @@ export CUBLAS_WORKSPACE_CONFIG=:4096:8
 export PYTHONHASHSEED=0
 export VLLM_BATCH_INVARIANT=1
 
+echo "WARNING: this pinned GPT-OSS stack failed the v0.2 identical-prompt serving gate." >&2
+echo "Use it only for preflight repair; the evaluator suppresses scientific summaries on a conflict." >&2
+
 cd "${repo_dir}"
 exec .venv/bin/vllm serve openai/gpt-oss-20b \
   --revision 6cee5e81ee83917806bbde320786a8fb61efebee \

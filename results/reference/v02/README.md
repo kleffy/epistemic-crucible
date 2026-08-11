@@ -12,6 +12,13 @@ reason for invalidation, and replacement. Regenerate this directory with:
 python experiments/package_factorial_artifacts.py
 ```
 
+`gpt_oss_serving_preflight.json` records a separate, invalid model-serving
+preflight. No attribution scores from those runs are reported. The pinned vLLM
+stack produced different visible actions for byte-identical policy inputs, and
+its Humming MXFP4 kernel explicitly rejected batch-invariant execution. GPT-OSS
+therefore remains blocked until a replacement serving stack passes the in-run
+zero-conflict gate in `run_factorial_eval.py`.
+
 The supplied acceptance files are preserved verbatim. Run them together with:
 
 ```bash

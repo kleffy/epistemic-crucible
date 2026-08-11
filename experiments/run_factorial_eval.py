@@ -293,6 +293,7 @@ def run_local_model(
     )
     episodes = _build_episodes(seeds, arms, variant=variant)
     trace_path = output_dir / f"factorial_{model_cfg['label']}_{int(time.time())}.jsonl"
+    step_records: list[dict[str, Any]] = []
     with trace_path.open("w") as handle:
         while active := [episode for episode in episodes if not episode.protocol.done]:
             conversations: list[list[dict]] = []
@@ -328,6 +329,7 @@ def run_local_model(
             for episode, prompt, candidates, conversation, record in zip(
                 active, prompts, candidates_by_episode, conversations, records
             ):
+                decision_index = len(episode.protocol.detector_evidence)
                 episode.history.append({"role": "assistant", "content": record.response})
                 episode.protocol.ledger.record_message("assistant", record.response)
                 action, parse_status = parse_macro_action(record.response, candidates)
@@ -369,6 +371,7 @@ def run_local_model(
                         "cue_carrier_slot": episode.cell.cue_carrier_slot,
                     },
                     "prompt_arm": episode.arm,
+                    "decision_index": decision_index,
                     "step": episode.protocol.env.world.step,
                     "prompt_hash": content_hash(
                         {"system": FACTORIAL_SYSTEM_PROMPT, "messages": conversation}
@@ -384,6 +387,7 @@ def run_local_model(
                     "raw_provider_status": record.finish_reason,
                     "generation": record.to_dict(),
                 }
+                step_records.append(step_record)
                 handle.write(json.dumps(step_record, sort_keys=True, default=str) + "\n")
         outcomes = [episode.protocol.outcome() for episode in episodes]
         for episode, outcome in zip(episodes, outcomes):
@@ -399,39 +403,214 @@ def run_local_model(
                 )
                 + "\n"
             )
+    serving_validation = audit_identical_prompt_generations(
+        step_records,
+        cfg.get("serving_validation", {}),
+    )
     arm_reports = {}
-    for arm in arms:
-        selected = [
-            outcome for episode, outcome in zip(episodes, outcomes) if episode.arm == arm["name"]
-        ]
-        if variant == "challenge_3x2":
-            arm_reports[arm["name"]] = asdict(
-                challenge_profile(
-                    _outcome_record(outcome, str(model_cfg["label"])) for outcome in selected
+    paired_contrasts: dict[str, dict[str, Any]] = {}
+    if serving_validation["passed"]:
+        for arm in arms:
+            selected = [
+                outcome
+                for episode, outcome in zip(episodes, outcomes)
+                if episode.arm == arm["name"]
+            ]
+            if variant == "challenge_3x2":
+                arm_reports[arm["name"]] = asdict(
+                    challenge_profile(
+                        _outcome_record(outcome, str(model_cfg["label"])) for outcome in selected
+                    )
                 )
-            )
-        else:
-            arm_reports[arm["name"]] = asdict(compute_factorial_metrics(selected))
-        parse_failures = sum(outcome.done_reason == "invalid_response" for outcome in selected)
-        arm_reports[arm["name"]]["parse_failure_rate"] = {
-            "value": parse_failures / len(selected) if selected else 0.0,
-            "denominator": len(selected),
-        }
+            else:
+                arm_reports[arm["name"]] = asdict(compute_factorial_metrics(selected))
+            parse_failures = sum(outcome.done_reason == "invalid_response" for outcome in selected)
+            arm_reports[arm["name"]]["parse_failure_rate"] = {
+                "value": parse_failures / len(selected) if selected else 0.0,
+                "denominator": len(selected),
+            }
+        if variant == "quartet_2x2":
+            paired_contrasts = _paired_prompt_arm_contrasts(episodes, outcomes)
     summary = {
+        "status": (
+            "eligible-for-scientific-analysis"
+            if serving_validation["passed"]
+            else "invalid-serving-reproducibility"
+        ),
         "manifest": run_manifest,
         "manifest_hash": manifest_hash,
         "stage_manifest": stage_manifest,
         "stage_manifest_hash": stage_manifest_hash,
         "trace": str(trace_path),
+        "serving_validation": serving_validation,
         "reports": arm_reports,
-        "paired_contrasts": (
-            _paired_prompt_arm_contrasts(episodes, outcomes) if variant == "quartet_2x2" else {}
-        ),
+        "paired_contrasts": paired_contrasts,
     }
-    (output_dir / f"factorial_{model_cfg['label']}_summary.json").write_text(
-        json.dumps(summary, indent=2, sort_keys=True) + "\n"
-    )
+    summary_path = output_dir / f"factorial_{model_cfg['label']}_summary.json"
+    summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+    if not serving_validation["passed"] and serving_validation["thresholds"]["fail_closed"]:
+        raise RuntimeError(
+            "serving reproducibility gate failed; scientific reports were suppressed; "
+            f"inspect {summary_path}"
+        )
     return summary
+
+
+def audit_identical_prompt_generations(
+    step_records: list[dict[str, Any]],
+    requirements: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Audit independent calls for byte-identical public policy inputs.
+
+    Crossed mechanism cells deliberately issue separate model calls even when
+    their full visible conversations are identical. Any response or parsed-action
+    disagreement within such a group is serving nondeterminism, not evidence that
+    the policy responded to the hidden mechanism.
+    """
+    requirements = requirements or {}
+    thresholds = {
+        "minimum_replicated_prompt_groups": int(
+            requirements.get("minimum_replicated_prompt_groups", 1)
+        ),
+        "minimum_initial_mechanism_axis_groups": int(
+            requirements.get("minimum_initial_mechanism_axis_groups", 0)
+        ),
+        "maximum_response_conflict_groups": int(
+            requirements.get("maximum_response_conflict_groups", 0)
+        ),
+        "maximum_action_conflict_groups": int(
+            requirements.get("maximum_action_conflict_groups", 0)
+        ),
+        "maximum_candidate_set_conflict_groups": int(
+            requirements.get("maximum_candidate_set_conflict_groups", 0)
+        ),
+        "fail_closed": bool(requirements.get("fail_closed", True)),
+    }
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for record in step_records:
+        grouped.setdefault(str(record["prompt_hash"]), []).append(record)
+    replicated = {key: group for key, group in grouped.items() if len(group) > 1}
+
+    initial_axis_groups: dict[tuple[int, str, int], list[dict[str, Any]]] = {}
+    for record in step_records:
+        if int(record.get("decision_index", -1)) != 0:
+            continue
+        key = (
+            int(record["base_seed"]),
+            str(record["prompt_arm"]),
+            int(record["condition"]["cue_slot"]),
+        )
+        initial_axis_groups.setdefault(key, []).append(record)
+    complete_initial_axis_groups = {
+        key: group
+        for key, group in initial_axis_groups.items()
+        if len({int(record["condition"]["mechanism_slot"]) for record in group}) >= 2
+    }
+    initial_axis_prompt_conflicts = [
+        {
+            "base_seed": key[0],
+            "prompt_arm": key[1],
+            "cue_slot": key[2],
+            "prompt_hashes": sorted({str(record["prompt_hash"]) for record in group}),
+        }
+        for key, group in sorted(complete_initial_axis_groups.items())
+        if len({str(record["prompt_hash"]) for record in group}) > 1
+    ]
+
+    def _conflicts(field) -> list[dict[str, Any]]:
+        conflicts = []
+        for prompt_hash, group in sorted(replicated.items()):
+            values = {field(record) for record in group}
+            if len(values) <= 1:
+                continue
+            conflicts.append(
+                {
+                    "prompt_hash": prompt_hash,
+                    "call_count": len(group),
+                    "base_seeds": sorted({int(record["base_seed"]) for record in group}),
+                    "condition_ids": sorted({str(record["condition"]["id"]) for record in group}),
+                    "prompt_arms": sorted({str(record["prompt_arm"]) for record in group}),
+                }
+            )
+        return conflicts
+
+    def _initial_axis_conflicts(field) -> list[dict[str, Any]]:
+        conflicts = []
+        for key, group in sorted(complete_initial_axis_groups.items()):
+            if len({field(record) for record in group}) <= 1:
+                continue
+            conflicts.append(
+                {
+                    "base_seed": key[0],
+                    "prompt_arm": key[1],
+                    "cue_slot": key[2],
+                    "condition_ids": sorted({str(record["condition"]["id"]) for record in group}),
+                }
+            )
+        return conflicts
+
+    response_conflicts = _conflicts(
+        lambda record: content_hash(record["generation"].get("response", ""))
+    )
+    action_conflicts = _conflicts(lambda record: json.dumps(record["action"], sort_keys=True))
+    candidate_conflicts = _conflicts(lambda record: str(record["candidate_set_hash"]))
+    initial_axis_response_conflicts = _initial_axis_conflicts(
+        lambda record: content_hash(record["generation"].get("response", ""))
+    )
+    initial_axis_action_conflicts = _initial_axis_conflicts(
+        lambda record: json.dumps(record["action"], sort_keys=True)
+    )
+    initial_axis_candidate_conflicts = _initial_axis_conflicts(
+        lambda record: str(record["candidate_set_hash"])
+    )
+    counts = {
+        "step_records": len(step_records),
+        "unique_prompt_groups": len(grouped),
+        "replicated_prompt_groups": len(replicated),
+        "replicated_calls": sum(len(group) for group in replicated.values()),
+        "initial_mechanism_axis_groups": len(complete_initial_axis_groups),
+        "initial_mechanism_axis_prompt_conflict_groups": len(initial_axis_prompt_conflicts),
+        "initial_mechanism_axis_response_conflict_groups": len(initial_axis_response_conflicts),
+        "initial_mechanism_axis_action_conflict_groups": len(initial_axis_action_conflicts),
+        "initial_mechanism_axis_candidate_set_conflict_groups": len(
+            initial_axis_candidate_conflicts
+        ),
+        "response_conflict_groups": len(response_conflicts),
+        "action_conflict_groups": len(action_conflicts),
+        "candidate_set_conflict_groups": len(candidate_conflicts),
+    }
+    passed = (
+        counts["replicated_prompt_groups"] >= thresholds["minimum_replicated_prompt_groups"]
+        and counts["initial_mechanism_axis_groups"]
+        >= thresholds["minimum_initial_mechanism_axis_groups"]
+        and counts["initial_mechanism_axis_prompt_conflict_groups"] == 0
+        and counts["initial_mechanism_axis_response_conflict_groups"]
+        <= thresholds["maximum_response_conflict_groups"]
+        and counts["initial_mechanism_axis_action_conflict_groups"]
+        <= thresholds["maximum_action_conflict_groups"]
+        and counts["initial_mechanism_axis_candidate_set_conflict_groups"]
+        <= thresholds["maximum_candidate_set_conflict_groups"]
+        and counts["response_conflict_groups"] <= thresholds["maximum_response_conflict_groups"]
+        and counts["action_conflict_groups"] <= thresholds["maximum_action_conflict_groups"]
+        and counts["candidate_set_conflict_groups"]
+        <= thresholds["maximum_candidate_set_conflict_groups"]
+    )
+    return {
+        "passed": passed,
+        "scientific_results_eligible": passed,
+        "unit": "independent calls sharing the full system-and-conversation hash",
+        "counts": counts,
+        "thresholds": thresholds,
+        "conflicts": {
+            "responses": response_conflicts,
+            "actions": action_conflicts,
+            "candidate_sets": candidate_conflicts,
+            "initial_mechanism_axis_prompts": initial_axis_prompt_conflicts,
+            "initial_mechanism_axis_responses": initial_axis_response_conflicts,
+            "initial_mechanism_axis_actions": initial_axis_action_conflicts,
+            "initial_mechanism_axis_candidate_sets": initial_axis_candidate_conflicts,
+        },
+    }
 
 
 def _repository_commit() -> str:
@@ -495,6 +674,8 @@ def validate_stage_manifest(
         raise ValueError("configured prompt arms do not match the frozen manifest")
     if int(cfg.get("concurrency", 8)) != int(manifest.get("concurrency", -1)):
         raise ValueError("configured concurrency does not match the frozen manifest")
+    if cfg.get("serving_validation") != manifest.get("serving_validation"):
+        raise ValueError("configured serving validation does not match the frozen manifest")
     locked_models = manifest.get("models", {})
     label = str(model_cfg["label"])
     if locked_models.get(label) != _model_lock(model_cfg):
