@@ -3,6 +3,9 @@
 The model path targets an OpenAI-compatible *local* server. It does not make
 paid provider calls. Start one pinned model server at a time, then select the
 matching model label from ``configs/factorial_v02.yaml``.
+
+Live acquisition disables cache reads and validates uncached independent calls.
+Artifact replay is cache-only and cannot emit a serving-validation pass.
 """
 
 from __future__ import annotations
@@ -52,6 +55,8 @@ from crucible.utils.serialization import to_dict  # noqa: E402
 PROMPT_VERSION = "factorial-neutral-v1"
 CANDIDATE_ORDER_VERSION = "macro-kind-slot-v1"
 MACRO_COMPILER_VERSION = "legal-bfs-v1"
+LIVE_ACQUISITION = "live_acquisition"
+ARTIFACT_REPLAY = "artifact_replay"
 FACTORIAL_SYSTEM_PROMPT = """\
 You control an epistemic policy over three tools. On each decision you receive
 public tool features, any detector evidence, and a numbered list containing only
@@ -247,11 +252,21 @@ def run_local_model(
     history_mode = str(cfg.get("history_mode", "full"))
     if history_mode not in {"full", "compact_ledger"}:
         raise ValueError("history_mode must be 'full' or 'compact_ledger'")
+    execution_mode = str(cfg.get("execution_mode", LIVE_ACQUISITION))
+    if execution_mode not in {LIVE_ACQUISITION, ARTIFACT_REPLAY}:
+        raise ValueError(f"execution_mode must be {LIVE_ACQUISITION!r} or {ARTIFACT_REPLAY!r}")
+    cache_policy = {
+        "read_enabled": execution_mode == ARTIFACT_REPLAY,
+        "write_enabled": execution_mode == LIVE_ACQUISITION,
+        "require_hits": execution_mode == ARTIFACT_REPLAY,
+    }
     run_manifest = {
         "schema_version": TRACE_SCHEMA_VERSION,
         "protocol": PROTOCOL_NAME,
         "variant": variant,
         "history_mode": history_mode,
+        "execution_mode": execution_mode,
+        "cache_policy": cache_policy,
         "prompt_version": PROMPT_VERSION,
         "candidate_order_version": CANDIDATE_ORDER_VERSION,
         "macro_action_compiler_version": MACRO_COMPILER_VERSION,
@@ -271,9 +286,23 @@ def run_local_model(
         "stage": stage,
         "stage_manifest_hash": stage_manifest_hash,
     }
+    cache_identity_manifest = {
+        **run_manifest,
+        "execution_mode": LIVE_ACQUISITION,
+        "cache_policy": {
+            "read_enabled": False,
+            "write_enabled": True,
+            "require_hits": False,
+        },
+    }
+    cache_namespace_hash = content_hash(cache_identity_manifest)
+    run_manifest["cache_namespace_hash"] = cache_namespace_hash
     manifest_hash = content_hash(run_manifest)
     output_dir.mkdir(parents=True, exist_ok=True)
-    cache = ResponseCache(output_dir / "cache" / f"{model_cfg['label']}-{manifest_hash[:12]}.jsonl")
+    cache = ResponseCache(
+        output_dir / "cache" / f"{model_cfg['label']}-{cache_namespace_hash[:12]}.jsonl",
+        **cache_policy,
+    )
     output_ceiling = int(model_cfg.get("output_ceiling", 1024))
     generation = {
         "max_new_tokens": output_ceiling,
@@ -283,12 +312,17 @@ def run_local_model(
         "run_manifest": run_manifest,
         **model_cfg.get("generation", {}),
     }
+    cache_key_generation = {
+        **generation,
+        "run_manifest": cache_identity_manifest,
+    }
     backend = make_backend(
         "openai",
         model_id,
         cache=cache,
         base_url=cfg.get("base_url", "http://127.0.0.1:8000/v1"),
         model_revision=revision,
+        cache_key_params=cache_key_generation,
         **generation,
     )
     episodes = _build_episodes(seeds, arms, variant=variant)
@@ -406,10 +440,11 @@ def run_local_model(
     serving_validation = audit_identical_prompt_generations(
         step_records,
         cfg.get("serving_validation", {}),
+        execution_mode=execution_mode,
     )
     arm_reports = {}
     paired_contrasts: dict[str, dict[str, Any]] = {}
-    if serving_validation["passed"]:
+    if serving_validation["scientific_results_eligible"] is True:
         for arm in arms:
             selected = [
                 outcome
@@ -431,12 +466,15 @@ def run_local_model(
             }
         if variant == "quartet_2x2":
             paired_contrasts = _paired_prompt_arm_contrasts(episodes, outcomes)
+    status = (
+        "artifact-replay-no-live-validation"
+        if execution_mode == ARTIFACT_REPLAY
+        else "eligible-for-scientific-analysis"
+        if serving_validation["passed"]
+        else "invalid-serving-reproducibility"
+    )
     summary = {
-        "status": (
-            "eligible-for-scientific-analysis"
-            if serving_validation["passed"]
-            else "invalid-serving-reproducibility"
-        ),
+        "status": status,
         "manifest": run_manifest,
         "manifest_hash": manifest_hash,
         "stage_manifest": stage_manifest,
@@ -448,7 +486,11 @@ def run_local_model(
     }
     summary_path = output_dir / f"factorial_{model_cfg['label']}_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
-    if not serving_validation["passed"] and serving_validation["thresholds"]["fail_closed"]:
+    if (
+        execution_mode == LIVE_ACQUISITION
+        and not serving_validation["passed"]
+        and serving_validation["thresholds"]["fail_closed"]
+    ):
         raise RuntimeError(
             "serving reproducibility gate failed; scientific reports were suppressed; "
             f"inspect {summary_path}"
@@ -459,6 +501,8 @@ def run_local_model(
 def audit_identical_prompt_generations(
     step_records: list[dict[str, Any]],
     requirements: dict[str, Any] | None = None,
+    *,
+    execution_mode: str = LIVE_ACQUISITION,
 ) -> dict[str, Any]:
     """Audit independent calls for byte-identical public policy inputs.
 
@@ -467,6 +511,29 @@ def audit_identical_prompt_generations(
     disagreement within such a group is serving nondeterminism, not evidence that
     the policy responded to the hidden mechanism.
     """
+    if execution_mode not in {LIVE_ACQUISITION, ARTIFACT_REPLAY}:
+        raise ValueError(f"unknown execution mode {execution_mode!r}")
+    cached_records = [
+        record for record in step_records if record["generation"].get("cache_hit") is True
+    ]
+    uncached_records = [
+        record for record in step_records if record["generation"].get("cache_hit") is not True
+    ]
+    if execution_mode == ARTIFACT_REPLAY:
+        return {
+            "performed": False,
+            "passed": None,
+            "scientific_results_eligible": False,
+            "execution_mode": execution_mode,
+            "reason": "cache-only artifact replay cannot validate the current serving process",
+            "counts": {
+                "step_records": len(step_records),
+                "cache_hit_records": len(cached_records),
+                "uncached_records": len(uncached_records),
+                "server_contacted": bool(uncached_records),
+            },
+        }
+
     requirements = requirements or {}
     thresholds = {
         "minimum_replicated_prompt_groups": int(
@@ -484,15 +551,16 @@ def audit_identical_prompt_generations(
         "maximum_candidate_set_conflict_groups": int(
             requirements.get("maximum_candidate_set_conflict_groups", 0)
         ),
+        "require_all_uncached": bool(requirements.get("require_all_uncached", True)),
         "fail_closed": bool(requirements.get("fail_closed", True)),
     }
     grouped: dict[str, list[dict[str, Any]]] = {}
-    for record in step_records:
+    for record in uncached_records:
         grouped.setdefault(str(record["prompt_hash"]), []).append(record)
     replicated = {key: group for key, group in grouped.items() if len(group) > 1}
 
     initial_axis_groups: dict[tuple[int, str, int], list[dict[str, Any]]] = {}
-    for record in step_records:
+    for record in uncached_records:
         if int(record.get("decision_index", -1)) != 0:
             continue
         key = (
@@ -565,6 +633,9 @@ def audit_identical_prompt_generations(
     )
     counts = {
         "step_records": len(step_records),
+        "uncached_records": len(uncached_records),
+        "cache_hit_records": len(cached_records),
+        "server_contacted": bool(uncached_records),
         "unique_prompt_groups": len(grouped),
         "replicated_prompt_groups": len(replicated),
         "replicated_calls": sum(len(group) for group in replicated.values()),
@@ -580,7 +651,9 @@ def audit_identical_prompt_generations(
         "candidate_set_conflict_groups": len(candidate_conflicts),
     }
     passed = (
-        counts["replicated_prompt_groups"] >= thresholds["minimum_replicated_prompt_groups"]
+        counts["server_contacted"]
+        and (not thresholds["require_all_uncached"] or counts["cache_hit_records"] == 0)
+        and counts["replicated_prompt_groups"] >= thresholds["minimum_replicated_prompt_groups"]
         and counts["initial_mechanism_axis_groups"]
         >= thresholds["minimum_initial_mechanism_axis_groups"]
         and counts["initial_mechanism_axis_prompt_conflict_groups"] == 0
@@ -596,8 +669,10 @@ def audit_identical_prompt_generations(
         <= thresholds["maximum_candidate_set_conflict_groups"]
     )
     return {
+        "performed": True,
         "passed": passed,
         "scientific_results_eligible": passed,
+        "execution_mode": execution_mode,
         "unit": "independent calls sharing the full system-and-conversation hash",
         "counts": counts,
         "thresholds": thresholds,
@@ -674,6 +749,8 @@ def validate_stage_manifest(
         raise ValueError("configured prompt arms do not match the frozen manifest")
     if int(cfg.get("concurrency", 8)) != int(manifest.get("concurrency", -1)):
         raise ValueError("configured concurrency does not match the frozen manifest")
+    if cfg.get("execution_mode", LIVE_ACQUISITION) != manifest.get("execution_mode"):
+        raise ValueError("configured execution mode does not match the frozen manifest")
     if cfg.get("serving_validation") != manifest.get("serving_validation"):
         raise ValueError("configured serving validation does not match the frozen manifest")
     locked_models = manifest.get("models", {})

@@ -2,6 +2,7 @@
 # endpoint, then run with --model LABEL --stage confirmatory and the frozen
 # configs/confirmatory_manifest.json. The runner refuses a dirty or mismatched checkout.
 base_url: http://127.0.0.1:8000/v1
+execution_mode: live_acquisition
 concurrency: 8
 serving_validation:
   minimum_replicated_prompt_groups: 1
@@ -9,6 +10,7 @@ serving_validation:
   maximum_response_conflict_groups: 0
   maximum_action_conflict_groups: 0
   maximum_candidate_set_conflict_groups: 0
+  require_all_uncached: true
   fail_closed: true
 seeds: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
         112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,

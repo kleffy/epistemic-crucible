@@ -19,6 +19,11 @@ its Humming MXFP4 kernel explicitly rejected batch-invariant execution. GPT-OSS
 therefore remains blocked until a replacement serving stack passes the in-run
 zero-conflict gate in `run_factorial_eval.py`.
 
+The gate separates live acquisition from artifact replay. Live runs cannot read
+the response cache and require every audited record to report `cache_hit=false`;
+replay runs require cache hits, never contact a server, and cannot emit a passing
+serving-validation status.
+
 The supplied acceptance files are preserved verbatim. Run them together with:
 
 ```bash

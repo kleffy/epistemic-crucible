@@ -65,13 +65,25 @@ class GenerationRecord:
 
 
 class ResponseCache:
-    """Disk-backed prompt→response cache (one JSONL file per model)."""
+    """Disk-backed prompt→response cache with explicit acquisition/replay policy."""
 
-    def __init__(self, path: str | pathlib.Path | None) -> None:
+    def __init__(
+        self,
+        path: str | pathlib.Path | None,
+        *,
+        read_enabled: bool = True,
+        write_enabled: bool = True,
+        require_hits: bool = False,
+    ) -> None:
+        if require_hits and not read_enabled:
+            raise ValueError("require_hits requires cache reads")
         self.path = pathlib.Path(path) if path else None
+        self.read_enabled = read_enabled
+        self.write_enabled = write_enabled
+        self.require_hits = require_hits
         self._mem: dict[str, str] = {}
         self._records: dict[str, dict] = {}
-        if self.path and self.path.exists():
+        if self.read_enabled and self.path and self.path.exists():
             with self.path.open() as fh:
                 for line in fh:
                     line = line.strip()
@@ -92,9 +104,13 @@ class ResponseCache:
         return hashlib.sha256(blob.encode()).hexdigest()
 
     def get(self, key: str) -> str | None:
+        if not self.read_enabled:
+            return None
         return self._mem.get(key)
 
     def get_record(self, key: str) -> dict | None:
+        if not self.read_enabled:
+            return None
         record = self._records.get(key)
         return dict(record) if record is not None else None
 
@@ -102,6 +118,8 @@ class ResponseCache:
         self.put_record(key, {"response": response})
 
     def put_record(self, key: str, record: dict) -> None:
+        if not self.write_enabled:
+            return
         if key in self._mem:
             return
         response = str(record["response"])
@@ -123,10 +141,18 @@ class LLMBackend(ABC):
     model_id: str
     gen_params: dict
 
-    def __init__(self, model_id: str, cache: ResponseCache | None = None, **gen_params) -> None:
+    def __init__(
+        self,
+        model_id: str,
+        cache: ResponseCache | None = None,
+        *,
+        cache_key_params: dict[str, Any] | None = None,
+        **gen_params,
+    ) -> None:
         self.model_id = model_id
         self.cache = cache
         self.gen_params = {"max_new_tokens": 192, "temperature": 0.0, **gen_params}
+        self.cache_key_params = cache_key_params
 
     def generate_batch(
         self,
@@ -165,10 +191,10 @@ class LLMBackend(ABC):
         for i, (conv, context) in enumerate(zip(conversations, cache_contexts, strict=True)):
             key = None
             if self.cache is not None:
-                cache_parameters = self.gen_params
+                cache_parameters = self.cache_key_params or self.gen_params
                 if context is not None:
                     cache_parameters = {
-                        "generation": self.gen_params,
+                        "generation": cache_parameters,
                         "experimental_context": context,
                     }
                 key = ResponseCache.key(self.model_id, system, conv, cache_parameters)
@@ -188,6 +214,11 @@ class LLMBackend(ABC):
                     continue
             misses.append(conv)
             miss_idx.append((i, key))
+        if misses and self.cache is not None and self.cache.require_hits:
+            raise RuntimeError(
+                "artifact replay cache miss: live generation is disabled "
+                f"({len(misses)} missing responses)"
+            )
         if misses:
             generated = self._generate_batch_records(system, misses)
             for (i, key), record in zip(miss_idx, generated):
