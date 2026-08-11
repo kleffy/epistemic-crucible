@@ -1,0 +1,161 @@
+{
+  "build_command": "make v02",
+  "build_verification": {
+    "extracted_text_matches": true,
+    "overfull_box_warnings": false,
+    "page_count": 8,
+    "preserved_pdf": {
+      "sha256": "39bb252e5a032c91deceb5b26b00932215b985849a0500e50bfbf180596e69b6",
+      "size_bytes": 224842
+    },
+    "rebuilt_pdf": {
+      "sha256": "d410b9f62e651022ddaa81a52a0b48f90e7165ddda93b06f18f070f72cbb4140",
+      "size_bytes": 224842
+    },
+    "undefined_reference_warnings": false
+  },
+  "captured_at_utc": "2026-08-11T20:00:06.240127+00:00",
+  "files": {
+    ".gitignore": {
+      "sha256": "ff83f8860c38fc6f36e3531da639b13b97752dddf0c8abe37b0cdd4532f9e5c1",
+      "size_bytes": 269
+    },
+    "Makefile": {
+      "sha256": "932537dc78d16fa45fffff64d543b95565b4c64b37c7a7bb54ae21765282f19e",
+      "size_bytes": 2736
+    },
+    "references.bib": {
+      "sha256": "046918a763153a041a51ffca7018ed1b572cc8580d89fa4bca8c73c04a34d675",
+      "size_bytes": 19650
+    },
+    "snapshot/confirmatory_manifest.json": {
+      "sha256": "612a40d8f4fb33cadec16f97420d0990e5bb73a3b3c78184b76282eb0c3cb874",
+      "size_bytes": 5404
+    },
+    "snapshot/create_manifest.py": {
+      "sha256": "0b3c4c874e24e6423b3d507843b94837efe5f2d20329a35208bcacd8206d5dac",
+      "size_bytes": 4458
+    },
+    "snapshot/preconfirmatory_review.pdf": {
+      "sha256": "39bb252e5a032c91deceb5b26b00932215b985849a0500e50bfbf180596e69b6",
+      "size_bytes": 224842
+    },
+    "v02/README.md": {
+      "sha256": "9b4d2d670311208691148b7a9721744ee3d2089957ffd5814dc25a1bd2514db7",
+      "size_bytes": 736
+    },
+    "v02/figures/attribution_plane.tex": {
+      "sha256": "3d57c2e88c0700e2bf0ff61ac2449ad9632e4a2e7b7884cb6cd554c855949435",
+      "size_bytes": 2877
+    },
+    "v02/figures/quartet.tex": {
+      "sha256": "c103d6cd562952f6847fba168ea43edec99a0aca5cf4c0f26be4cc2a6a37c370",
+      "size_bytes": 1606
+    },
+    "v02/iclr2027_conference.bst": {
+      "sha256": "2d67552db7ed38ccfccb5957b52f95656e25c249724761d3cf5f7922ad1844c5",
+      "size_bytes": 26973
+    },
+    "v02/iclr2027_conference.sty": {
+      "sha256": "797deef41724e93761426ac0cbcca46279a91cc650dd1f0ce76a4f08d2098ea6",
+      "size_bytes": 9025
+    },
+    "v02/main.tex": {
+      "sha256": "93515e8c02b0f7876ce7657f1843a79e9d900e6c2f4797595831420ba349b929",
+      "size_bytes": 1058
+    },
+    "v02/sections/abstract.tex": {
+      "sha256": "a922f506443d585f3a4537e1772e613c3d011e02508c9a429c4457ddce470b75",
+      "size_bytes": 1570
+    },
+    "v02/sections/ai_use.tex": {
+      "sha256": "88135803476342000d1253090a70faac384b0a5357ecb32fcd745e9f4a6e8851",
+      "size_bytes": 453
+    },
+    "v02/sections/appendix.tex": {
+      "sha256": "32aea213fa0ab9068c1291c03ee02c515245be0c375428f820906bc3aa74dd75",
+      "size_bytes": 1584
+    },
+    "v02/sections/integrity.tex": {
+      "sha256": "0413d038e18951ffb828b691d16195a789e7d1206ac459c81b0375f4bda5aab7",
+      "size_bytes": 2088
+    },
+    "v02/sections/introduction.tex": {
+      "sha256": "7cf000a022858e9ed12d70e8eb25416f358b12db921402573a4fd0dee813f1aa",
+      "size_bytes": 2481
+    },
+    "v02/sections/limitations.tex": {
+      "sha256": "a71ca34046bd8bc8a6f102dc222628d010bb064d857b4f887a014436b20bf092",
+      "size_bytes": 1192
+    },
+    "v02/sections/method.tex": {
+      "sha256": "1b83a42d20816eff35adcedafff8cf775a6f3f45e99bf57e0b756d10751c0c46",
+      "size_bytes": 4245
+    },
+    "v02/sections/prior_record.tex": {
+      "sha256": "4769cd23091cdca974a8f0a69dac74d9f8e6bae78016638f799da77c6584d0c9",
+      "size_bytes": 482
+    },
+    "v02/sections/related_work.tex": {
+      "sha256": "189dd16b33f97784e5798155cde10de1c11f566325b3490535b96693bded69bc",
+      "size_bytes": 2645
+    },
+    "v02/sections/reproducibility.tex": {
+      "sha256": "87bbe49ca6bd9689414638739cdc2acf4910230969602d678e4553ebe37db23a",
+      "size_bytes": 2022
+    },
+    "v02/sections/results.tex": {
+      "sha256": "d26b269327fe02cb6f917b8f1afef884f163f174c3d2d03e48594997aaea242d",
+      "size_bytes": 4353
+    },
+    "v02/sections/study.tex": {
+      "sha256": "d77ad6523ea376db67d6910c939554868874cca32a76e126682179b9ea0d2578",
+      "size_bytes": 2644
+    }
+  },
+  "original_paper_tree": {
+    "head": "daf18e40d7708a0a06662dcc604bbabcf38cfb74",
+    "path": "/mnt/data/kleffy-ai-workspace/aib-labs/projects/crucible-paper",
+    "status_porcelain": [
+      " M .gitignore",
+      " M Makefile",
+      " M main.tex",
+      " M references.bib",
+      " M sections/analysis.tex",
+      " M sections/appendix.tex",
+      " M sections/intro.tex",
+      " M sections/limitations.tex",
+      " M sections/protocol.tex",
+      " M sections/reproducibility.tex",
+      "?? v02/README.md",
+      "?? v02/figures/attribution_plane.tex",
+      "?? v02/figures/quartet.tex",
+      "?? v02/iclr2027_conference.bst",
+      "?? v02/iclr2027_conference.sty",
+      "?? v02/main.tex",
+      "?? v02/sections/abstract.tex",
+      "?? v02/sections/ai_use.tex",
+      "?? v02/sections/appendix.tex",
+      "?? v02/sections/integrity.tex",
+      "?? v02/sections/introduction.tex",
+      "?? v02/sections/limitations.tex",
+      "?? v02/sections/method.tex",
+      "?? v02/sections/prior_record.tex",
+      "?? v02/sections/related_work.tex",
+      "?? v02/sections/reproducibility.tex",
+      "?? v02/sections/results.tex",
+      "?? v02/sections/study.tex"
+    ]
+  },
+  "protocol": {
+    "freeze_commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+    "freeze_parent": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
+    "freeze_tag": "v0.2-confirmatory-freeze-20260811",
+    "freeze_tag_target": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+    "protocol_commit": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
+    "protocol_tag": "v0.2-protocol-rc2",
+    "protocol_tag_target": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c"
+  },
+  "schema_version": "0.1",
+  "status": "pre-confirmatory-outcomes-unobserved"
+}
