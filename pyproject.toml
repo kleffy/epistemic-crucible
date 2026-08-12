@@ -36,11 +36,15 @@ llm = [
     "transformers>=4.45",
     "accelerate>=0.34",
     "huggingface_hub>=0.25",
+    "bitsandbytes==0.50.0",
+    "mistral-common>=1.6.2",
     "anthropic>=0.40",
     "openai>=1.50",
 ]
 serve = [
     "vllm==0.26.0",
+    # FlashInfer JIT-compiles sampling kernels during vLLM warm-up.
+    "ninja>=1.13",
     "amd-quark==0.12.post1; python_version >= '3.11' and python_version < '3.14'",
     "openai>=1.50",
 ]

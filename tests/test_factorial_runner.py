@@ -135,6 +135,68 @@ def test_invalid_model_responses_are_abstentions_and_step_records_are_loadable(
     assert summary["serving_validation"]["counts"]["server_contacted"] is True
 
 
+def test_factorial_runner_selects_declared_direct_transformers_backend(tmp_path, monkeypatch):
+    from crucible.agents.llm_backends import GenerationRecord
+
+    observed = {}
+
+    class InvalidBackend:
+        def generate_batch_records(self, system, conversations, *, cache_contexts):
+            return [
+                GenerationRecord(
+                    response="invalid",
+                    model_id="test/model",
+                    backend="transformers",
+                    requested_params={},
+                    effective_params={},
+                    usage={},
+                    finish_reason="stop",
+                    response_id=None,
+                )
+                for _ in conversations
+            ]
+
+    def backend_factory(kind, model_id, **kwargs):
+        observed.update(kind=kind, model_id=model_id, kwargs=kwargs)
+        return InvalidBackend()
+
+    monkeypatch.setattr("experiments.run_factorial_eval.make_backend", backend_factory)
+    config = {
+        "seeds": [1000],
+        "prompt_arms": [{"name": "neutral", "mode": "neutral", "count": 0, "seed_count": 1}],
+    }
+    model = {
+        "label": "test-model",
+        "id": "test/model",
+        "revision": "a" * 40,
+        "tokenizer_revision": "b" * 40,
+        "output_ceiling": 16,
+        "generation": {},
+        "serving": {
+            "backend": "transformers",
+            "device": "cuda",
+            "dtype": "bfloat16",
+            "batch_size": 1,
+            "quantization": "bitsandbytes-nf4",
+        },
+    }
+    summary = run_local_model(
+        config,
+        model,
+        tmp_path,
+        stage="pilot",
+        stage_manifest={"stage": "pilot", "base_seeds": [1000]},
+        stage_manifest_hash="a" * 64,
+    )
+    assert observed["kind"] == "transformers"
+    assert observed["kwargs"]["model_revision"] == "a" * 40
+    assert observed["kwargs"]["tokenizer_revision"] == "b" * 40
+    assert observed["kwargs"]["batch_size"] == 1
+    assert observed["kwargs"]["quantization"] == "bitsandbytes-nf4"
+    assert summary["manifest"]["backend"] == "local_transformers"
+    assert summary["manifest"]["server"] is None
+
+
 def test_serving_reproducibility_gate_rejects_conflicting_identical_prompts(tmp_path, monkeypatch):
     from crucible.agents.llm_backends import GenerationRecord
 
@@ -304,13 +366,11 @@ def test_live_validation_ignores_clean_stale_cache_and_contacts_current_backend(
 def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monkeypatch):
     from crucible.agents.llm_backends import MockBackend
 
-    calls = {"count": 0, "explode": False}
+    calls = {"count": 0}
 
     def backend_factory(_backend, model_id, **kwargs):
         def policy(_system, _conversation):
             calls["count"] += 1
-            if calls["explode"]:
-                raise AssertionError("artifact replay contacted the backend")
             return "stable\nACTION: 0"
 
         return MockBackend(model_id=model_id, policy=policy, **kwargs)
@@ -337,8 +397,12 @@ def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monk
         "tokenizer_revision": "0" * 40,
         "output_ceiling": 16,
         "generation": {},
-        "serving": {},
+        "serving": {
+            "backend": "transformers",
+            "environment": {"REPLAY_TEST_ENV": "required-live"},
+        },
     }
+    monkeypatch.setenv("REPLAY_TEST_ENV", "required-live")
     run_local_model(
         config,
         model,
@@ -349,7 +413,19 @@ def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monk
     )
     assert calls["count"] == 4
 
-    calls.update(count=0, explode=True)
+    def live_backend_must_not_be_constructed(*args, **kwargs):
+        raise AssertionError("artifact replay constructed a live backend")
+
+    def model_must_not_be_loaded(*args, **kwargs):
+        raise AssertionError("artifact replay loaded model weights")
+
+    monkeypatch.setattr(
+        "experiments.run_factorial_eval.make_backend", live_backend_must_not_be_constructed
+    )
+    monkeypatch.setattr("crucible.agents.llm_backends._load_hf_model", model_must_not_be_loaded)
+    monkeypatch.setattr("experiments.run_factorial_eval._runtime_hardware", lambda: {"gpu": None})
+    monkeypatch.delenv("REPLAY_TEST_ENV")
+    calls["count"] = 0
     replay = run_local_model(
         {**config, "execution_mode": "artifact_replay"},
         model,
@@ -366,6 +442,19 @@ def test_cache_only_replay_cannot_emit_passing_serving_validation(tmp_path, monk
     assert replay["serving_validation"]["counts"]["cache_hit_records"] == 4
     assert replay["serving_validation"]["counts"]["server_contacted"] is False
     assert replay["reports"] == {}
+
+    cache_path = next((tmp_path / "cache").glob("*.jsonl"))
+    cached_lines = cache_path.read_text().splitlines(keepends=True)
+    cache_path.write_text("".join(cached_lines[1:]))
+    with pytest.raises(RuntimeError, match="artifact replay cache miss"):
+        run_local_model(
+            {**config, "execution_mode": "artifact_replay"},
+            model,
+            tmp_path,
+            stage="pilot",
+            stage_manifest={"stage": "pilot", "base_seeds": [1000]},
+            stage_manifest_hash="a" * 64,
+        )
 
 
 def test_hardware_provenance_tolerates_cpu_hosts_without_nvidia_smi(monkeypatch):
@@ -420,7 +509,7 @@ def test_gpt_oss_launch_profile_disables_nondeterministic_serving_paths():
     assert "VLLM_BATCH_INVARIANT=1" in script
     assert "failed the v0.2 identical-prompt serving gate" in script
 
-    with open("configs/factorial_v02.yaml") as handle:
+    with open("configs/factorial_pilot_v02.yaml") as handle:
         config = yaml.safe_load(handle)
     serving = config["models"][0]["serving"]
     assert serving["batch_invariant_requested"] is True
@@ -436,8 +525,9 @@ def test_pilot_and_confirmatory_seed_manifests_are_disjoint():
     confirmatory = json.loads(open("configs/confirmatory_manifest.json").read())
     assert set(pilot["base_seeds"]).isdisjoint(confirmatory["base_seeds"])
     assert confirmatory["bootstrap"]["resamples"] == 10_000
-    assert confirmatory["smallest_effect_of_interest"]["cue_tracking"] == 0.15
+    assert confirmatory["smallest_effect_of_interest"]["cue_following"] == 0.15
     assert confirmatory["base_seeds"] == list(range(100, 164))
+    assert confirmatory["variant"] == "challenge_3x2"
 
 
 def test_confirmatory_manifest_fails_closed_until_frozen_and_exact():
@@ -445,10 +535,11 @@ def test_confirmatory_manifest_fails_closed_until_frozen_and_exact():
         config = yaml.safe_load(handle)
     manifest = json.loads(open("configs/confirmatory_manifest.json").read())
     model = config["models"][0]
+    unfrozen = {**manifest, "frozen": False, "protocol_commit": None}
     with pytest.raises(ValueError, match="frozen=true"):
         validate_stage_manifest(
             "confirmatory",
-            manifest,
+            unfrozen,
             config,
             model,
             repository_commit="abc123",
@@ -482,7 +573,7 @@ def test_confirmatory_manifest_fails_closed_until_frozen_and_exact():
             repository_commit="abc123",
             working_tree_clean=False,
         )
-    mismatched_concurrency = {**frozen, "concurrency": 1}
+    mismatched_concurrency = {**frozen, "concurrency": 8}
     with pytest.raises(ValueError, match="configured concurrency"):
         validate_stage_manifest(
             "confirmatory",
@@ -516,5 +607,62 @@ def test_confirmatory_manifest_fails_closed_until_frozen_and_exact():
             config,
             model,
             repository_commit="abc123",
+            working_tree_clean=True,
+        )
+    mismatched_variant = {**frozen, "variant": "quartet_2x2"}
+    with pytest.raises(ValueError, match="factorial variant"):
+        validate_stage_manifest(
+            "confirmatory",
+            mismatched_variant,
+            config,
+            model,
+            repository_commit="abc123",
+            working_tree_clean=True,
+        )
+    mismatched_registry = {**frozen, "selected_models": ["mistral-small-3.2-24b"]}
+    with pytest.raises(ValueError, match="selected model registry"):
+        validate_stage_manifest(
+            "confirmatory",
+            mismatched_registry,
+            config,
+            model,
+            repository_commit="abc123",
+            working_tree_clean=True,
+        )
+
+
+def test_confirmatory_manifest_accepts_only_tagged_direct_freeze_wrapper(monkeypatch):
+    with open("configs/factorial_v02.yaml") as handle:
+        config = yaml.safe_load(handle)
+    manifest = json.loads(open("configs/confirmatory_manifest.json").read())
+    frozen = {
+        **manifest,
+        "frozen": True,
+        "protocol_commit": "protocol-sha",
+        "freeze_tag": "v0.2-confirmatory-freeze",
+    }
+    monkeypatch.setattr(
+        "experiments.run_factorial_eval._resolve_git_revision",
+        lambda revision: "freeze-sha" if revision == "v0.2-confirmatory-freeze" else None,
+    )
+    monkeypatch.setattr(
+        "experiments.run_factorial_eval._repository_parent",
+        lambda commit: "protocol-sha" if commit == "freeze-sha" else None,
+    )
+    validate_stage_manifest(
+        "confirmatory",
+        frozen,
+        config,
+        config["models"][0],
+        repository_commit="freeze-sha",
+        working_tree_clean=True,
+    )
+    with pytest.raises(ValueError, match="tagged direct freeze wrapper"):
+        validate_stage_manifest(
+            "confirmatory",
+            frozen,
+            config,
+            config["models"][0],
+            repository_commit="other-sha",
             working_tree_clean=True,
         )

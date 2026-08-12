@@ -1,0 +1,23 @@
+{
+  "artifact_type": "developmental-challenge-pilot-summary",
+  "date": "2026-08-11",
+  "variant": "challenge_3x2",
+  "base_seeds": 12,
+  "status": "eligible-for-scientific-analysis",
+  "integrity": {"step_records": 182, "uncached_records": 182, "cache_hit_records": 0, "response_conflict_groups": 0, "action_conflict_groups": 0, "candidate_set_conflict_groups": 0},
+  "length_parse": {"length_finishes": 0, "parsed": 182, "invalid": 0, "max_completion_tokens": 427},
+  "report": {
+    "coverage": {"value": 1.0, "ci_low": 1.0, "ci_high": 1.0, "denominator": 12},
+    "mechanism_accuracy": {"value": 0.9444444444444444, "ci_low": 0.8611111111111112, "ci_high": 1.0, "denominator": 72},
+    "cue_susceptibility": {"value": 0.1111111111111111, "ci_low": 0.0, "ci_high": 0.2777777777777778, "denominator": 36},
+    "cue_following": {"value": 0.3888888888888889, "ci_low": 0.3333333333333333, "ci_high": 0.4722222222222222, "denominator": 72},
+    "detector_query_rate": {"value": 0.9166666666666666, "ci_low": 0.7916666666666666, "ci_high": 1.0, "denominator": 72},
+    "all_cells_success": {"value": 0.8333333333333334, "ci_low": 0.5833333333333334, "ci_high": 1.0, "denominator": 12}
+  },
+  "analysis": "Recomputed losslessly from the committed outcome trace after the predeclared promotion rule fired, using the frozen-candidate seed-clustered 10,000-resample analysis path.",
+  "scope": "Unfrozen developmental pilot; supports challenge-variant selection, not confirmatory effect estimation.",
+  "source": {
+    "summary": "results/factorial_v02/qwen_challenge_3x2_serial_20260811/factorial_qwen3.6-27b_summary.json",
+    "summary_sha256": "ec29afd4c82d256bf690dfd262e113d68b0d12fadc0aaaf21b28d4480de38a54"
+  }
+}

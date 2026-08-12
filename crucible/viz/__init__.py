@@ -10,3 +10,7 @@ This sub-package contains:
 All functions require matplotlib. Install with:
     pip install epistemic-crucible[notebooks]
 """
+
+from crucible.viz.factorial import render_factorial_world
+
+__all__ = ["render_factorial_world"]

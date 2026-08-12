@@ -1,0 +1,80 @@
+{
+  "expected_initial_mechanism_axis_groups_per_model": 640,
+  "expected_outcomes_per_model": 1920,
+  "freeze_commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+  "models": [
+    {
+      "attempt": "qwen-attempt-001",
+      "cache_hits": 0,
+      "cache_records": 3819,
+      "complete_arm_reports": [
+        "cue_a",
+        "cue_b",
+        "mechanism_a",
+        "mechanism_b",
+        "neutral"
+      ],
+      "conflict_counts": {
+        "action_conflict_groups": 0,
+        "candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_action_conflict_groups": 0,
+        "initial_mechanism_axis_candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_prompt_conflict_groups": 0,
+        "initial_mechanism_axis_response_conflict_groups": 0,
+        "response_conflict_groups": 0
+      },
+      "initial_mechanism_axis_groups": 640,
+      "model_id": "Qwen/Qwen3.6-27B",
+      "model_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+      "outcomes": 1920,
+      "repository_commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+      "run_manifest_hash": "bba438c3b27d929086c633786ee722ab14c87a7aa424b48856139f2c2740a2bb",
+      "stage_manifest_hash": "612a40d8f4fb33cadec16f97420d0990e5bb73a3b3c78184b76282eb0c3cb874",
+      "status": "eligible-for-scientific-analysis",
+      "step_records": 3819,
+      "summary_sha256": "7cdeb49984ebebff9799ce1828d81ee1b8dc61f860a1b7e9806c1eae098a9f07",
+      "tokenizer_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+      "trace": "raw/qwen-attempt-001/factorial_qwen3.6-27b_1786479103.jsonl",
+      "trace_sha256": "1eeab0add841d54d515a3f2f04949a7b374528dd175cde6ee0219e68d55ecb06",
+      "unique_seed_arm_condition_tuples": 1920
+    },
+    {
+      "attempt": "mistral-attempt-001",
+      "cache_hits": 0,
+      "cache_records": 4071,
+      "complete_arm_reports": [
+        "cue_a",
+        "cue_b",
+        "mechanism_a",
+        "mechanism_b",
+        "neutral"
+      ],
+      "conflict_counts": {
+        "action_conflict_groups": 0,
+        "candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_action_conflict_groups": 0,
+        "initial_mechanism_axis_candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_prompt_conflict_groups": 0,
+        "initial_mechanism_axis_response_conflict_groups": 0,
+        "response_conflict_groups": 0
+      },
+      "initial_mechanism_axis_groups": 640,
+      "model_id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+      "model_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+      "outcomes": 1920,
+      "repository_commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+      "run_manifest_hash": "bf448cbf958aea2f71c1339329565e35e06e94f2a9a31bb077e3f4f6098c7635",
+      "stage_manifest_hash": "612a40d8f4fb33cadec16f97420d0990e5bb73a3b3c78184b76282eb0c3cb874",
+      "status": "eligible-for-scientific-analysis",
+      "step_records": 4071,
+      "summary_sha256": "9d09251552e52cd9b0199e33fc36c7c75410ad668016d4eefa257598140fa4b5",
+      "tokenizer_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+      "trace": "raw/mistral-attempt-001/factorial_mistral-small-3.2-24b_1786506771.jsonl",
+      "trace_sha256": "41bd3a5be076f19835c6ea7fda51c58822f79f52dc3750b8111baf4342e2ea49",
+      "unique_seed_arm_condition_tuples": 1920
+    }
+  ],
+  "passed": true,
+  "schema": "frozen-confirmatory-structural-verification-v1",
+  "scientific_estimands_recomputed": false
+}

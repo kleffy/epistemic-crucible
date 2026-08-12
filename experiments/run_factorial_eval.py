@@ -1,8 +1,7 @@
-"""Run the v0.2 crossed-intervention controls or local vLLM study.
+"""Run the v0.2 crossed-intervention controls or local model study.
 
-The model path targets an OpenAI-compatible *local* server. It does not make
-paid provider calls. Start one pinned model server at a time, then select the
-matching model label from ``configs/factorial_v02.yaml``.
+The model path supports a declared direct-Transformers backend or an
+OpenAI-compatible *local* server. It does not make paid provider calls.
 
 Live acquisition disables cache reads and validates uncached independent calls.
 Artifact replay is cache-only and cannot emit a serving-validation pass.
@@ -13,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import pathlib
 import platform
 import random
@@ -29,7 +29,11 @@ _HERE = pathlib.Path(__file__).parent.parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
-from crucible.agents.llm_backends import ResponseCache, make_backend  # noqa: E402
+from crucible.agents.llm_backends import (  # noqa: E402
+    CacheOnlyBackend,
+    ResponseCache,
+    make_backend,
+)
 from crucible.agents.prompting import build_label_map  # noqa: E402
 from crucible.factorial import (  # noqa: E402
     PROTOCOL_NAME,
@@ -44,11 +48,12 @@ from crucible.factorial import (  # noqa: E402
     run_scripted_control,
 )
 from crucible.factorial_metrics import (  # noqa: E402
+    compute_challenge_metrics,
     compute_factorial_metrics,
     paired_arm_contrast,
+    paired_challenge_arm_contrast,
 )
 from crucible.ledger import content_hash  # noqa: E402
-from crucible.metrics import challenge_profile  # noqa: E402
 from crucible.objects import ObjectType  # noqa: E402
 from crucible.utils.serialization import to_dict  # noqa: E402
 
@@ -241,7 +246,7 @@ def run_local_model(
     stage_manifest: dict[str, Any],
     stage_manifest_hash: str,
 ) -> dict[str, Any]:
-    """Run one pinned model already served by a local OpenAI-compatible endpoint."""
+    """Run one pinned model through a declared local acquisition backend."""
     model_id = str(model_cfg["id"])
     revision = str(model_cfg["revision"])
     if len(revision) != 40 or any(char not in "0123456789abcdef" for char in revision):
@@ -260,6 +265,25 @@ def run_local_model(
         "write_enabled": execution_mode == LIVE_ACQUISITION,
         "require_hits": execution_mode == ARTIFACT_REPLAY,
     }
+    serving_cfg = dict(model_cfg.get("serving", {}))
+    backend_kind = str(serving_cfg.get("backend", "openai"))
+    if backend_kind not in {"openai", "transformers"}:
+        raise ValueError("factorial model backend must be 'openai' or 'transformers'")
+    declared_environment = dict(serving_cfg.get("environment", {}))
+    effective_environment = {
+        key: os.environ.get(key) for key in declared_environment if key in os.environ
+    }
+    if backend_kind == "transformers" and execution_mode == LIVE_ACQUISITION:
+        mismatched_environment = {
+            key: {"expected": str(value), "effective": os.environ.get(key)}
+            for key, value in declared_environment.items()
+            if os.environ.get(key) != str(value)
+        }
+        if mismatched_environment:
+            raise ValueError(
+                "direct Transformers environment does not match the serving manifest: "
+                f"{mismatched_environment}"
+            )
     run_manifest = {
         "schema_version": TRACE_SCHEMA_VERSION,
         "protocol": PROTOCOL_NAME,
@@ -274,31 +298,64 @@ def run_local_model(
         "model_id": model_id,
         "model_revision": revision,
         "tokenizer_revision": model_cfg.get("tokenizer_revision", revision),
-        "backend": "local_vllm",
-        "server": cfg.get("base_url", "http://127.0.0.1:8000/v1"),
+        "backend": "local_vllm" if backend_kind == "openai" else "local_transformers",
+        "server": (
+            cfg.get("base_url", "http://127.0.0.1:8000/v1") if backend_kind == "openai" else None
+        ),
         "concurrency": int(cfg.get("concurrency", 8)),
         "seeds": seeds,
         "arms": arms,
         "generation": model_cfg.get("generation", {}),
-        "serving": model_cfg.get("serving", {}),
-        "server_launch_manifest_hash": content_hash(model_cfg.get("serving", {})),
+        "serving": serving_cfg,
+        "effective_environment": effective_environment,
+        "server_launch_manifest_hash": content_hash(serving_cfg),
         "runtime_hardware": _runtime_hardware(),
         "stage": stage,
         "stage_manifest_hash": stage_manifest_hash,
     }
-    cache_identity_manifest = {
-        **run_manifest,
-        "execution_mode": LIVE_ACQUISITION,
-        "cache_policy": {
-            "read_enabled": False,
-            "write_enabled": True,
-            "require_hits": False,
-        },
-    }
+    output_dir.mkdir(parents=True, exist_ok=True)
+    acquisition_summary_path = output_dir / f"factorial_{model_cfg['label']}_summary.json"
+    if execution_mode == ARTIFACT_REPLAY:
+        if not acquisition_summary_path.exists():
+            raise RuntimeError(
+                "artifact replay requires the original live-acquisition summary "
+                f"at {acquisition_summary_path}"
+            )
+        acquisition_summary = json.loads(acquisition_summary_path.read_text())
+        acquisition_manifest = dict(acquisition_summary.get("manifest", {}))
+        recorded_namespace = acquisition_manifest.pop("cache_namespace_hash", None)
+        current_stable = dict(run_manifest)
+        acquisition_stable = dict(acquisition_manifest)
+        runtime_keys = {
+            "execution_mode",
+            "cache_policy",
+            "effective_environment",
+            "runtime_hardware",
+        }
+        for key in runtime_keys:
+            current_stable.pop(key, None)
+            acquisition_stable.pop(key, None)
+        if current_stable != acquisition_stable:
+            raise RuntimeError(
+                "artifact replay manifest does not match the original live acquisition"
+            )
+        cache_identity_manifest = acquisition_manifest
+    else:
+        recorded_namespace = None
+        cache_identity_manifest = {
+            **run_manifest,
+            "execution_mode": LIVE_ACQUISITION,
+            "cache_policy": {
+                "read_enabled": False,
+                "write_enabled": True,
+                "require_hits": False,
+            },
+        }
     cache_namespace_hash = content_hash(cache_identity_manifest)
+    if recorded_namespace is not None and recorded_namespace != cache_namespace_hash:
+        raise RuntimeError("live-acquisition cache namespace hash does not verify")
     run_manifest["cache_namespace_hash"] = cache_namespace_hash
     manifest_hash = content_hash(run_manifest)
-    output_dir.mkdir(parents=True, exist_ok=True)
     cache = ResponseCache(
         output_dir / "cache" / f"{model_cfg['label']}-{cache_namespace_hash[:12]}.jsonl",
         **cache_policy,
@@ -316,15 +373,28 @@ def run_local_model(
         **generation,
         "run_manifest": cache_identity_manifest,
     }
-    backend = make_backend(
-        "openai",
-        model_id,
-        cache=cache,
-        base_url=cfg.get("base_url", "http://127.0.0.1:8000/v1"),
-        model_revision=revision,
-        cache_key_params=cache_key_generation,
+    backend_kwargs: dict[str, Any] = {
+        "cache": cache,
+        "model_revision": revision,
+        "cache_key_params": cache_key_generation,
         **generation,
-    )
+    }
+    if execution_mode == ARTIFACT_REPLAY:
+        backend = CacheOnlyBackend(model_id, **backend_kwargs)
+    else:
+        if backend_kind == "openai":
+            backend_kwargs["base_url"] = cfg.get("base_url", "http://127.0.0.1:8000/v1")
+        else:
+            backend_kwargs.update(
+                {
+                    "tokenizer_revision": model_cfg.get("tokenizer_revision", revision),
+                    "device": serving_cfg.get("device", "cuda"),
+                    "dtype": serving_cfg.get("dtype", "bfloat16"),
+                    "batch_size": int(serving_cfg.get("batch_size", 1)),
+                    "quantization": serving_cfg.get("quantization"),
+                }
+            )
+        backend = make_backend(backend_kind, model_id, **backend_kwargs)
     episodes = _build_episodes(seeds, arms, variant=variant)
     trace_path = output_dir / f"factorial_{model_cfg['label']}_{int(time.time())}.jsonl"
     step_records: list[dict[str, Any]] = []
@@ -452,11 +522,7 @@ def run_local_model(
                 if episode.arm == arm["name"]
             ]
             if variant == "challenge_3x2":
-                arm_reports[arm["name"]] = asdict(
-                    challenge_profile(
-                        _outcome_record(outcome, str(model_cfg["label"])) for outcome in selected
-                    )
-                )
+                arm_reports[arm["name"]] = asdict(compute_challenge_metrics(selected))
             else:
                 arm_reports[arm["name"]] = asdict(compute_factorial_metrics(selected))
             parse_failures = sum(outcome.done_reason == "invalid_response" for outcome in selected)
@@ -464,8 +530,11 @@ def run_local_model(
                 "value": parse_failures / len(selected) if selected else 0.0,
                 "denominator": len(selected),
             }
-        if variant == "quartet_2x2":
-            paired_contrasts = _paired_prompt_arm_contrasts(episodes, outcomes)
+        paired_contrasts = _paired_prompt_arm_contrasts(
+            episodes,
+            outcomes,
+            variant=variant,
+        )
     status = (
         "artifact-replay-no-live-validation"
         if execution_mode == ARTIFACT_REPLAY
@@ -484,7 +553,11 @@ def run_local_model(
         "reports": arm_reports,
         "paired_contrasts": paired_contrasts,
     }
-    summary_path = output_dir / f"factorial_{model_cfg['label']}_summary.json"
+    summary_path = (
+        output_dir / f"factorial_{model_cfg['label']}_replay_summary.json"
+        if execution_mode == ARTIFACT_REPLAY
+        else acquisition_summary_path
+    )
     summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
     if (
         execution_mode == LIVE_ACQUISITION
@@ -699,6 +772,28 @@ def _repository_commit() -> str:
     return completed.stdout.strip() if completed.returncode == 0 else "unknown"
 
 
+def _resolve_git_revision(revision: str) -> str | None:
+    completed = subprocess.run(
+        ["git", "rev-parse", f"{revision}^{{commit}}"],
+        cwd=_HERE,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout.strip() if completed.returncode == 0 else None
+
+
+def _repository_parent(commit: str) -> str | None:
+    completed = subprocess.run(
+        ["git", "rev-parse", f"{commit}^"],
+        cwd=_HERE,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout.strip() if completed.returncode == 0 else None
+
+
 def _working_tree_clean() -> bool:
     completed = subprocess.run(
         ["git", "status", "--porcelain"],
@@ -747,6 +842,8 @@ def validate_stage_manifest(
         raise ValueError("confirmatory manifest must set frozen=true")
     if cfg.get("prompt_arms") != manifest.get("prompt_arms"):
         raise ValueError("configured prompt arms do not match the frozen manifest")
+    if variant != manifest.get("variant"):
+        raise ValueError("configured factorial variant does not match the frozen manifest")
     if int(cfg.get("concurrency", 8)) != int(manifest.get("concurrency", -1)):
         raise ValueError("configured concurrency does not match the frozen manifest")
     if cfg.get("execution_mode", LIVE_ACQUISITION) != manifest.get("execution_mode"):
@@ -755,11 +852,29 @@ def validate_stage_manifest(
         raise ValueError("configured serving validation does not match the frozen manifest")
     locked_models = manifest.get("models", {})
     label = str(model_cfg["label"])
+    selected_models = manifest.get("selected_models", [])
+    if set(selected_models) != set(locked_models):
+        raise ValueError("selected model registry does not match frozen model locks")
+    if label not in selected_models:
+        raise ValueError(f"model {label!r} is not selected for confirmation")
+    if set(selected_models) & set(manifest.get("excluded_models", {})):
+        raise ValueError("selected and excluded model registries overlap")
     if locked_models.get(label) != _model_lock(model_cfg):
         raise ValueError(f"model lock for {label!r} does not match the frozen manifest")
     actual_commit = repository_commit if repository_commit is not None else _repository_commit()
-    if manifest.get("protocol_commit") != actual_commit:
-        raise ValueError("repository commit does not match frozen protocol_commit")
+    protocol_commit = manifest.get("protocol_commit")
+    if protocol_commit != actual_commit:
+        freeze_tag = manifest.get("freeze_tag")
+        valid_freeze_wrapper = bool(
+            freeze_tag
+            and _resolve_git_revision(str(freeze_tag)) == actual_commit
+            and _repository_parent(actual_commit) == protocol_commit
+        )
+        if not valid_freeze_wrapper:
+            raise ValueError(
+                "repository commit is neither the frozen protocol commit nor its tagged "
+                "direct freeze wrapper"
+            )
     clean = working_tree_clean if working_tree_clean is not None else _working_tree_clean()
     if not clean:
         raise ValueError("confirmatory runs require a clean working tree")
@@ -879,19 +994,34 @@ def _default_prompt_arms() -> list[dict[str, Any]]:
 def _paired_prompt_arm_contrasts(
     episodes: list[_StudyEpisode],
     outcomes: list[CommitOutcome],
+    *,
+    variant: str = "quartet_2x2",
 ) -> dict[str, dict[str, Any]]:
     by_arm: dict[str, list[CommitOutcome]] = {}
     for episode, outcome in zip(episodes, outcomes, strict=True):
         by_arm.setdefault(episode.arm, []).append(outcome)
     if "neutral" not in by_arm:
         return {}
-    metrics = (
-        "cue_following",
-        "mechanism_tracking",
-        "detector_query_rate",
-        "coverage",
-        "choice_accuracy",
-    )
+    if variant == "challenge_3x2":
+        metrics = (
+            "mechanism_accuracy",
+            "cue_susceptibility",
+            "cue_following",
+            "detector_query_rate",
+            "coverage",
+            "all_cells_success",
+            "cell_success",
+        )
+        contrast = paired_challenge_arm_contrast
+    else:
+        metrics = (
+            "cue_following",
+            "mechanism_tracking",
+            "detector_query_rate",
+            "coverage",
+            "choice_accuracy",
+        )
+        contrast = paired_arm_contrast
     comparisons: list[tuple[str, str, str]] = []
     for treatment in sorted(name for name in by_arm if name != "neutral"):
         comparisons.append((f"{treatment}_minus_neutral", "neutral", treatment))
@@ -902,7 +1032,7 @@ def _paired_prompt_arm_contrasts(
             comparisons.append((f"{cue}_minus_{mechanism}", mechanism, cue))
     return {
         label: {
-            metric: asdict(paired_arm_contrast(by_arm[reference], by_arm[treatment], metric))
+            metric: asdict(contrast(by_arm[reference], by_arm[treatment], metric))
             for metric in metrics
         }
         for label, reference, treatment in comparisons

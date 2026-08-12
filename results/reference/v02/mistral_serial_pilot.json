@@ -1,0 +1,49 @@
+{
+  "artifact_type": "developmental-pilot-summary",
+  "date": "2026-08-11",
+  "model": {
+    "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    "revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+    "backend": "vllm-openai-compatible",
+    "vllm_version": "0.26.0",
+    "quantization": "bitsandbytes-nf4",
+    "concurrency": 1
+  },
+  "status": "eligible-for-scientific-analysis",
+  "scope": "Unfrozen 16-seed five-arm pilot; prohibited for confirmatory estimates or claim selection.",
+  "integrity": {
+    "step_records": 685,
+    "uncached_records": 685,
+    "cache_hit_records": 0,
+    "replicated_prompt_groups": 212,
+    "response_conflict_groups": 0,
+    "action_conflict_groups": 0,
+    "candidate_set_conflict_groups": 0
+  },
+  "length_parse": {
+    "ceiling": 1024,
+    "length_finishes": 0,
+    "parsed": 685,
+    "invalid": 0,
+    "max_completion_tokens": 113
+  },
+  "key_pilot_coordinates": {
+    "neutral": {"coverage": 1.0, "mechanism_tracking": 1.0, "cue_susceptibility": 0.0, "quartet_success": 1.0, "detector_query_rate": 1.0},
+    "cue_a": {"coverage": 1.0, "mechanism_tracking": 0.5, "cue_susceptibility": 1.0, "quartet_success": 0.0, "detector_query_rate": 0.0},
+    "cue_b": {"coverage": 1.0, "mechanism_tracking": 0.5, "cue_susceptibility": 1.0, "quartet_success": 0.0, "detector_query_rate": 0.0},
+    "mechanism_a": {"coverage": 1.0, "mechanism_tracking": 0.984375, "cue_susceptibility": 0.03125, "quartet_success": 0.9375, "detector_query_rate": 1.0},
+    "mechanism_b": {"coverage": 1.0, "mechanism_tracking": 1.0, "cue_susceptibility": 0.0, "quartet_success": 1.0, "detector_query_rate": 1.0}
+  },
+  "paired_pilot_effects": {
+    "cue_a_minus_neutral": {"mechanism_tracking": -0.5, "cue_following": 0.5, "detector_query_rate": -1.0},
+    "cue_b_minus_neutral": {"mechanism_tracking": -0.5, "cue_following": 0.5, "detector_query_rate": -1.0},
+    "mechanism_a_minus_neutral": {"mechanism_tracking": -0.015625, "cue_following": 0.015625, "detector_query_rate": 0.0},
+    "mechanism_b_minus_neutral": {"mechanism_tracking": 0.0, "cue_following": 0.0, "detector_query_rate": 0.0}
+  },
+  "source": {
+    "summary": "results/factorial_v02/mistral_vllm_serial_pilot_20260811/factorial_mistral-small-3.2-24b_summary.json",
+    "summary_sha256": "b380be4447c5fe287c855f7a12788add0d2405006af33e82bbd619959e6eefc4",
+    "trace": "results/factorial_v02/mistral_vllm_serial_pilot_20260811/factorial_mistral-small-3.2-24b_1786456490.jsonl",
+    "trace_sha256": "6795e852ba325e6a6871c3564a054cb16e8df06dac535c78ec14f6a66bd72604"
+  }
+}

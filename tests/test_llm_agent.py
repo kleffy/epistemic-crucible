@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from crucible.actions import ActionKind, Direction
 from crucible.agents.llm_agent import LLMAgent
-from crucible.agents.llm_backends import MockBackend, ResponseCache
+from crucible.agents.llm_backends import MockBackend, ResponseCache, TransformersBackend
 from crucible.agents.prompting import build_user_message, describe_goal, parse_action
 from crucible.env import CrucibleEnv
 from crucible.grammar import GoalKind, GoalSpec, TaskFamily, generate_task
@@ -225,6 +225,37 @@ def test_response_cache_persists_complete_generation_provenance(tmp_path):
         "response_id",
     ):
         assert field in record
+
+
+def test_transformers_backend_forwards_pinned_revisions_and_nf4(monkeypatch):
+    observed = {}
+
+    def fake_load(model_id, device, dtype, quantization, **kwargs):
+        observed.update(
+            model_id=model_id,
+            device=device,
+            dtype=dtype,
+            quantization=quantization,
+            **kwargs,
+        )
+        return object(), object()
+
+    monkeypatch.setattr("crucible.agents.llm_backends._load_hf_model", fake_load)
+    TransformersBackend(
+        "Qwen/Qwen3.6-27B",
+        model_revision="a" * 40,
+        tokenizer_revision="b" * 40,
+        quantization="bitsandbytes-nf4",
+        batch_size=1,
+    )
+    assert observed == {
+        "model_id": "Qwen/Qwen3.6-27B",
+        "device": "cuda",
+        "dtype": "bfloat16",
+        "quantization": "bitsandbytes-nf4",
+        "model_revision": "a" * 40,
+        "tokenizer_revision": "b" * 40,
+    }
 
 
 def test_experimental_cache_context_separates_identical_hidden_condition_calls(tmp_path):

@@ -1,0 +1,32 @@
+{
+  "schema_version": "0.1",
+  "status": "pre-confirmatory-outcomes-unobserved",
+  "captured_at_utc": "2026-08-11T19:59:52.021436+00:00",
+  "paper_snapshot": {
+    "commit": "9e68d2d18cf77e83faf76aaa44104b428068ee8d",
+    "tag": "pre-confirmatory-manuscript-20260811",
+    "build_command": "make v02",
+    "page_count": 8,
+    "extracted_text_matches_clean_rebuild": true
+  },
+  "scientific_freeze": {
+    "protocol_commit": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
+    "protocol_tag": "v0.2-protocol-rc2",
+    "freeze_commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+    "freeze_tag": "v0.2-confirmatory-freeze-20260811"
+  },
+  "artifacts": {
+    "results/reference/v02/preconfirmatory/manuscript.pdf": {
+      "sha256": "39bb252e5a032c91deceb5b26b00932215b985849a0500e50bfbf180596e69b6",
+      "size_bytes": 224842
+    },
+    "results/reference/v02/preconfirmatory/manuscript_sources.tar.gz": {
+      "sha256": "ed55dd4534cdb70a8bb2f77e145d5a0f79e2ce68c35f98be9b27391a4f0a7838",
+      "size_bytes": 255773
+    },
+    "results/reference/v02/preconfirmatory/paper_snapshot_manifest.json": {
+      "sha256": "40c84db5297aef35b0cf3e648f70e837a53b54d08c11ff13d7e5d80edc558156",
+      "size_bytes": 5873
+    }
+  }
+}

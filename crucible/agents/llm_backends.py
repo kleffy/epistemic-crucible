@@ -293,12 +293,21 @@ class MockBackend(LLMBackend):
         return [self._policy(system, conv) for conv in conversations]
 
 
+class CacheOnlyBackend(LLMBackend):
+    """Replay cached generations without constructing or contacting a live model."""
+
+    def _generate_batch(self, system: str, conversations: list[Conversation]) -> list[str]:
+        raise RuntimeError(
+            "cache-only backend cannot generate; artifact replay requires complete cache hits"
+        )
+
+
 # ---------------------------------------------------------------------------
 # Local transformers backend (GPU)
 # ---------------------------------------------------------------------------
 
 # Module-level cache so large weights load once and are shared across agents.
-_HF_MODELS: dict[str, tuple] = {}
+_HF_MODELS: dict[tuple, tuple] = {}
 
 
 class TransformersBackend(LLMBackend):
@@ -308,8 +317,10 @@ class TransformersBackend(LLMBackend):
         cache: ResponseCache | None = None,
         device: str = "cuda",
         dtype: str = "bfloat16",
-        batch_size: int = 32,
+        batch_size: int = 1,
         quantization: str | None = None,
+        model_revision: str | None = None,
+        tokenizer_revision: str | None = None,
         **gen_params,
     ) -> None:
         super().__init__(
@@ -319,16 +330,39 @@ class TransformersBackend(LLMBackend):
             dtype=dtype,
             batch_size=batch_size,
             quantization=quantization,
+            model_revision=model_revision,
+            tokenizer_revision=tokenizer_revision,
             **gen_params,
         )
         self.device = device
+        self.dtype = dtype
         self.batch_size = batch_size
-        self._tok, self._model = _load_hf_model(model_id, device, dtype, quantization)
+        self.quantization = quantization
+        self.model_revision = model_revision
+        self.tokenizer_revision = tokenizer_revision or model_revision
+        self._tok, self._model = _load_hf_model(
+            model_id,
+            device,
+            dtype,
+            quantization,
+            model_revision=model_revision,
+            tokenizer_revision=self.tokenizer_revision,
+        )
 
     def _generate_batch(self, system: str, conversations: list[Conversation]) -> list[str]:
+        return [record.response for record in self._generate_batch_records(system, conversations)]
+
+    def _generate_batch_records(
+        self,
+        system: str,
+        conversations: list[Conversation],
+    ) -> list[GenerationRecord]:
         import torch
 
-        outputs: list[str] = []
+        records: list[GenerationRecord] = []
+        template_kwargs = dict(
+            self.gen_params.get("extra_body", {}).get("chat_template_kwargs", {})
+        )
         for start in range(0, len(conversations), self.batch_size):
             chunk = conversations[start : start + self.batch_size]
             prompts = [
@@ -336,11 +370,12 @@ class TransformersBackend(LLMBackend):
                     _merge_roles([{"role": "system", "content": system}, *conv]),
                     tokenize=False,
                     add_generation_prompt=True,
+                    **template_kwargs,
                 )
                 for conv in chunk
             ]
             enc = self._tok(prompts, return_tensors="pt", padding=True).to(self.device)
-            with torch.no_grad():
+            with torch.inference_mode():
                 gen = self._model.generate(
                     **enc,
                     max_new_tokens=self.gen_params["max_new_tokens"],
@@ -348,8 +383,47 @@ class TransformersBackend(LLMBackend):
                     pad_token_id=self._tok.pad_token_id,
                 )
             new_tokens = gen[:, enc["input_ids"].shape[1] :]
-            outputs.extend(self._tok.batch_decode(new_tokens, skip_special_tokens=True))
-        return outputs
+            responses = self._tok.batch_decode(new_tokens, skip_special_tokens=True)
+            prompt_lengths = enc["attention_mask"].sum(dim=1).tolist()
+            completion_lengths = [
+                int((tokens != self._tok.pad_token_id).sum().item()) for tokens in new_tokens
+            ]
+            for response, prompt_tokens, completion_tokens in zip(
+                responses, prompt_lengths, completion_lengths, strict=True
+            ):
+                records.append(
+                    GenerationRecord(
+                        response=response,
+                        model_id=self.model_id,
+                        backend=self.backend_name,
+                        requested_params=dict(self.gen_params),
+                        effective_params={
+                            "model": self.model_id,
+                            "model_revision": self.model_revision,
+                            "tokenizer_revision": self.tokenizer_revision,
+                            "device": self.device,
+                            "dtype": self.dtype,
+                            "quantization": self.quantization,
+                            "batch_size": self.batch_size,
+                            "max_new_tokens": self.gen_params["max_new_tokens"],
+                            "temperature": 0.0,
+                            "do_sample": False,
+                            "chat_template_kwargs": template_kwargs,
+                        },
+                        usage={
+                            "prompt_tokens": int(prompt_tokens),
+                            "completion_tokens": completion_tokens,
+                            "total_tokens": int(prompt_tokens) + completion_tokens,
+                        },
+                        finish_reason=(
+                            "length"
+                            if completion_tokens >= self.gen_params["max_new_tokens"]
+                            else "stop"
+                        ),
+                        response_id=None,
+                    )
+                )
+        return records
 
 
 def _merge_roles(messages: list[dict]) -> list[dict]:
@@ -372,8 +446,16 @@ def _merge_roles(messages: list[dict]) -> list[dict]:
     return out
 
 
-def _load_hf_model(model_id: str, device: str, dtype: str, quantization: str | None = None):
-    key = (model_id, quantization)
+def _load_hf_model(
+    model_id: str,
+    device: str,
+    dtype: str,
+    quantization: str | None = None,
+    *,
+    model_revision: str | None = None,
+    tokenizer_revision: str | None = None,
+):
+    key = (model_id, model_revision, tokenizer_revision, device, dtype, quantization)
     if key in _HF_MODELS:
         return _HF_MODELS[key]
     import gc
@@ -393,12 +475,16 @@ def _load_hf_model(model_id: str, device: str, dtype: str, quantization: str | N
 
     seed_torch(0)
     _log.info("loading %s (%s, quant=%s) on %s ...", model_id, dtype, quantization, device)
-    tok = AutoTokenizer.from_pretrained(model_id, padding_side="left")
+    tok = AutoTokenizer.from_pretrained(
+        model_id,
+        revision=tokenizer_revision or model_revision,
+        padding_side="left",
+    )
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
     kwargs: dict = {"device_map": device}
-    if quantization == "4bit":
-        # nf4 double-quant; verified on Blackwell (sm_120). Lets ~32B fit in 32 GB.
+    if quantization in {"4bit", "bitsandbytes-nf4"}:
+        # NF4 double-quant; verified on Blackwell (sm_120). Lets ~32B fit in 32 GB.
         from transformers import BitsAndBytesConfig
 
         kwargs["quantization_config"] = BitsAndBytesConfig(
@@ -407,9 +493,12 @@ def _load_hf_model(model_id: str, device: str, dtype: str, quantization: str | N
             bnb_4bit_use_double_quant=True,
             bnb_4bit_compute_dtype=torch.bfloat16,
         )
-    else:
-        kwargs["dtype"] = getattr(torch, dtype)
-    model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id,
+        revision=model_revision,
+        dtype=getattr(torch, dtype),
+        **kwargs,
+    )
     model.eval()
     _HF_MODELS[key] = (tok, model)
     return tok, model

@@ -49,14 +49,15 @@ python experiments/generate_report.py --traces results/baselines_*.jsonl
 # Run the full baseline suite (~8 minutes, 20 seeds × 6 agents × 5 families)
 python experiments/run_baselines.py --config configs/baselines.yaml
 
-# Run the fast v0.2 controls, or the full pre-registered integrity audit
+# Run the fast v0.2 controls, or the full specified integrity audit
 python experiments/run_factorial_eval.py --controls
 python experiments/run_integrity_gate.py
 ```
 
 Model runs are stage-gated. A pilot invocation supplies the pilot config and manifest;
-confirmatory runs additionally require a frozen manifest, its exact protocol commit,
-and a clean worktree:
+confirmatory runs additionally require a frozen manifest, a clean worktree, and
+either the exact tagged protocol commit or its declared tagged direct-child freeze
+wrapper (the latter contains only the immutable freeze metadata):
 
 ```bash
 python experiments/run_factorial_eval.py \
@@ -65,6 +66,43 @@ python experiments/run_factorial_eval.py \
   --stage pilot \
   --manifest configs/pilot_manifest.json
 ```
+
+For Qwen, the pinned direct-Transformers fallback loads the text-only model in
+NF4 on the GPU. The one-seed serial smoke must pass before the serial 16-seed
+pilot. The selected serial output ceiling is 2,048 tokens. The separate
+batch-size-4 gate failed with nine raw-response conflict groups, so Qwen remains
+batch size 1 and the batched trace is ineligible for scientific analysis:
+
+```bash
+./experiments/run_qwen_transformers_v02.sh \
+  --config configs/factorial_smoke_qwen_v02.yaml \
+  --model qwen3.6-27b \
+  --stage pilot \
+  --manifest configs/pilot_manifest.json \
+  --output-dir results/factorial_v02/qwen_serial_smoke
+```
+
+For Mistral, the exact-revision NF4 text-only vLLM path passed both the one-seed
+smoke and the 16-seed five-arm pilot at the selected 1,024-token ceiling. The
+launch script declares the Ninja runtime used by FlashInfer and forces vLLM
+generation defaults so the request and server layers are both greedy:
+
+```bash
+./experiments/serve_mistral_v02.sh
+
+python experiments/run_factorial_eval.py \
+  --config configs/factorial_smoke_mistral_v02.yaml \
+  --model mistral-small-3.2-24b \
+  --stage pilot \
+  --manifest configs/pilot_manifest.json \
+  --output-dir results/factorial_v02/mistral_vllm_smoke
+```
+
+Both valid models triggered the prospectively specified `3x2` promotion rule,
+and both disjoint challenge pilots passed. The confirmatory candidate therefore
+uses `challenge_3x2`, serial serving, Qwen and Mistral only; GPT-OSS is retained
+in the exclusion registry because its pinned serving paths failed before
+inferential analysis.
 
 Factorial model configs default to `execution_mode: live_acquisition`. In that
 mode cache reads are disabled, every generation must contact the current server,

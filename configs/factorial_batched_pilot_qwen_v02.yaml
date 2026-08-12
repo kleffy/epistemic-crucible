@@ -1,0 +1,49 @@
+# Archived configuration for the invalid batch-size-4 validation. It produced
+# nine raw-response conflict groups and its scientific reports were suppressed.
+# Do not use it for confirmatory acquisition or scientific estimates.
+base_url: http://127.0.0.1:8000/v1
+execution_mode: live_acquisition
+concurrency: 4
+serving_validation:
+  minimum_replicated_prompt_groups: 1
+  minimum_initial_mechanism_axis_groups: 160
+  maximum_response_conflict_groups: 0
+  maximum_action_conflict_groups: 0
+  maximum_candidate_set_conflict_groups: 0
+  require_all_uncached: true
+  fail_closed: true
+seeds: [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007,
+        1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015]
+prompt_arms:
+  - {name: neutral, mode: neutral, count: 0, base_seed: 9000, seed_count: 16}
+  - {name: cue_a, mode: cue, count: 6, base_seed: 9000, seed_count: 16}
+  - {name: cue_b, mode: cue, count: 6, base_seed: 10000, seed_count: 16}
+  - {name: mechanism_a, mode: mechanism, count: 6, base_seed: 11000, seed_count: 16}
+  - {name: mechanism_b, mode: mechanism, count: 6, base_seed: 12000, seed_count: 16}
+models:
+  - label: qwen3.6-27b
+    id: Qwen/Qwen3.6-27B
+    revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    tokenizer_revision: ea24fab73f0d8f18a59b05d79f5d2312a859b21a
+    output_ceiling: 1536
+    serving:
+      backend: transformers
+      quantization: bitsandbytes-nf4
+      bitsandbytes_version: 0.50.0
+      dtype: bfloat16
+      device: cuda
+      batch_size: 4
+      language_model_only: true
+      chat_template: model-default@pinned-revision
+      engine_seed: 0
+      do_sample: false
+      transformers_version: 5.15.0
+      torch_version: 2.11.0+cu130
+      failed_backend_record: results/reference/v02/qwen_vllm_serving_preflight.json
+      environment:
+        CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+        PYTHONHASHSEED: "0"
+    generation:
+      seed: 0
+      extra_body:
+        chat_template_kwargs: {enable_thinking: false}
