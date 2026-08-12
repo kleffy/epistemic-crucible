@@ -1,0 +1,33 @@
+
+\begin{table*}[t]
+  \centering
+  \begingroup
+  \newcommand{\cellci}[4]{\shortstack{#1\\{\scriptsize[#2,#3]}\\{\scriptsize #4}}}
+  \scriptsize
+  \setlength{\tabcolsep}{2.0pt}
+  \begin{tabular}{@{}llcccccccc@{}}
+    \toprule
+    Model & Arm & Coverage & $\mathrm{Acc}_M$ & $F_C$ & $S_C$ & Query &
+      Cell success & All-six & Invalid / length \\
+    \midrule
+    Qwen & Neutral & \cellci{1}{1}{1}{384/384} & \cellci{.995}{.984}{1}{$n=384$} & \cellci{.339}{.333}{.349}{$n=384$} & \cellci{.010}{0}{.031}{$n=192$} & \cellci{.992}{.977}{1}{$n=384$} & \cellci{.995}{.984}{1}{$n=64$} & \cellci{.984}{.953}{1}{$n=64$} & 0/0 \\
+     & Cue A & \cellci{1}{1}{1}{384/384} & \cellci{.333}{.333}{.333}{$n=384$} & \cellci{1}{1}{1}{$n=384$} & \cellci{1}{1}{1}{$n=192$} & \cellci{0}{0}{0}{$n=384$} & \cellci{.333}{.333}{.333}{$n=64$} & \cellci{0}{0}{0}{$n=64$} & 0/0 \\
+     & Cue B & \cellci{1}{1}{1}{384/384} & \cellci{.333}{.333}{.333}{$n=384$} & \cellci{1}{1}{1}{$n=384$} & \cellci{1}{1}{1}{$n=192$} & \cellci{0}{0}{0}{$n=384$} & \cellci{.333}{.333}{.333}{$n=64$} & \cellci{0}{0}{0}{$n=64$} & 0/0 \\
+     & Mechanism A & \cellci{.971}{.940}{.995}{373/384} & \cellci{1}{1}{1}{$n=373$} & \cellci{.332}{.331}{.333}{$n=373$} & \cellci{0}{0}{0}{$n=181$} & \cellci{.977}{.945}{1}{$n=384$} & \cellci{.971}{.940}{.995}{$n=64$} & \cellci{.938}{.875}{.984}{$n=64$} & 11/11 \\
+     & Mechanism B & \cellci{1}{1}{1}{384/384} & \cellci{1}{1}{1}{$n=384$} & \cellci{.333}{.333}{.333}{$n=384$} & \cellci{0}{0}{0}{$n=192$} & \cellci{1}{1}{1}{$n=384$} & \cellci{1}{1}{1}{$n=64$} & \cellci{1}{1}{1}{$n=64$} & 0/0 \\
+    \midrule
+    Mistral & Neutral & \cellci{1}{1}{1}{384/384} & \cellci{1}{1}{1}{$n=384$} & \cellci{.333}{.333}{.333}{$n=384$} & \cellci{0}{0}{0}{$n=192$} & \cellci{1}{1}{1}{$n=384$} & \cellci{1}{1}{1}{$n=64$} & \cellci{1}{1}{1}{$n=64$} & 0/0 \\
+     & Cue A & \cellci{1}{1}{1}{384/384} & \cellci{.333}{.333}{.333}{$n=384$} & \cellci{1}{1}{1}{$n=384$} & \cellci{1}{1}{1}{$n=192$} & \cellci{0}{0}{0}{$n=384$} & \cellci{.333}{.333}{.333}{$n=64$} & \cellci{0}{0}{0}{$n=64$} & 0/0 \\
+     & Cue B & \cellci{1}{1}{1}{384/384} & \cellci{.333}{.333}{.333}{$n=384$} & \cellci{1}{1}{1}{$n=384$} & \cellci{1}{1}{1}{$n=192$} & \cellci{0}{0}{0}{$n=384$} & \cellci{.333}{.333}{.333}{$n=64$} & \cellci{0}{0}{0}{$n=64$} & 0/0 \\
+     & Mechanism A & \cellci{1}{1}{1}{384/384} & \cellci{.987}{.974}{.997}{$n=384$} & \cellci{.346}{.336}{.357}{$n=384$} & \cellci{.026}{.005}{.052}{$n=192$} & \cellci{1}{1}{1}{$n=384$} & \cellci{.987}{.974}{.997}{$n=64$} & \cellci{.922}{.844}{.984}{$n=64$} & 0/0 \\
+     & Mechanism B & \cellci{1}{1}{1}{384/384} & \cellci{1}{1}{1}{$n=384$} & \cellci{.333}{.333}{.333}{$n=384$} & \cellci{0}{0}{0}{$n=192$} & \cellci{1}{1}{1}{$n=384$} & \cellci{1}{1}{1}{$n=64$} & \cellci{1}{1}{1}{$n=64$} & 0/0 \\
+    \bottomrule
+  \end{tabular}
+  \endgroup
+  \caption{Frozen confirmatory outcomes. Each metric cell gives estimate, paired
+  seed-clustered bootstrap 95\% interval, and denominator; coverage gives committed
+  cells/384. $\mathrm{Acc}_M$ and $F_C$ condition on commitment, $S_C$ on paired
+  commitments, query on all cells, and cell/all-six success on 64 base seeds.
+  Diagnostics give invalid responses / length finishes out of 384 cells.}
+  \label{tab:confirmatory}
+\end{table*}

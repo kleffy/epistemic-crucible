@@ -2,15 +2,15 @@
 
 The authoritative schedule is the
 [ICLR 2027 Author Guidelines](https://iclr.cc/Conferences/2027/AuthorGuidelines).
-As verified on 2026-08-10:
+As verified on 2026-08-12:
 
 - **2026-09-18 AOE:** official genuine-abstract deadline; no authors may be added later.
 - **2026-09-25 AOE:** official full-paper and supplement deadline.
 - **2026-09-11:** internal abstract/author freeze.
 - **2026-09-16:** internal paper freeze for final audits.
 - Main text is at most nine pages; references and appendices follow conference rules.
-- The paper and supplement are double-blind. Related public preprints are cited in
-  the third person.
+- The paper and supplement are double-blind. This submission treats EC as its first
+  public paper; unpublished developmental manuscripts remain outside the review package.
 - Include the required Artificial Intelligence use statement.
 
 ## Operational dates
@@ -37,7 +37,8 @@ As verified on 2026-08-10:
 
 - [ ] Anonymous title page; no author names, email, acknowledgements, identity-bearing
   paths, PDF metadata, citation metadata, or Git history in the supplement.
-- [ ] Cite the public v0.1 preprint in the third person; never say “our v0.1 paper.”
+- [ ] Confirm that no unpublished-developmental-history framing appears in the paper
+  or anonymous supplement.
 - [ ] Choose the least-exposing anonymous code route: an anonymous supplement/repo,
   or after discussion opens, a reviewer-and-AC-only OpenReview comment containing
   the anonymous repository link.
@@ -57,3 +58,10 @@ As verified on 2026-08-10:
   becomes public; escalate uncertain material for qualified review.
 - [ ] Run `pytest tests/ -v`, `ruff check .`, and `ruff format --check .`. No static
   type checker is claimed unless separately added and configured.
+- [ ] Regenerate Tables 1--4 and Figures 1--4 with
+  `python experiments/build_submission_assets.py`; verify the committed asset manifest.
+- [ ] Build the anonymous code/results ZIP with
+  `python experiments/build_anonymous_supplement.py --output <submission.zip>` and
+  extract it into a clean directory before running its documented tests and asset command.
+- [ ] Verify the local final-submission manifest hashes both anonymous packages, the
+  final PDF, and every compact scientific artifact before upload.

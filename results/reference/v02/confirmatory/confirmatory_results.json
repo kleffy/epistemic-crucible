@@ -1,0 +1,2141 @@
+{
+  "confirmatory_freeze_artifact": {
+    "commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+    "name": "confirmatory freeze artifact F",
+    "public_tag": "v0.2-confirmatory-freeze-20260811"
+  },
+  "design": {
+    "base_seeds": 64,
+    "bootstrap_resamples": 10000,
+    "cells_per_arm_seed": 6,
+    "prompt_arms": [
+      "neutral",
+      "cue_a",
+      "cue_b",
+      "mechanism_a",
+      "mechanism_b"
+    ],
+    "variant": "challenge_3x2"
+  },
+  "models": {
+    "mistral": {
+      "backend": "local_vllm",
+      "cache_hits": 0,
+      "conflict_groups": {
+        "action_conflict_groups": 0,
+        "candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_action_conflict_groups": 0,
+        "initial_mechanism_axis_candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_prompt_conflict_groups": 0,
+        "initial_mechanism_axis_response_conflict_groups": 0,
+        "response_conflict_groups": 0
+      },
+      "display_name": "Mistral-Small-3.2-24B-Instruct-2506",
+      "initial_mechanism_axis_groups": 640,
+      "manifest_hash": "bf448cbf958aea2f71c1339329565e35e06e94f2a9a31bb077e3f4f6098c7635",
+      "model_id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+      "model_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+      "outcome_count": 1920,
+      "paired_contrasts": {
+        "cue_a_minus_mechanism_a": {
+          "all_cells_success": {
+            "ci_high": -0.84375,
+            "ci_low": -0.984375,
+            "denominator": 64,
+            "value": -0.921875
+          },
+          "cell_success": {
+            "ci_high": -0.6406250000000002,
+            "ci_low": -0.6640625000000002,
+            "denominator": 64,
+            "value": -0.6536458333333335
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.6640625000000002,
+            "ci_low": 0.6406250000000002,
+            "denominator": 64,
+            "value": 0.6536458333333335
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.9947916666666667,
+            "ci_low": 0.9479166666666667,
+            "denominator": 64,
+            "value": 0.9739583333333334
+          },
+          "detector_query_rate": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6406250000000002,
+            "ci_low": -0.6640625000000002,
+            "denominator": 64,
+            "value": -0.6536458333333335
+          }
+        },
+        "cue_a_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "cell_success": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.6666666666666669,
+            "ci_low": 0.6666666666666669,
+            "denominator": 64,
+            "value": 0.6666666666666669
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          }
+        },
+        "cue_b_minus_mechanism_b": {
+          "all_cells_success": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "cell_success": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.6666666666666669,
+            "ci_low": 0.6666666666666669,
+            "denominator": 64,
+            "value": 0.6666666666666669
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          }
+        },
+        "cue_b_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "cell_success": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.6666666666666669,
+            "ci_low": 0.6666666666666669,
+            "denominator": 64,
+            "value": 0.6666666666666669
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          }
+        },
+        "mechanism_a_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": -0.015625,
+            "ci_low": -0.15625,
+            "denominator": 64,
+            "value": -0.078125
+          },
+          "cell_success": {
+            "ci_high": -0.002604166666666666,
+            "ci_low": -0.02604166666666666,
+            "denominator": 64,
+            "value": -0.01302083333333333
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.026041666666666668,
+            "ci_low": 0.002604166666666667,
+            "denominator": 64,
+            "value": 0.013020833333333334
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.05208333333333333,
+            "ci_low": 0.005208333333333333,
+            "denominator": 64,
+            "value": 0.026041666666666664
+          },
+          "detector_query_rate": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.002604166666666666,
+            "ci_low": -0.02604166666666666,
+            "denominator": 64,
+            "value": -0.01302083333333333
+          }
+        },
+        "mechanism_b_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cell_success": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "detector_query_rate": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          }
+        }
+      },
+      "reports": {
+        "cue_a": {
+          "all_cells_success": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 64,
+            "value": 0.3333333333333333
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 192,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 384,
+            "value": 0.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3333333333333333
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        },
+        "cue_b": {
+          "all_cells_success": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 64,
+            "value": 0.3333333333333333
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 192,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 384,
+            "value": 0.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3333333333333333
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        },
+        "mechanism_a": {
+          "all_cells_success": {
+            "ci_high": 0.984375,
+            "ci_low": 0.84375,
+            "denominator": 64,
+            "value": 0.921875
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 0.9973958333333333,
+            "ci_low": 0.9739583333333334,
+            "denominator": 64,
+            "value": 0.9869791666666666
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 0.3567708333333333,
+            "ci_low": 0.3359375,
+            "denominator": 384,
+            "value": 0.3463541666666667
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.052083333333333336,
+            "ci_low": 0.005208333333333333,
+            "denominator": 192,
+            "value": 0.026041666666666668
+          },
+          "detector_query_rate": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.9973958333333334,
+            "ci_low": 0.9739583333333334,
+            "denominator": 384,
+            "value": 0.9869791666666666
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        },
+        "mechanism_b": {
+          "all_cells_success": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3333333333333333
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 192,
+            "value": 0.0
+          },
+          "detector_query_rate": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        },
+        "neutral": {
+          "all_cells_success": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3333333333333333
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 192,
+            "value": 0.0
+          },
+          "detector_query_rate": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        }
+      },
+      "run_manifest": {
+        "arms": [
+          {
+            "base_seed": 9000,
+            "count": 0,
+            "mode": "neutral",
+            "name": "neutral",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 9000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 10000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_b",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 11000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 12000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_b",
+            "seed_count": 64
+          }
+        ],
+        "backend": "local_vllm",
+        "cache_namespace_hash": "1d0364ccba3d8f3e9f6af49b3686dabae4a30ffbb309809ac6bf31abf05e2691",
+        "cache_policy": {
+          "read_enabled": false,
+          "require_hits": false,
+          "write_enabled": true
+        },
+        "candidate_order_version": "macro-kind-slot-v1",
+        "concurrency": 1,
+        "effective_environment": {
+          "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+          "PYTHONHASHSEED": "0",
+          "VLLM_BATCH_INVARIANT": "1"
+        },
+        "execution_mode": "live_acquisition",
+        "generation": {
+          "seed": 0
+        },
+        "history_mode": "full",
+        "macro_action_compiler_version": "legal-bfs-v1",
+        "model_id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+        "model_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+        "prompt_version": "factorial-neutral-v1",
+        "protocol": "affordance-factorial-v0.2",
+        "repository_commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+        "runtime_hardware": {
+          "cuda_runtime": "13.0",
+          "driver": "580.126.09",
+          "gpu": "NVIDIA GeForce RTX 5090",
+          "platform": "Linux-6.17.0-14-generic-x86_64-with-glibc2.39",
+          "python": "3.12.12",
+          "pytorch": "2.11.0+cu130"
+        },
+        "schema_version": "0.2",
+        "seeds": [
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163
+        ],
+        "server": "http://127.0.0.1:8000/v1",
+        "server_launch_manifest_hash": "024a37f8ed161cb8a3bb67d83849fb73e5f90f9245b9eb8df83126df61353162",
+        "serving": {
+          "async_scheduling": false,
+          "backend": "openai",
+          "batch_invariant_requested": true,
+          "bitsandbytes_version": "0.50.0",
+          "chat_template": "model-default@pinned-revision",
+          "chunked_prefill": true,
+          "dtype": "bfloat16",
+          "enforce_eager": true,
+          "engine_seed": 0,
+          "environment": {
+            "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+            "PYTHONHASHSEED": "0",
+            "VLLM_BATCH_INVARIANT": "1"
+          },
+          "generation_config": "vllm",
+          "ignore_patterns": [
+            "consolidated.safetensors"
+          ],
+          "language_model_only": true,
+          "launch_script": "experiments/serve_mistral_v02.sh",
+          "load_format": "bitsandbytes",
+          "max_model_len": 8192,
+          "max_num_seqs": 8,
+          "ninja_version": "1.13.0",
+          "prefix_caching": false,
+          "quantization": "bitsandbytes-nf4",
+          "tokenizer_mode": "mistral",
+          "vllm_version": "0.26.0"
+        },
+        "stage": "confirmatory",
+        "stage_manifest_hash": "612a40d8f4fb33cadec16f97420d0990e5bb73a3b3c78184b76282eb0c3cb874",
+        "tokenizer_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+        "variant": "challenge_3x2"
+      },
+      "serving": {
+        "async_scheduling": false,
+        "backend": "openai",
+        "batch_invariant_requested": true,
+        "bitsandbytes_version": "0.50.0",
+        "chat_template": "model-default@pinned-revision",
+        "chunked_prefill": true,
+        "dtype": "bfloat16",
+        "enforce_eager": true,
+        "engine_seed": 0,
+        "environment": {
+          "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+          "PYTHONHASHSEED": "0",
+          "VLLM_BATCH_INVARIANT": "1"
+        },
+        "generation_config": "vllm",
+        "ignore_patterns": [
+          "consolidated.safetensors"
+        ],
+        "language_model_only": true,
+        "launch_script": "experiments/serve_mistral_v02.sh",
+        "load_format": "bitsandbytes",
+        "max_model_len": 8192,
+        "max_num_seqs": 8,
+        "ninja_version": "1.13.0",
+        "prefix_caching": false,
+        "quantization": "bitsandbytes-nf4",
+        "tokenizer_mode": "mistral",
+        "vllm_version": "0.26.0"
+      },
+      "source_summary_sha256": "9d09251552e52cd9b0199e33fc36c7c75410ad668016d4eefa257598140fa4b5",
+      "source_trace_sha256": "41bd3a5be076f19835c6ea7fda51c58822f79f52dc3750b8111baf4342e2ea49",
+      "stage_manifest": {
+        "base_seeds": [
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163
+        ],
+        "bootstrap": {
+          "demonstration_analysis": "resample base seed and treat each fixed demonstration pool as a replication",
+          "resamples": 10000,
+          "unit": "base seed"
+        },
+        "ceiling_variant_decision": "Promoted: Qwen and Mistral both triggered the predeclared rule on the valid 2x2 pilot; the disjoint 3x2 pilots then passed their serving gates.",
+        "ceiling_variant_promotion_rule": "Promote the 3x2 challenge to the primary confirmatory study if any pilot model has neutral-arm mechanism tracking >=0.90 with detector query rate >=0.80 on the 2x2 assay, indicating attribution ceiling after investigation.",
+        "concurrency": 1,
+        "demonstration_pools": {
+          "cue": [
+            9000,
+            10000
+          ],
+          "interpretation": "Two fixed replications; no population-level claim over arbitrary demonstration pools",
+          "mechanism": [
+            11000,
+            12000
+          ]
+        },
+        "demonstration_seed_count": 64,
+        "estimability_rule": "At least two model policies yield at least 30 complete paired six-cell blocks",
+        "excluded_models": {
+          "gpt-oss-20b": {
+            "preflight_record": "results/reference/v02/gpt_oss_serving_preflight.json",
+            "reason": "Pinned serving configurations violated the deterministic-policy gate before inferential analysis.",
+            "scientific_metrics_reported": false
+          }
+        },
+        "execution_mode": "live_acquisition",
+        "freeze_date": "2026-08-11",
+        "freeze_deadline": "2026-08-23",
+        "freeze_tag": "v0.2-confirmatory-freeze-20260811",
+        "frozen": true,
+        "informative_null_rule": "A null is informative only when its interval excludes an absolute effect of 0.15",
+        "integrity_repair_rule": "Any post-freeze defect requires a complete rerun of every affected confirmatory condition",
+        "manifest_version": "0.2",
+        "models": {
+          "mistral-small-3.2-24b": {
+            "generation": {
+              "seed": 0
+            },
+            "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+            "output_ceiling": 1024,
+            "revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+            "serving": {
+              "async_scheduling": false,
+              "backend": "openai",
+              "batch_invariant_requested": true,
+              "bitsandbytes_version": "0.50.0",
+              "chat_template": "model-default@pinned-revision",
+              "chunked_prefill": true,
+              "dtype": "bfloat16",
+              "enforce_eager": true,
+              "engine_seed": 0,
+              "environment": {
+                "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+                "PYTHONHASHSEED": "0",
+                "VLLM_BATCH_INVARIANT": "1"
+              },
+              "generation_config": "vllm",
+              "ignore_patterns": [
+                "consolidated.safetensors"
+              ],
+              "language_model_only": true,
+              "launch_script": "experiments/serve_mistral_v02.sh",
+              "load_format": "bitsandbytes",
+              "max_model_len": 8192,
+              "max_num_seqs": 8,
+              "ninja_version": "1.13.0",
+              "prefix_caching": false,
+              "quantization": "bitsandbytes-nf4",
+              "tokenizer_mode": "mistral",
+              "vllm_version": "0.26.0"
+            },
+            "tokenizer_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43"
+          },
+          "qwen3.6-27b": {
+            "generation": {
+              "extra_body": {
+                "chat_template_kwargs": {
+                  "enable_thinking": false
+                }
+              },
+              "seed": 0
+            },
+            "id": "Qwen/Qwen3.6-27B",
+            "output_ceiling": 2048,
+            "revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+            "serving": {
+              "backend": "transformers",
+              "batch_size": 1,
+              "bitsandbytes_version": "0.50.0",
+              "chat_template": "model-default@pinned-revision",
+              "device": "cuda",
+              "do_sample": false,
+              "dtype": "bfloat16",
+              "engine_seed": 0,
+              "environment": {
+                "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+                "PYTHONHASHSEED": "0"
+              },
+              "failed_backend_record": "results/reference/v02/qwen_vllm_serving_preflight.json",
+              "language_model_only": true,
+              "quantization": "bitsandbytes-nf4",
+              "torch_version": "2.11.0+cu130",
+              "transformers_version": "5.15.0"
+            },
+            "tokenizer_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a"
+          }
+        },
+        "primary_metrics": [
+          "mechanism_accuracy",
+          "cue_susceptibility",
+          "cue_following",
+          "detector_query_rate",
+          "coverage",
+          "all_cells_success",
+          "cell_success"
+        ],
+        "primary_preflight_outcomes": [
+          "detector_query_rate",
+          "parse_failure_rate",
+          "mechanism_accuracy",
+          "cue_following",
+          "coverage"
+        ],
+        "prompt_arms": [
+          {
+            "base_seed": 9000,
+            "count": 0,
+            "mode": "neutral",
+            "name": "neutral",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 9000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 10000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_b",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 11000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 12000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_b",
+            "seed_count": 64
+          }
+        ],
+        "protocol_commit": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
+        "protocol_tag": "v0.2-protocol-rc2",
+        "selected_models": [
+          "qwen3.6-27b",
+          "mistral-small-3.2-24b"
+        ],
+        "serving_validation": {
+          "fail_closed": true,
+          "maximum_action_conflict_groups": 0,
+          "maximum_candidate_set_conflict_groups": 0,
+          "maximum_response_conflict_groups": 0,
+          "minimum_initial_mechanism_axis_groups": 640,
+          "minimum_replicated_prompt_groups": 1,
+          "require_all_uncached": true
+        },
+        "smallest_effect_of_interest": {
+          "cue_following": 0.15,
+          "mechanism_accuracy": 0.15
+        },
+        "stage": "confirmatory",
+        "variant": "challenge_3x2",
+        "zero_shot_seed_count": 64
+      },
+      "stage_manifest_hash": "612a40d8f4fb33cadec16f97420d0990e5bb73a3b3c78184b76282eb0c3cb874",
+      "status": "eligible-for-scientific-analysis",
+      "tokenizer_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43"
+    },
+    "qwen": {
+      "backend": "local_transformers",
+      "cache_hits": 0,
+      "conflict_groups": {
+        "action_conflict_groups": 0,
+        "candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_action_conflict_groups": 0,
+        "initial_mechanism_axis_candidate_set_conflict_groups": 0,
+        "initial_mechanism_axis_prompt_conflict_groups": 0,
+        "initial_mechanism_axis_response_conflict_groups": 0,
+        "response_conflict_groups": 0
+      },
+      "display_name": "Qwen3.6-27B",
+      "initial_mechanism_axis_groups": 640,
+      "manifest_hash": "bba438c3b27d929086c633786ee722ab14c87a7aa424b48856139f2c2740a2bb",
+      "model_id": "Qwen/Qwen3.6-27B",
+      "model_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+      "outcome_count": 1920,
+      "paired_contrasts": {
+        "cue_a_minus_mechanism_a": {
+          "all_cells_success": {
+            "ci_high": -0.875,
+            "ci_low": -0.984375,
+            "denominator": 64,
+            "value": -0.9375
+          },
+          "cell_success": {
+            "ci_high": -0.6067708333333335,
+            "ci_low": -0.6614583333333335,
+            "denominator": 64,
+            "value": -0.6380208333333335
+          },
+          "coverage": {
+            "ci_high": 0.059895833333333336,
+            "ci_low": 0.005208333333333334,
+            "denominator": 64,
+            "value": 0.028645833333333336
+          },
+          "cue_following": {
+            "ci_high": 0.6705729166666669,
+            "ci_low": 0.6666666666666669,
+            "denominator": 64,
+            "value": 0.6679687500000002
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 61,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": -0.9453125,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -0.9765625
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          }
+        },
+        "cue_a_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": -0.953125,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -0.984375
+          },
+          "cell_success": {
+            "ci_high": -0.6510416666666667,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6614583333333335
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.6666666666666669,
+            "ci_low": 0.6510416666666667,
+            "denominator": 64,
+            "value": 0.6614583333333335
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 0.96875,
+            "denominator": 64,
+            "value": 0.9895833333333334
+          },
+          "detector_query_rate": {
+            "ci_high": -0.9765625,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -0.9921875
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6510416666666667,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6614583333333335
+          }
+        },
+        "cue_b_minus_mechanism_b": {
+          "all_cells_success": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "cell_success": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.6666666666666669,
+            "ci_low": 0.6666666666666669,
+            "denominator": 64,
+            "value": 0.6666666666666669
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": -1.0,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -1.0
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6666666666666669,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6666666666666669
+          }
+        },
+        "cue_b_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": -0.953125,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -0.984375
+          },
+          "cell_success": {
+            "ci_high": -0.6510416666666667,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6614583333333335
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.6666666666666669,
+            "ci_low": 0.6510416666666667,
+            "denominator": 64,
+            "value": 0.6614583333333335
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 0.96875,
+            "denominator": 64,
+            "value": 0.9895833333333334
+          },
+          "detector_query_rate": {
+            "ci_high": -0.9765625,
+            "ci_low": -1.0,
+            "denominator": 64,
+            "value": -0.9921875
+          },
+          "mechanism_accuracy": {
+            "ci_high": -0.6510416666666667,
+            "ci_low": -0.6666666666666669,
+            "denominator": 64,
+            "value": -0.6614583333333335
+          }
+        },
+        "mechanism_a_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": 0.015625,
+            "ci_low": -0.125,
+            "denominator": 64,
+            "value": -0.046875
+          },
+          "cell_success": {
+            "ci_high": 0.002604166666666668,
+            "ci_low": -0.0546875,
+            "denominator": 64,
+            "value": -0.0234375
+          },
+          "coverage": {
+            "ci_high": -0.005208333333333334,
+            "ci_low": -0.059895833333333336,
+            "denominator": 64,
+            "value": -0.028645833333333336
+          },
+          "cue_following": {
+            "ci_high": 0.0,
+            "ci_low": -0.018229166666666664,
+            "denominator": 64,
+            "value": -0.006510416666666666
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.0,
+            "ci_low": -0.03278688524590164,
+            "denominator": 61,
+            "value": -0.01092896174863388
+          },
+          "detector_query_rate": {
+            "ci_high": 0.015625,
+            "ci_low": -0.046875,
+            "denominator": 64,
+            "value": -0.015625
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.015625,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.005208333333333334
+          }
+        },
+        "mechanism_b_minus_neutral": {
+          "all_cells_success": {
+            "ci_high": 0.046875,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.015625
+          },
+          "cell_success": {
+            "ci_high": 0.015625,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.005208333333333334
+          },
+          "coverage": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "cue_following": {
+            "ci_high": 0.0,
+            "ci_low": -0.015625,
+            "denominator": 64,
+            "value": -0.005208333333333333
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.0,
+            "ci_low": -0.03125,
+            "denominator": 64,
+            "value": -0.010416666666666666
+          },
+          "detector_query_rate": {
+            "ci_high": 0.0234375,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0078125
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.015625,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.005208333333333334
+          }
+        }
+      },
+      "reports": {
+        "cue_a": {
+          "all_cells_success": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 64,
+            "value": 0.3333333333333333
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 192,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 384,
+            "value": 0.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3333333333333333
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        },
+        "cue_b": {
+          "all_cells_success": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 64,
+            "value": 0.0
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 64,
+            "value": 0.3333333333333333
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "cue_susceptibility": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 192,
+            "value": 1.0
+          },
+          "detector_query_rate": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 384,
+            "value": 0.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3333333333333333
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        },
+        "mechanism_a": {
+          "all_cells_success": {
+            "ci_high": 0.984375,
+            "ci_low": 0.875,
+            "denominator": 64,
+            "value": 0.9375
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 0.9947916666666666,
+            "ci_low": 0.9401041666666667,
+            "denominator": 64,
+            "value": 0.9713541666666666
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 0.9947916666666667,
+            "ci_low": 0.9401041666666667,
+            "denominator": 64,
+            "value": 0.9713541666666666
+          },
+          "coverage_by_cell": {
+            "m0_c0": 0.96875,
+            "m0_c1": 0.984375,
+            "m1_c0": 0.96875,
+            "m1_c1": 0.96875,
+            "m2_c0": 0.96875,
+            "m2_c1": 0.96875
+          },
+          "cue_following": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3305785123966942,
+            "denominator": 373,
+            "value": 0.3324396782841823
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 181,
+            "value": 0.0
+          },
+          "detector_query_rate": {
+            "ci_high": 1.0,
+            "ci_low": 0.9453125,
+            "denominator": 384,
+            "value": 0.9765625
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 11,
+            "length_finishes": 11
+          },
+          "mechanism_accuracy": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 373,
+            "value": 1.0
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.028645833333333332
+          }
+        },
+        "mechanism_b": {
+          "all_cells_success": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 0.3333333333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3333333333333333
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "denominator": 192,
+            "value": 0.0
+          },
+          "detector_query_rate": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 384,
+            "value": 1.0
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        },
+        "neutral": {
+          "all_cells_success": {
+            "ci_high": 1.0,
+            "ci_low": 0.953125,
+            "denominator": 64,
+            "value": 0.984375
+          },
+          "base_seeds": 64,
+          "cell_success": {
+            "ci_high": 1.0,
+            "ci_low": 0.984375,
+            "denominator": 64,
+            "value": 0.9947916666666666
+          },
+          "complete_challenges": 64,
+          "coverage": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "denominator": 64,
+            "value": 1.0
+          },
+          "coverage_by_cell": {
+            "m0_c0": 1.0,
+            "m0_c1": 1.0,
+            "m1_c0": 1.0,
+            "m1_c1": 1.0,
+            "m2_c0": 1.0,
+            "m2_c1": 1.0
+          },
+          "cue_following": {
+            "ci_high": 0.3489583333333333,
+            "ci_low": 0.3333333333333333,
+            "denominator": 384,
+            "value": 0.3385416666666667
+          },
+          "cue_susceptibility": {
+            "ci_high": 0.03125,
+            "ci_low": 0.0,
+            "denominator": 192,
+            "value": 0.010416666666666666
+          },
+          "detector_query_rate": {
+            "ci_high": 1.0,
+            "ci_low": 0.9765625,
+            "denominator": 384,
+            "value": 0.9921875
+          },
+          "diagnostics": {
+            "denominator": 384,
+            "invalid_responses": 0,
+            "length_finishes": 0
+          },
+          "mechanism_accuracy": {
+            "ci_high": 1.0,
+            "ci_low": 0.984375,
+            "denominator": 384,
+            "value": 0.9947916666666666
+          },
+          "parse_failure_rate": {
+            "denominator": 384,
+            "value": 0.0
+          }
+        }
+      },
+      "run_manifest": {
+        "arms": [
+          {
+            "base_seed": 9000,
+            "count": 0,
+            "mode": "neutral",
+            "name": "neutral",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 9000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 10000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_b",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 11000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 12000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_b",
+            "seed_count": 64
+          }
+        ],
+        "backend": "local_transformers",
+        "cache_namespace_hash": "06b606d07878cae837cadde19162b5663605d7d5e041d81ca8f1ba61cf5ebfae",
+        "cache_policy": {
+          "read_enabled": false,
+          "require_hits": false,
+          "write_enabled": true
+        },
+        "candidate_order_version": "macro-kind-slot-v1",
+        "concurrency": 1,
+        "effective_environment": {
+          "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+          "PYTHONHASHSEED": "0"
+        },
+        "execution_mode": "live_acquisition",
+        "generation": {
+          "extra_body": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          },
+          "seed": 0
+        },
+        "history_mode": "full",
+        "macro_action_compiler_version": "legal-bfs-v1",
+        "model_id": "Qwen/Qwen3.6-27B",
+        "model_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+        "prompt_version": "factorial-neutral-v1",
+        "protocol": "affordance-factorial-v0.2",
+        "repository_commit": "df320df9ab6265fff3cc8ca5b545fb317fd2e0a8",
+        "runtime_hardware": {
+          "cuda_runtime": "13.0",
+          "driver": "580.126.09",
+          "gpu": "NVIDIA GeForce RTX 5090",
+          "platform": "Linux-6.17.0-14-generic-x86_64-with-glibc2.39",
+          "python": "3.12.12",
+          "pytorch": "2.11.0+cu130"
+        },
+        "schema_version": "0.2",
+        "seeds": [
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163
+        ],
+        "server": null,
+        "server_launch_manifest_hash": "8668fb63918bf5c524ac210e0b5465d81c95844f650f2e5fe48ea11076dba8b4",
+        "serving": {
+          "backend": "transformers",
+          "batch_size": 1,
+          "bitsandbytes_version": "0.50.0",
+          "chat_template": "model-default@pinned-revision",
+          "device": "cuda",
+          "do_sample": false,
+          "dtype": "bfloat16",
+          "engine_seed": 0,
+          "environment": {
+            "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+            "PYTHONHASHSEED": "0"
+          },
+          "failed_backend_record": "results/reference/v02/qwen_vllm_serving_preflight.json",
+          "language_model_only": true,
+          "quantization": "bitsandbytes-nf4",
+          "torch_version": "2.11.0+cu130",
+          "transformers_version": "5.15.0"
+        },
+        "stage": "confirmatory",
+        "stage_manifest_hash": "612a40d8f4fb33cadec16f97420d0990e5bb73a3b3c78184b76282eb0c3cb874",
+        "tokenizer_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+        "variant": "challenge_3x2"
+      },
+      "serving": {
+        "backend": "transformers",
+        "batch_size": 1,
+        "bitsandbytes_version": "0.50.0",
+        "chat_template": "model-default@pinned-revision",
+        "device": "cuda",
+        "do_sample": false,
+        "dtype": "bfloat16",
+        "engine_seed": 0,
+        "environment": {
+          "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+          "PYTHONHASHSEED": "0"
+        },
+        "failed_backend_record": "results/reference/v02/qwen_vllm_serving_preflight.json",
+        "language_model_only": true,
+        "quantization": "bitsandbytes-nf4",
+        "torch_version": "2.11.0+cu130",
+        "transformers_version": "5.15.0"
+      },
+      "source_summary_sha256": "7cdeb49984ebebff9799ce1828d81ee1b8dc61f860a1b7e9806c1eae098a9f07",
+      "source_trace_sha256": "1eeab0add841d54d515a3f2f04949a7b374528dd175cde6ee0219e68d55ecb06",
+      "stage_manifest": {
+        "base_seeds": [
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163
+        ],
+        "bootstrap": {
+          "demonstration_analysis": "resample base seed and treat each fixed demonstration pool as a replication",
+          "resamples": 10000,
+          "unit": "base seed"
+        },
+        "ceiling_variant_decision": "Promoted: Qwen and Mistral both triggered the predeclared rule on the valid 2x2 pilot; the disjoint 3x2 pilots then passed their serving gates.",
+        "ceiling_variant_promotion_rule": "Promote the 3x2 challenge to the primary confirmatory study if any pilot model has neutral-arm mechanism tracking >=0.90 with detector query rate >=0.80 on the 2x2 assay, indicating attribution ceiling after investigation.",
+        "concurrency": 1,
+        "demonstration_pools": {
+          "cue": [
+            9000,
+            10000
+          ],
+          "interpretation": "Two fixed replications; no population-level claim over arbitrary demonstration pools",
+          "mechanism": [
+            11000,
+            12000
+          ]
+        },
+        "demonstration_seed_count": 64,
+        "estimability_rule": "At least two model policies yield at least 30 complete paired six-cell blocks",
+        "excluded_models": {
+          "gpt-oss-20b": {
+            "preflight_record": "results/reference/v02/gpt_oss_serving_preflight.json",
+            "reason": "Pinned serving configurations violated the deterministic-policy gate before inferential analysis.",
+            "scientific_metrics_reported": false
+          }
+        },
+        "execution_mode": "live_acquisition",
+        "freeze_date": "2026-08-11",
+        "freeze_deadline": "2026-08-23",
+        "freeze_tag": "v0.2-confirmatory-freeze-20260811",
+        "frozen": true,
+        "informative_null_rule": "A null is informative only when its interval excludes an absolute effect of 0.15",
+        "integrity_repair_rule": "Any post-freeze defect requires a complete rerun of every affected confirmatory condition",
+        "manifest_version": "0.2",
+        "models": {
+          "mistral-small-3.2-24b": {
+            "generation": {
+              "seed": 0
+            },
+            "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+            "output_ceiling": 1024,
+            "revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43",
+            "serving": {
+              "async_scheduling": false,
+              "backend": "openai",
+              "batch_invariant_requested": true,
+              "bitsandbytes_version": "0.50.0",
+              "chat_template": "model-default@pinned-revision",
+              "chunked_prefill": true,
+              "dtype": "bfloat16",
+              "enforce_eager": true,
+              "engine_seed": 0,
+              "environment": {
+                "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+                "PYTHONHASHSEED": "0",
+                "VLLM_BATCH_INVARIANT": "1"
+              },
+              "generation_config": "vllm",
+              "ignore_patterns": [
+                "consolidated.safetensors"
+              ],
+              "language_model_only": true,
+              "launch_script": "experiments/serve_mistral_v02.sh",
+              "load_format": "bitsandbytes",
+              "max_model_len": 8192,
+              "max_num_seqs": 8,
+              "ninja_version": "1.13.0",
+              "prefix_caching": false,
+              "quantization": "bitsandbytes-nf4",
+              "tokenizer_mode": "mistral",
+              "vllm_version": "0.26.0"
+            },
+            "tokenizer_revision": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43"
+          },
+          "qwen3.6-27b": {
+            "generation": {
+              "extra_body": {
+                "chat_template_kwargs": {
+                  "enable_thinking": false
+                }
+              },
+              "seed": 0
+            },
+            "id": "Qwen/Qwen3.6-27B",
+            "output_ceiling": 2048,
+            "revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a",
+            "serving": {
+              "backend": "transformers",
+              "batch_size": 1,
+              "bitsandbytes_version": "0.50.0",
+              "chat_template": "model-default@pinned-revision",
+              "device": "cuda",
+              "do_sample": false,
+              "dtype": "bfloat16",
+              "engine_seed": 0,
+              "environment": {
+                "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+                "PYTHONHASHSEED": "0"
+              },
+              "failed_backend_record": "results/reference/v02/qwen_vllm_serving_preflight.json",
+              "language_model_only": true,
+              "quantization": "bitsandbytes-nf4",
+              "torch_version": "2.11.0+cu130",
+              "transformers_version": "5.15.0"
+            },
+            "tokenizer_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a"
+          }
+        },
+        "primary_metrics": [
+          "mechanism_accuracy",
+          "cue_susceptibility",
+          "cue_following",
+          "detector_query_rate",
+          "coverage",
+          "all_cells_success",
+          "cell_success"
+        ],
+        "primary_preflight_outcomes": [
+          "detector_query_rate",
+          "parse_failure_rate",
+          "mechanism_accuracy",
+          "cue_following",
+          "coverage"
+        ],
+        "prompt_arms": [
+          {
+            "base_seed": 9000,
+            "count": 0,
+            "mode": "neutral",
+            "name": "neutral",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 9000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 10000,
+            "count": 6,
+            "mode": "cue",
+            "name": "cue_b",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 11000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_a",
+            "seed_count": 64
+          },
+          {
+            "base_seed": 12000,
+            "count": 6,
+            "mode": "mechanism",
+            "name": "mechanism_b",
+            "seed_count": 64
+          }
+        ],
+        "protocol_commit": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
+        "protocol_tag": "v0.2-protocol-rc2",
+        "selected_models": [
+          "qwen3.6-27b",
+          "mistral-small-3.2-24b"
+        ],
+        "serving_validation": {
+          "fail_closed": true,
+          "maximum_action_conflict_groups": 0,
+          "maximum_candidate_set_conflict_groups": 0,
+          "maximum_response_conflict_groups": 0,
+          "minimum_initial_mechanism_axis_groups": 640,
+          "minimum_replicated_prompt_groups": 1,
+          "require_all_uncached": true
+        },
+        "smallest_effect_of_interest": {
+          "cue_following": 0.15,
+          "mechanism_accuracy": 0.15
+        },
+        "stage": "confirmatory",
+        "variant": "challenge_3x2",
+        "zero_shot_seed_count": 64
+      },
+      "stage_manifest_hash": "612a40d8f4fb33cadec16f97420d0990e5bb73a3b3c78184b76282eb0c3cb874",
+      "status": "eligible-for-scientific-analysis",
+      "tokenizer_revision": "ea24fab73f0d8f18a59b05d79f5d2312a859b21a"
+    }
+  },
+  "projection_policy": "Prespecified estimates and seed-paired contrasts are copied verbatim from the frozen summaries; traces are read only for finish-reason diagnostics.",
+  "protocol_artifact": {
+    "commit": "da7d4f2a481514ea80bd1130dd3f9e2582a0444c",
+    "name": "protocol artifact P",
+    "public_tag": "v0.2-protocol-rc2"
+  },
+  "schema_version": "0.2-confirmatory-results-1"
+}

@@ -1,0 +1,58 @@
+{
+  "files": {
+    "figure1_factorial_world.pdf": {
+      "sha256": "57c6e4128fe40a551a5e6e8f608a28935aa7aa39cc018f77681da37ca34bf1a6",
+      "size_bytes": 18793
+    },
+    "figure1_factorial_world.svg": {
+      "sha256": "993c66684544b4c7c20050dd8dcaa561fa616f529b823c56b893e549eee2652c",
+      "size_bytes": 44235
+    },
+    "figure2_crossed_designs.pdf": {
+      "sha256": "6d1142a8234607062b6abc6e9cf1da8b73637c7ba4bfc443172d285f6eb90a98",
+      "size_bytes": 21517
+    },
+    "figure2_crossed_designs.svg": {
+      "sha256": "b84eddb6abf2d8798396b39ee90a16fff959dd120909e2b06dda7f6cba190912",
+      "size_bytes": 46045
+    },
+    "figure3_attribution_calibration.pdf": {
+      "sha256": "85580d608c25d0c31355081bbd77aa836f1ed00dbf3f478f256af69a6a520b6d",
+      "size_bytes": 23741
+    },
+    "figure3_attribution_calibration.svg": {
+      "sha256": "a16a679a91b1881ec8ffaf3a89dffbf2d573d6d31a5c1c9bbd4fdd2e0f70ad75",
+      "size_bytes": 50371
+    },
+    "figure4_prompt_profiles.pdf": {
+      "sha256": "a170c93890f3635764ccd1fa184d8fa4b9054ec47168358aad48e22d64b096e8",
+      "size_bytes": 31757
+    },
+    "figure4_prompt_profiles.svg": {
+      "sha256": "41403f32df22ff42d35a1130fb565b9fe05f74bcd62aabdc192270c97eeac7a0",
+      "size_bytes": 72153
+    },
+    "table1_integrity.tex": {
+      "sha256": "d6597d8f6c5ec863f91a06c17f424ca2a69cbb18a3b596e246997ccbdd957a93",
+      "size_bytes": 640
+    },
+    "table2_bc.tex": {
+      "sha256": "97f181ccf24c9fae1c98f70995e54c6fcf34ff3c127f4fea1a3e8d96877f487e",
+      "size_bytes": 550
+    },
+    "table3_confirmatory.tex": {
+      "sha256": "82523984e103b6027b8f0553e45ad265e8d88e340fa0178e048cb9be743b9656",
+      "size_bytes": 3281
+    },
+    "table4_contrasts.tex": {
+      "sha256": "2f93823d5d3e7a397e1425fc1a40dad30476f38e8b539af402e00d657845de75",
+      "size_bytes": 984
+    }
+  },
+  "inputs": {
+    "factorial_bc_summary_sha256": "de8e423e0fd2281b8eda9d0dae7a4ab2181d772a60c1dd776194623a11499012",
+    "integrity_report_sha256": "d173c563f281ba227a18f47773b4259bc7f43e228c785b8b76dfdfb95ddbfc23",
+    "manuscript_inputs_sha256": "1a2ea2ffe3000f0f069af5d197192370da25f24b3874a042ce3f70f485f2538b"
+  },
+  "schema_version": "0.2-submission-assets-1"
+}

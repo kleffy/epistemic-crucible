@@ -46,6 +46,22 @@ pilot. The disjoint challenge pilots then passed, so `challenge_3x2` is the
 selected confirmatory variant. GPT-OSS remains in the exclusion registry and
 is not a confirmatory model.
 
+The completed frozen acquisitions are projected under `confirmatory/`. That
+directory contains all ten arm reports, fixed-pool paired contrasts, cell
+success, denominators, diagnostics, model revisions, source-summary hashes,
+structural verification, immutable-seal digests, and the exact machine-readable
+inputs and generated Tables 1--4/Figures 1--4. Raw traces, caches, weights, and
+the SquashFS image remain outside Git.
+
+The compact result record is a copy-only projection: it transfers the frozen
+summary estimates and prespecified contrasts without recomputing estimands. Raw
+traces are inspected only to count provider length finishes. Regenerate the
+submission assets with:
+
+```bash
+python experiments/build_submission_assets.py
+```
+
 The gate separates live acquisition from artifact replay. Live runs cannot read
 the response cache and require every audited record to report `cache_hit=false`;
 replay runs require cache hits, never contact a server, and cannot emit a passing
