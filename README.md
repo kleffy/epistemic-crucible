@@ -1,225 +1,99 @@
 # Epistemic Crucible
 
-> Success is not identification: cross the visible cue and operative mechanism to
-> measure which one controls an agent's behavior.
+**Does an LLM agent act on relevant evidence, or on a cue that happened to predict success?**
 
-## What this is
+Epistemic Crucible is a controlled testbed for empirical AI-safety research. It
+varies visible cues and hidden task mechanisms independently, then measures how
+an agent's evidence gathering and decisions respond.
 
-A lightweight generative environment for measuring **behavioral policy dependence**
-under controlled world interventions.
+The safety question is whether successful behaviour is enough to justify trust.
+An agent may choose the right action while relying on a superficial correlation.
+Separating these explanations matters when evaluations are used to support
+claims about reliable agents and oversight.
 
-**This is not a claim about internal causal representations.** v0.2 crosses the
-carrier of a hidden mechanism with the carrier of a visible cue and records how an
-agent's terminal choice responds. The frozen v0.1 task families remain available for
-reproduction but are not the primary v0.2 measurement surface.
+## How the assay works
 
-## v0.2 diagnostic loop
+The agent must choose a tool that opens a gate. Conductivity determines which
+tool works; colour provides a visible cue.
 
-1. Agent encounters three tools with visible features and a hidden conductivity bit.
-2. It chooses model-facing `QUERY(tool)` or `COMMIT(tool)` macro-actions; each is
-   compiled into legal movement, pickup, and apply actions through the environment.
-3. A queried tool is removed from later query choices; the first commit is terminal.
-4. Each base world is evaluated in a paired 2x2 quartet crossing mechanism and cue.
-5. Mechanism/cue tracking, paired responsiveness, unconditional and conditional cue
-   susceptibility, evidence acquisition/use, coverage, and task success are reported
-   separately, with no aggregate score.
+1. **Acquire evidence:** `QUERY(tool)` returns a detector signal about conductivity.
+2. **Choose an action:** `COMMIT(tool)` makes a terminal choice, whether correct or
+   incorrect.
+3. **Cross the conditions:** change which tool is conductive independently of
+   which tool carries the cue, holding other features fixed within a paired world.
 
-## Installation
+The base design has four conditions (2×2). The confirmatory study uses the
+prespecified six-condition challenge (3×2). Scripted controls calibrate the assay
+against known policies, including a detector user, a cue follower and an oracle.
+Evidence acquisition, cue following, mechanism tracking and task success are
+reported separately.
+
+## Frozen v0.2 findings
+
+The confirmatory study evaluates **Qwen3.6-27B** and
+**Mistral-Small-3.2-24B** across 64 paired base seeds, five fixed prompt arms and
+six conditions: **1,920 episode outcomes per model**.
+
+**Detector-query rate**
+
+| Model | Neutral prompt | Cue-demonstration A | Cue-demonstration B |
+|---|---:|---:|---:|
+| Qwen3.6-27B | 99.22% | 0% | 0% |
+| Mistral-Small-3.2-24B | 100% | 0% | 0% |
+
+In both fixed cue-demonstration arms, both models followed the visible cue in
+every episode. These results show context-dependent evidence acquisition and
+cue reliance in this assay, despite the models' ability to use the detector
+under neutral prompts.
+
+The [frozen results](results/reference/v02/confirmatory/) include all five arms,
+paired contrasts, denominators, pinned model revisions and source hashes.
+Uncertainty is estimated over **paired base seeds**, not independent episodes.
+
+**Scope:** these are behavioural findings about two models under fixed prompts
+in a small, deterministic environment. They do not establish internal causal
+representations, deliberate deception or the effectiveness of deployed AI-control
+methods. Extending the design to monitors or auditors is future work.
+
+## Run a CPU diagnostic
+
+Python 3.10 or later. The scripted controls run offline after installation and
+require no GPU, model weights or API key.
 
 ```bash
-git clone https://github.com/kleffy/epistemic-crucible && cd epistemic-crucible
-uv venv .venv && uv pip install -e ".[dev,notebooks]"
-# or with pip: pip install -e ".[dev,notebooks]"
-```
-
-No GPU required. No remote API required. All standard code paths run offline on CPU.
-
-## Quick start
-
-```bash
-# Verify installation
-pytest tests/ -v -m "not slow"
-
-# Run the affordance diagnostic (~20 seconds, 20 seeds × 3 agents)
-python experiments/run_baselines.py --config configs/quickstart.yaml
-
-# Generate a markdown report from the trace
-python experiments/generate_report.py --traces results/baselines_*.jsonl
-
-# Run the full baseline suite (~8 minutes, 20 seeds × 6 agents × 5 families)
-python experiments/run_baselines.py --config configs/baselines.yaml
-
-# Run the fast v0.2 controls, or the full specified integrity audit
+git clone https://github.com/kleffy/epistemic-crucible.git
+cd epistemic-crucible
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev,notebooks]"
 python experiments/run_factorial_eval.py --controls
-python experiments/run_integrity_gate.py
 ```
 
-Model runs are stage-gated. A pilot invocation supplies the pilot config and manifest;
-confirmatory runs additionally require a frozen manifest, a clean worktree, and
-either the exact tagged protocol commit or its declared tagged direct-child freeze
-wrapper (the latter contains only the immutable freeze metadata):
+This exercises the base 2×2 controls and writes traces plus
+`factorial_control_summary.json` to `results/factorial_v02/`.
+Run the CPU test suite with `python -m pytest tests/ -v -m "not gpu"`.
 
-```bash
-python experiments/run_factorial_eval.py \
-  --config configs/factorial_pilot_v02.yaml \
-  --model MODEL_LABEL \
-  --stage pilot \
-  --manifest configs/pilot_manifest.json
-```
+Repeating the LLM study requires the pinned models, compatible GPU serving and a
+clean checkout at the frozen protocol or its declared freeze-wrapper commit.
+Start with the [v0.2 protocol](docs/v0.2-protocol.md) and
+[confirmatory manifest](configs/confirmatory_manifest.json); the
+[model configuration](configs/factorial_v02.yaml) records serving settings.
+Live acquisition and cache-only replay are separate modes. The public result
+package contains summaries and provenance; raw confirmatory traces, caches,
+model weights and the SquashFS seal are excluded.
 
-For Qwen, the pinned direct-Transformers fallback loads the text-only model in
-NF4 on the GPU. The one-seed serial smoke must pass before the serial 16-seed
-pilot. The selected serial output ceiling is 2,048 tokens. The separate
-batch-size-4 gate failed with nine raw-response conflict groups, so Qwen remains
-batch size 1 and the batched trace is ineligible for scientific analysis:
+## Research status
 
-```bash
-./experiments/run_qwen_transformers_v02.sh \
-  --config configs/factorial_smoke_qwen_v02.yaml \
-  --model qwen3.6-27b \
-  --stage pilot \
-  --manifest configs/pilot_manifest.json \
-  --output-dir results/factorial_v02/qwen_serial_smoke
-```
+This repository contains the v0.2 protocol, evaluation code and frozen
+confirmatory results. The earlier cross-provider pilot and five-family v0.1
+results are historical records. An availability confound prompted the redesign;
+the [v0.1 audit](docs/AUDIT-v0.1.md) explains the corrections. Those earlier
+results are outside the primary v0.2 claims.
 
-For Mistral, the exact-revision NF4 text-only vLLM path passed both the one-seed
-smoke and the 16-seed five-arm pilot at the selected 1,024-token ceiling. The
-launch script declares the Ninja runtime used by FlashInfer and forces vLLM
-generation defaults so the request and server layers are both greedy:
+## Citation and licence
 
-```bash
-./experiments/serve_mistral_v02.sh
+Use [CITATION.cff](CITATION.cff) to cite the software:
+*Success Is Not Identification: Crossed World Interventions for Attributing Agent
+Policies* — Daniel La'ah Ayuba, 2026.
 
-python experiments/run_factorial_eval.py \
-  --config configs/factorial_smoke_mistral_v02.yaml \
-  --model mistral-small-3.2-24b \
-  --stage pilot \
-  --manifest configs/pilot_manifest.json \
-  --output-dir results/factorial_v02/mistral_vllm_smoke
-```
-
-Both valid models triggered the prospectively specified `3x2` promotion rule,
-and both disjoint challenge pilots passed. The confirmatory candidate therefore
-uses `challenge_3x2`, serial serving, Qwen and Mistral only; GPT-OSS is retained
-in the exclusion registry because its pinned serving paths failed before
-inferential analysis.
-
-Factorial model configs default to `execution_mode: live_acquisition`. In that
-mode cache reads are disabled, every generation must contact the current server,
-and only uncached records can satisfy the serving-validation gate. Responses are
-appended to the cache for audit replay. `artifact_replay` is cache-only: a miss is
-an error, the server is never contacted, scientific reports are suppressed, and
-no passing serving-validation status can be emitted.
-
-## CI test commands
-
-```bash
-pytest tests/ -v -m "not slow"   # fast suite (<5 s, excludes end-to-end runs)
-pytest tests/ -v                  # full suite including end-to-end runs (~60 s)
-ruff check .                      # lint
-ruff format --check .             # formatting
-```
-
-## Frozen v0.1 results (historical)
-
-The results below accompany the frozen `v0.1-arxiv` tag. They are retained for
-reproduction, not promoted as v0.2 evidence. See
-[`docs/AUDIT-v0.1.md`](docs/AUDIT-v0.1.md) for the construct and reporting audit.
-
-Task Success Rates on the affordance family from the publication sweep
-(`configs/publication.yaml`, 100 seeds, ~79 train / ~21 test). Full artifacts in
-[`results/reference/`](results/reference/):
-
-| Agent               | Train TSR | Test TSR | Shortcut sensitivity |
-|---------------------|-----------|----------|----------------------|
-| **neural_ppo** (legacy name; BC) | 0.203 | 0.048 | **0.155** (highest) |
-| heuristic           | 0.443     | 0.429    | 0.014                |
-| hybrid_rule_planner | 0.418     | 0.429    | −0.011               |
-| random / tabular_rl / world_model / memorization | 0.000 | 0.000 | 0.000 |
-
-These values are descriptive legacy task-success results. They do not identify
-whether a policy follows the hidden mechanism, a visible cue, or an availability
-heuristic, and v0.2 makes no causal-knowledge inference from them.
-
-The neural agent is GPU-capable (`pip install -e ".[gpu]"`); see
-[`docs/benchmark_card.md`](docs/benchmark_card.md) for the training recipe and the
-honest note on why this CPU-bound symbolic task does not benefit from a GPU.
-
-### LLM panel (cross-provider)
-
-LLMs are evaluated on a **decision-focused** layout (objects reachable, so the
-task tests the causal decision instead of navigation) with a deliberately
-neutral prompt and **anonymized object IDs so the split never leaks**. Open-weights
-models run locally on the GPU (7–8B, and Qwen2.5-32B in 4-bit); Claude and GPT/o3
-via API. Overall TSR across the four learnable families (full artifacts in
-[`results/reference/llm/`](results/reference/llm/)):
-
-| Model | Overall TSR [95% CI] |
-|-------|----------------------|
-| gpt-5.5 | **0.80** [0.68, 0.93] |
-| qwen2.5-32b-instruct (4-bit) | 0.60 [0.54, 0.67] |
-| claude-opus-4-8 | 0.58 [0.42, 0.72] |
-| claude-sonnet-4-6 | 0.51 [0.45, 0.57] |
-| o3 | 0.33 [0.17, 0.47] |
-| claude-haiku-4-5 | 0.31 [0.25, 0.37] |
-| llama-3.1-8b-instruct | 0.10 [0.06, 0.14] |
-| qwen2.5-7b-instruct | 0.09 [0.06, 0.13] |
-
-The table is preserved only to reproduce v0.1. Its former `0.57` colour-reliance
-headline equals the observed red-tool availability rate (`0.57/0.60`), so it is
-not evidence of saturation or cue-controlled policy. The v0.1 record also omitted
-that the inference path allowed 3,000 completion tokens, used low reasoning effort,
-retained nine messages (not nine turns), and trained the released neural checkpoint
-with behavior cloning rather than PPO. v0.2 corrects those points explicitly and
-does not carry this leaderboard or the four unrepaired families into its primary
-claims.
-
-## Diagnostic experiment
-
-Run the diagnostic headlessly to see where task success hides causal failure:
-
-```bash
-pip install -e .[notebooks]
-python experiments/run_diagnostic.py
-```
-
-Results are written to `results/`. Open
-`notebooks/00_crucible_diagnostic_experiment.ipynb` in Jupyter for interactive
-plots: shortcut exposure, intervention traces, and failure mode breakdown.
-
-## Documentation
-
-- [docs/design.md](docs/design.md): architecture and design rationale
-- [docs/benchmark_card.md](docs/benchmark_card.md): benchmark specification and baseline results
-- [docs/metrics.md](docs/metrics.md): metric definitions and gaming risk analysis
-- [docs/task_grammar.md](docs/task_grammar.md): task family grammar
-- [docs/release_policy.md](docs/release_policy.md): versioning, reproducibility guarantees, citation
-- [docs/v0.2-protocol.md](docs/v0.2-protocol.md): crossed protocol, metrics, controls, and staged study
-- [docs/ICLR2027_SUBMISSION_CHECKLIST.md](docs/ICLR2027_SUBMISSION_CHECKLIST.md): verified deadlines and submission operations
-
-## Project layout
-
-```
-crucible/        core environment package
-  agents/        baseline agent implementations
-  viz/           visualization utilities (requires matplotlib)
-  utils/         seeding, logging, serialization
-configs/         YAML configuration files
-tests/           pytest test suite
-experiments/     experiment runner scripts
-notebooks/       diagnostic notebooks
-results/         output artefacts (not committed)
-docs/            design and benchmark documentation
-```
-
-## Citation
-
-```bibtex
-@software{epistemic_crucible_2026,
-  author = {Ayuba, Daniel La'ah},
-  title  = {Success Is Not Identification: Crossed World Interventions
-            for Attributing Agent Policies},
-  year   = {2026},
-  note   = {software protocol v0.2; v0.1-arxiv remains frozen},
-}
-```
+Released under the [MIT licence](LICENSE).
