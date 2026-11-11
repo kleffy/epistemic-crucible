@@ -93,7 +93,7 @@ results are outside the primary v0.2 claims.
 ## Citation and licence
 
 Use [CITATION.cff](CITATION.cff) to cite the software:
-*Success Is Not Identification: Crossed World Interventions for Attributing Agent
+*Crossed World Interventions for Attributing Agent
 Policies* — Daniel La'ah Ayuba, 2026.
 
 Released under the [MIT licence](LICENSE).
