@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use the Epistemic Crucible benchmark, please cite it as below."
-title: "Success Is Not Identification: Crossed World Interventions for Attributing Agent Policies"
+title: "Crossed World Interventions for Attributing Agent Policies"
 abstract: >-
   A crossed-intervention behavioral assay that measures whether an interactive
   policy's terminal choices track operative detector evidence or a correlated visible
